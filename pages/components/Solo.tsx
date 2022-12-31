@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Styled from "styled-components";
-import { tracks as myTracks } from "./data/tracks";
+import { tracks as myTracks } from "../../public/data/tracks";
 
 const StyledSolo = Styled.div`
   display: flex;

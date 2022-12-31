@@ -71,7 +71,7 @@ export default function Solo() {
       </a>
       <h1>Track #{track.id}</h1>
       <p>{today}</p>
-      <iframe
+      {/* <iframe
         title={track.title}
         style={{ borderRadius: "12px", maxWidth: "50rem" }}
         src={track.src}
@@ -81,7 +81,7 @@ export default function Solo() {
         allowFullScreen={false}
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"
-      ></iframe>
+      ></iframe> */}
       <button
         onClick={() => {
           alert(

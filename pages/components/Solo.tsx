@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from "react";
-import Styled from "styled-components";
+import styled from "styled-components";
+import useSWR from "swr";
 import { tracks as myTracks } from "../../public/data/tracks";
 
-const StyledSolo = Styled.div`
+interface Track {
+  id: string;
+  title: string;
+  src: string;
+}
+
+interface SpotifyData {
+  songUrl: string;
+  isPlaying: boolean;
+  title: string;
+}
+
+const StyledSolo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -40,7 +53,13 @@ const StyledSolo = Styled.div`
 `;
 
 export default function Solo() {
-  const [track, setTrack] = useState(myTracks[1]);
+  const fetcher = (url: RequestInfo | URL) => fetch(url).then((r) => r.json());
+  const { data } = useSWR<SpotifyData>("/api/spotify", fetcher, {
+    refreshInterval: 1000,
+  });
+  const songId = data?.songUrl.split("/").pop();
+  const src = `https://open.spotify.com/embed/track/${songId}?utm_source=generator&theme=0`;
+  const [track, setTrack] = useState<Track>(myTracks[1]);
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -49,39 +68,71 @@ export default function Solo() {
     day: "numeric",
   });
 
-  // Randomise track on page load
+  const [hour, setHour] = useState<number>(new Date().getHours());
+  const [minute, setMinute] = useState<number>(new Date().getMinutes());
+
   useEffect(() => {
-    setTrack(myTracks[Math.floor(Math.random() * myTracks.length)]);
+    const interval = setInterval(() => {
+      setHour(new Date().getHours());
+      setMinute(new Date().getMinutes());
+      const colon = document.getElementById("colon");
+      if (colon) {
+        colon.style.visibility =
+          colon.style.visibility === "hidden" ? "visible" : "hidden";
+      }
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const toggleLink = () => {
+  const toggleLink = (): void => {
     window.open(
       "https://open.spotify.com/user/21h6osgmy2twlu7ichm7ygfhq?si=96fadda3e46144dc"
     );
   };
 
-  const randomise = () => {
+  const randomise = (): void => {
     setTrack(myTracks[Math.floor(Math.random() * myTracks.length)]);
   };
 
   return (
     <StyledSolo>
-      <a href="#" id="randomise" onClick={randomise}>
-        🎲
-      </a>
-      <h1>Track #{track.id}</h1>
-      <p>{today}</p>
-      <iframe
-        title={track.title}
-        style={{ borderRadius: "12px", maxWidth: "50rem" }}
-        src={track.src}
-        width="100%"
-        height="352"
-        frameBorder="0"
-        allowFullScreen={false}
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-      ></iframe>
+      {!data?.isPlaying && (
+        <a href="#" id="randomise" onClick={randomise}>
+          🎲
+        </a>
+      )}
+      {data?.isPlaying ? <h1>Now Playing</h1> : <h1>Track #{track.id}</h1>}
+      <p>
+        {today} {hour}
+        <span id="colon">:</span>
+        {minute < 10 ? `0${minute}` : minute} {hour < 12 ? "AM" : "PM"}
+      </p>
+
+      {data?.isPlaying ? (
+        <iframe
+          title={data.title}
+          style={{ borderRadius: "12px", maxWidth: "50rem" }}
+          src={src}
+          width="100%"
+          height="352"
+          frameBorder="0"
+          allowFullScreen={false}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      ) : (
+        <iframe
+          title={track.title}
+          style={{ borderRadius: "12px", maxWidth: "50rem" }}
+          src={track.src}
+          width="100%"
+          height="352"
+          frameBorder="0"
+          allowFullScreen={false}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      )}
       <button
         onClick={() => {
           alert(

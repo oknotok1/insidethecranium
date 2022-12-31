@@ -1,9 +1,12 @@
 import Head from "next/head";
+import styled from "styled-components";
 import Solo from "./components/Solo";
+
+const StyledHome = styled.div``;
 
 export default function Home() {
   return (
-    <>
+    <StyledHome>
       <Head>
         <title>Inside The Cranium</title>
         <meta name="description" content="A little side project by Jeff" />
@@ -13,6 +16,6 @@ export default function Home() {
       <main>
         <Solo />
       </main>
-    </>
+    </StyledHome>
   );
 }

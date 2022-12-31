@@ -84,7 +84,6 @@ export default function Solo() {
         colon.style.visibility =
           colon.style.visibility === "hidden" ? "visible" : "hidden";
       }
-      console.log(data);
     }, 1000);
     return () => clearInterval(interval);
   }, []);

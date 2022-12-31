@@ -5,7 +5,7 @@ interface Track {
   src: string;
 }
 
-const tracks: Track[] = [
+export const tracks: Track[] = [
   {
     id: "1",
     title: "",
@@ -37,5 +37,3 @@ const tracks: Track[] = [
     src: "https://open.spotify.com/embed/track/3nVZbbmFgFHk0VTnwWA3nG?utm_source=generator&theme=0",
   },
 ];
-
-export default tracks;

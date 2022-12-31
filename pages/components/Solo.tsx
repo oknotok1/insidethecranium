@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Styled from "styled-components";
-import Data from "./data/tracks";
+import { tracks as myTracks } from "./data/tracks";
 
 const StyledSolo = Styled.div`
   display: flex;
@@ -40,7 +40,7 @@ const StyledSolo = Styled.div`
 `;
 
 export default function Solo() {
-  const [track, setTrack] = useState(Data[1]);
+  const [track, setTrack] = useState(myTracks[1]);
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -51,7 +51,7 @@ export default function Solo() {
 
   // Randomise track on page load
   useEffect(() => {
-    setTrack(Data[Math.floor(Math.random() * Data.length)]);
+    setTrack(myTracks[Math.floor(Math.random() * myTracks.length)]);
   }, []);
 
   const toggleLink = () => {
@@ -61,7 +61,7 @@ export default function Solo() {
   };
 
   const randomise = () => {
-    setTrack(Data[Math.floor(Math.random() * Data.length)]);
+    setTrack(myTracks[Math.floor(Math.random() * myTracks.length)]);
   };
 
   return (

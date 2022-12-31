@@ -1,14 +1,5 @@
 import Head from "next/head";
-// import Solo from "./components/Solo";
-
-import Styled from "styled-components";
-
-const StyledMain = Styled.main`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-`;
+import Solo from "./components/Solo";
 
 export default function Home() {
   return (
@@ -19,10 +10,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <StyledMain>
-        <h1>Inside The Cranium</h1>
-        {/* <Solo /> */}
-      </StyledMain>
+      <main>
+        <Solo />
+      </main>
     </>
   );
 }

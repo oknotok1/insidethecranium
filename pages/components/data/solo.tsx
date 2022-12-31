@@ -1,4 +1,10 @@
-const soloData = [
+interface Track {
+  id: string;
+  title: string;
+  src: string;
+}
+
+const soloData: Track[] = [
   {
     id: "1",
     title: "",

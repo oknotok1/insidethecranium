@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { loadComponents } from "next/dist/server/load-components";
+import React, { useState, useEffect, use } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
 import { tracks as myTracks } from "../../public/data/tracks";
@@ -57,9 +58,12 @@ export default function Solo() {
   const { data } = useSWR<SpotifyData>("/api/spotify", fetcher, {
     refreshInterval: 1000,
   });
-  const songId = data?.songUrl.split("/").pop();
-  const src = `https://open.spotify.com/embed/track/${songId}?utm_source=generator&theme=0`;
-  const [track, setTrack] = useState<Track>(myTracks[1]);
+  let src = "";
+  if (data && data.songUrl) {
+    const songId = data.songUrl.split("/").pop();
+    src = `https://open.spotify.com/embed/track/${songId}?utm_source=generator&theme=0`;
+  }
+  const [track, setTrack] = useState<Track>(myTracks[0]);
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -80,6 +84,7 @@ export default function Solo() {
         colon.style.visibility =
           colon.style.visibility === "hidden" ? "visible" : "hidden";
       }
+      console.log(data);
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -109,17 +114,19 @@ export default function Solo() {
       </p>
 
       {data?.isPlaying ? (
-        <iframe
-          title={data.title}
-          style={{ borderRadius: "12px", maxWidth: "50rem" }}
-          src={src}
-          width="100%"
-          height="352"
-          frameBorder="0"
-          allowFullScreen={false}
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-        ></iframe>
+        <>
+          <iframe
+            title={data.title}
+            style={{ borderRadius: "12px", maxWidth: "50rem" }}
+            src={src}
+            width="100%"
+            height="352"
+            frameBorder="0"
+            allowFullScreen={false}
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </>
       ) : (
         <iframe
           title={track.title}

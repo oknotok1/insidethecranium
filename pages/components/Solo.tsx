@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Styled from "styled-components";
-import Data from "./data/solo";
+import soloData from "./data/solo";
 
 const StyledSolo = Styled.div`
   display: flex;
@@ -40,7 +40,7 @@ const StyledSolo = Styled.div`
 `;
 
 export default function Solo() {
-  const [track, setTrack] = useState(Data[1]);
+  const [track, setTrack] = useState(soloData[1]);
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -51,7 +51,7 @@ export default function Solo() {
 
   // Randomise track on page load
   useEffect(() => {
-    setTrack(Data[Math.floor(Math.random() * Data.length)]);
+    setTrack(soloData[Math.floor(Math.random() * soloData.length)]);
   }, []);
 
   const toggleLink = () => {
@@ -61,7 +61,7 @@ export default function Solo() {
   };
 
   const randomise = () => {
-    setTrack(Data[Math.floor(Math.random() * Data.length)]);
+    setTrack(soloData[Math.floor(Math.random() * soloData.length)]);
   };
 
   return (
@@ -71,7 +71,7 @@ export default function Solo() {
       </a>
       <h1>Track #{track.id}</h1>
       <p>{today}</p>
-      {/* <iframe
+      <iframe
         title={track.title}
         style={{ borderRadius: "12px", maxWidth: "50rem" }}
         src={track.src}
@@ -81,7 +81,7 @@ export default function Solo() {
         allowFullScreen={false}
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"
-      ></iframe> */}
+      ></iframe>
       <button
         onClick={() => {
           alert(

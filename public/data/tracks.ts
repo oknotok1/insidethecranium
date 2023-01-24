@@ -1,11 +1,10 @@
-
 interface Track {
   id: string;
   title: string;
   src: string;
 }
 
-export  const tracks: Track[] = [
+export const tracks: Track[] = [
   {
     id: "1",
     title: "",
@@ -35,5 +34,25 @@ export  const tracks: Track[] = [
     id: "6",
     title: "",
     src: "https://open.spotify.com/embed/track/3nVZbbmFgFHk0VTnwWA3nG?utm_source=generator&theme=0",
+  },
+  {
+    id: "7",
+    title: "",
+    src: "https://open.spotify.com/embed/track/6jUpru4hHOeZzoCKbaXMpw?utm_source=generator&theme=0",
+  },
+  {
+    id: "8",
+    title: "",
+    src: "https://open.spotify.com/embed/track/1Z5I7Z6kNdoJ4WfvqUXpqx?utm_source=generator&theme=0",
+  },
+  {
+    id: "9",
+    title: "",
+    src: "https://open.spotify.com/embed/track/5fl9DTvHOVrbg7crvJ0hCr?utm_source=generator&theme=0",
+  },
+  {
+    id: "10",
+    title: "",
+    src: "https://open.spotify.com/embed/track/3xEJ59GyjCjcJ69RQc2ej6?utm_source=generator&theme=0",
   },
 ];

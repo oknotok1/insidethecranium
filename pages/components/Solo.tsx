@@ -31,16 +31,21 @@ const StyledSolo = styled.div`
   }
 
   button {
-    color: #282c34;
-    background-color: #fff;
+    color: #242424;
+    font: inherit;
+    font-size: 0.75rem;
+    background-color: #ffffff;
     border: 1px solid #282c34;
-    border-radius: 12px;
+    border-radius: 0.5rem;
     margin-top: 1rem;
-    padding: 6px 12px;
+    padding: 0.5rem 1rem;
   }
 
   button:hover {
     cursor: pointer;
+    background-color: #282c34;
+    color: #ffffff;
+    border: 1px solid #ffffff;
   }
 
   #randomise {
@@ -141,13 +146,11 @@ export default function Solo() {
       )}
       <button
         onClick={() => {
-          alert(
-            "You've already come this far, might as well follow me on Spotify. 🤷🏻‍♀️"
-          );
+          alert("You asked for it. 🤷🏻‍♀️");
           toggleLink();
         }}
       >
-        Click
+        Follow Me
       </button>
     </StyledSolo>
   );

@@ -1,0 +1,58 @@
+.solo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  height: 100vh;
+  width: 100vw;
+  padding: 3rem;
+
+  button {
+    cursor: pointer;
+    background-color: #282c34;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+  }
+
+  button {
+    font-size: 0.75rem;
+    background-color: lighten(#282c34, 5%);
+    border: 1px solid #282c34;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+
+  button:hover {
+    cursor: pointer;
+    background-color: lighten(#282c34, 20%);
+    border: 1px solid darken(#ffffff, 50%);
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.player {
+  display: grid;
+  grid-template-columns: 3rem minmax(auto, 50rem) 3rem;
+  gap: 1rem;
+
+  button {
+    height: 100%;
+  }
+}
+
+.randomiseBtn {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: unset;
+}

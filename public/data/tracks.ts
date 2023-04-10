@@ -8,7 +8,7 @@ export const tracks: Track[] = [
   {
     id: "1",
     title: "",
-    src: "https://open.spotify.com/embed/track/3ICY4Gp8oex1BPVEgBJNKD?utm_source=generator&theme=0",
+    src: "https://open.spotify.com/embed/track/3EoQSIQ91sDN2gYIcPXa5b?utm_source=generator&theme=0",
   },
   {
     id: "2",

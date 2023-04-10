@@ -10,23 +10,19 @@
 
   button {
     cursor: pointer;
-    background-color: #282c34;
     color: #ffffff;
-    border: 1px solid #ffffff;
-  }
-
-  button {
     font-size: 0.75rem;
     background-color: lighten(#282c34, 5%);
     border: 1px solid #282c34;
     border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
   }
 
   button:hover {
     cursor: pointer;
     background-color: lighten(#282c34, 20%);
     border: 1px solid darken(#ffffff, 50%);
+    cursor: pointer;
   }
 }
 
@@ -55,4 +51,20 @@
   padding: 0;
   background: none;
   border: unset;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+
+  button {
+    background: unset;
+    font-size: 1.25rem;
+  }
+
+  button:hover {
+    cursor: pointer;
+    background: unset;
+    border: none;
+  }
 }

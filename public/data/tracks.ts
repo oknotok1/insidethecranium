@@ -55,4 +55,9 @@ export const tracks: Track[] = [
     title: "",
     src: "https://open.spotify.com/embed/track/3xEJ59GyjCjcJ69RQc2ej6?utm_source=generator&theme=0",
   },
+  {
+    id: "11",
+    title: "",
+    src: "https://open.spotify.com/embed/track/3Uvm6liH9z05JXhKVAQJOT?utm_source=generator&theme=0",
+  },
 ];

@@ -60,13 +60,12 @@
   button {
     background: unset;
     font-size: 1.25rem;
+    border: unset;
   }
 
   button:hover {
     cursor: pointer;
     background: unset;
-    border: none;
+    border: unset;
   }
 }
-
-// forcing push

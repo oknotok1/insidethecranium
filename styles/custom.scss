@@ -1,0 +1,19 @@
+// Override Bootstrap font-family variable
+$font-family-base: 'Noto Sans JP', sans-serif;
+
+// Override Bootstrap variables before importing Bootstrap
+$background: #282c34;
+$primary: #00818a;
+$secondary: #5e5e5e;
+$info: #2faf91;
+$text: #FFFFFF;
+$highlight1: #8cd881;
+$highlight2: #f9f871;
+
+// Import Bootstrap styles
+@import '~bootstrap/scss/bootstrap';
+
+/* custom.css or similar */
+.text-muted-light {
+  color: #fefefeb2;
+}

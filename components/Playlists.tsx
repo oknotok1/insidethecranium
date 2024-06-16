@@ -1,7 +1,7 @@
-import { UserPlaylists } from "@/types/spotify";
-import styles from "@/styles/Playlists.module.scss";
 import { useState } from "react";
 import { Button } from "reactstrap";
+import { UserPlaylists } from "@/types/spotify";
+import styles from "@/styles/Playlists.module.scss";
 
 const Playlists = ({ playlists: data }: { playlists: UserPlaylists }) => {
   const [playlists, setPlaylists] = useState(data.items.slice(0, 6));
@@ -34,7 +34,7 @@ const Playlists = ({ playlists: data }: { playlists: UserPlaylists }) => {
         <div>
           <h1>Playlists</h1>
           <p>
-            I have curated <strong>{playlists.length}</strong> thus far. They
+            I have curated <strong>{data.items.length}</strong> thus far. They
             {"'"}re mostly grouped by genres, and or moods. I know it{"'"}s
             excessive, but I can{"'"}t help it. I{"'"}ll be creating a directory
             soon to help you navigate through them.

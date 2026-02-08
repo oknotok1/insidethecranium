@@ -21,6 +21,7 @@ export default function PlaylistsGrid({
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isDone, setIsDone] = useState(initialPlaylists.length >= totalCount);
+  const [loadError, setLoadError] = useState(false);
   const loadingRef = useRef(false);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function PlaylistsGrid({
 
       let currentOffset = initialPlaylists.length;
       let allPlaylists = [...initialPlaylists];
+      let hasError = false;
 
       while (currentOffset < totalCount) {
         try {
@@ -40,7 +42,10 @@ export default function PlaylistsGrid({
             `/api/playlists?limit=${BATCH_SIZE}&offset=${currentOffset}&includeGenres=false`,
           );
 
-          if (!response.ok) break;
+          if (!response.ok) {
+            hasError = true;
+            break;
+          }
 
           const data = await response.json();
           if (!data.items || data.items.length === 0) break;
@@ -59,12 +64,18 @@ export default function PlaylistsGrid({
           await new Promise((resolve) => setTimeout(resolve, 100));
         } catch (error) {
           console.error("Error loading playlists batch:", error);
+          hasError = true;
           break;
         }
       }
 
       setIsLoading(false);
-      setIsDone(true);
+      // Only mark as done if we successfully loaded everything
+      if (currentOffset >= totalCount) {
+        setIsDone(true);
+      } else if (hasError) {
+        setLoadError(true);
+      }
       loadingRef.current = false;
     };
 
@@ -85,6 +96,16 @@ export default function PlaylistsGrid({
           <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
             Loading more playlists...
+          </span>
+        </div>
+      )}
+
+      {/* Error state - show if loading failed before completion */}
+      {!isLoading && !isDone && loadError && (
+        <div className="flex items-center justify-center py-8 text-sm text-gray-600 dark:text-gray-400">
+          <span>
+            Loaded {playlists.length} of {totalCount} playlists. Some failed to
+            load.
           </span>
         </div>
       )}

@@ -17,65 +17,57 @@ export default function NowPlaying({ className }: NowPlayingProps) {
   if (!nowPlayingTrack || !isListening || !nowPlayingTrack.item) return null;
 
   return (
-    <div className={`${styles.nowPlaying} ${className || ""}`}>
-      {/* Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
-        className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white text-xs transition-all hover:shadow-lg hover:scale-[1.02] active:scale-100 w-full min-w-0"
-        aria-label="Now playing"
-        style={{ cursor: "pointer" }}
-      >
-        <Play className="w-3 h-3 fill-current shrink-0" />
-        <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="whitespace-nowrap inline-block animate-marquee">
-            <div className="inline-block">
-              <span className="font-semibold">
-                {nowPlayingTrack?.item?.name}
-              </span>
-              <span className="mx-1.5 font-normal opacity-70">•</span>
-              <span className="font-normal">
-                {nowPlayingTrack?.item?.artists[0]?.name}
-              </span>
-              <span className="mx-1.5 font-normal opacity-70">•</span>
-              <span className="font-light italic">
-                {nowPlayingTrack?.item?.album?.name}
-              </span>
-              <span className="mx-4"></span>
-            </div>
-            <div className="inline-block">
-              <span className="font-semibold">
-                {nowPlayingTrack?.item?.name}
-              </span>
-              <span className="mx-1.5 font-normal opacity-70">•</span>
-              <span className="font-normal">
-                {nowPlayingTrack?.item?.artists[0]?.name}
-              </span>
-              <span className="mx-1.5 font-normal opacity-70">•</span>
-              <span className="font-light italic">
-                {nowPlayingTrack?.item?.album?.name}
-              </span>
-              <span className="mx-4"></span>
+    <>
+      <div className={`${styles.nowPlaying} ${className || ""} relative`}>
+        {/* Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+          className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white text-xs transition-all hover:shadow-lg hover:scale-[1.02] active:scale-100 w-full min-w-0"
+          aria-label="Now playing"
+          style={{ cursor: "pointer" }}
+        >
+          <Play className="w-3 h-3 fill-current shrink-0" />
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <div className="whitespace-nowrap inline-block animate-marquee">
+              <div className="inline-block">
+                <span className="font-semibold">
+                  {nowPlayingTrack?.item?.name}
+                </span>
+                <span className="mx-1.5 font-normal opacity-70">•</span>
+                <span className="font-normal">
+                  {nowPlayingTrack?.item?.artists[0]?.name}
+                </span>
+                <span className="mx-1.5 font-normal opacity-70">•</span>
+                <span className="font-light italic">
+                  {nowPlayingTrack?.item?.album?.name}
+                </span>
+                <span className="mx-4"></span>
+              </div>
+              <div className="inline-block">
+                <span className="font-semibold">
+                  {nowPlayingTrack?.item?.name}
+                </span>
+                <span className="mx-1.5 font-normal opacity-70">•</span>
+                <span className="font-normal">
+                  {nowPlayingTrack?.item?.artists[0]?.name}
+                </span>
+                <span className="mx-1.5 font-normal opacity-70">•</span>
+                <span className="font-light italic">
+                  {nowPlayingTrack?.item?.album?.name}
+                </span>
+                <span className="mx-4"></span>
+              </div>
             </div>
           </div>
-        </div>
-      </button>
+        </button>
 
-      {/* Popover */}
-      {isOpen && (
-        <>
+        {/* Popover - child of wrapper for proper positioning */}
+        {isOpen && (
           <div
-            className="fixed inset-0 z-60 bg-transparent cursor-default"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(false);
-            }}
-            aria-label="Close popover"
-          />
-          <div
-            className="fixed left-1/2 -translate-x-1/2 top-20 lg:absolute lg:top-full lg:mt-2 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-70 overflow-hidden"
+            className="fixed left-1/2 -translate-x-1/2 top-[4.5rem] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-full lg:mt-2 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-70 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Background gradient */}
@@ -124,7 +116,7 @@ export default function NowPlaying({ className }: NowPlayingProps) {
 
               {/* Genre */}
               {nowPlayingGenres.length > 0 && (
-                <div className="text-center mb-3">
+                <div className="text-center mb-4">
                   <p className="text-xs text-gray-600 dark:text-gray-400">
                     {nowPlayingGenres.join(" • ")}
                   </p>
@@ -144,8 +136,17 @@ export default function NowPlaying({ className }: NowPlayingProps) {
               )}
             </div>
           </div>
-        </>
+        )}
+      </div>
+
+      {/* Backdrop - rendered outside for proper click handling */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 top-16 z-60 bg-black/20 dark:bg-black/40"
+          onClick={() => setIsOpen(false)}
+          aria-label="Close popover"
+        />
       )}
-    </div>
+    </>
   );
 }

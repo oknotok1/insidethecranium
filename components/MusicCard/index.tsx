@@ -24,12 +24,19 @@ export default function MusicCard({
 
       {/* Info */}
       <div className="p-4">
-        <h3 className="mb-1 truncate text-gray-900 dark:text-white">{title}</h3>
-        {subtitle && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 truncate mb-2">
-            {subtitle}
-          </p>
-        )}
+        {/* Title group */}
+        <div className="mb-3">
+          <h3 className="text-base sm:text-lg font-medium mb-1 truncate text-gray-900 dark:text-white">
+            {title}
+          </h3>
+          {subtitle && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+              {subtitle}
+            </p>
+          )}
+        </div>
+        
+        {/* Metadata group */}
         <Genres genres={genres} />
       </div>
     </>
@@ -84,15 +91,27 @@ const AlbumArtwork = ({
   </div>
 );
 
-const Genres = ({ genres }: { genres: string[] }) => (
-  <div className="flex flex-wrap gap-x-1.5 gap-y-2 mt-2">
-    {genres.map((genre, index) => (
-      <span
-        key={index}
-        className="px-2 py-0.5 text-[10px] sm:text-xs rounded-full bg-gray-300 dark:bg-white/10 text-gray-700 dark:text-gray-300"
-      >
-        {genre}
-      </span>
-    ))}
-  </div>
-);
+const Genres = ({ genres }: { genres: string[] }) => {
+  const displayGenres = genres.slice(0, 3);
+  
+  return (
+    <>
+      {/* Mobile: Dot-separated */}
+      <div className="sm:hidden text-xs text-gray-600 dark:text-gray-400">
+        {displayGenres.join(" • ")}
+      </div>
+      
+      {/* Desktop: Chips */}
+      <div className="hidden sm:flex flex-wrap gap-2">
+        {displayGenres.map((genre, index) => (
+          <span
+            key={index}
+            className="px-3 py-1.5 text-xs rounded-full bg-gray-300 dark:bg-white/10 text-gray-700 dark:text-gray-300"
+          >
+            {genre}
+          </span>
+        ))}
+      </div>
+    </>
+  );
+};

@@ -73,7 +73,7 @@ export default async function PlaylistsPage() {
           </div>
 
           {playlists.items.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
               {playlists.items.map((playlist) => (
                 <PlaylistCard key={playlist.id} playlist={playlist} />
               ))}

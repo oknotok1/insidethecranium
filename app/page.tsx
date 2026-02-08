@@ -1,13 +1,15 @@
+import { cache } from 'react';
 import * as contentful from "contentful";
 import HeroSection from "@/components/(Homepage)/Hero";
 import CuratedSongs from "@/components/(Homepage)/CuratedSongs";
 import Playlists from "@/components/(Homepage)/Playlists";
 import HomepageSectionSkeleton from "@/components/(Homepage)/Skeleton";
+import { logger } from "@/utils/logger";
 
 // Cache page for 24 hours (static content that rarely changes)
 export const revalidate = 86400;
 
-async function getData() {
+const getData = cache(async () => {
   // Get enriched playlists with genres and clean descriptions from our API
   let playlists = {
     items: [],
@@ -35,15 +37,15 @@ async function getData() {
 
       if (!data.error && data.items) {
         playlists = data;
-        console.log(`[Homepage] ✓ Loaded ${data.items.length} playlists from cache`);
+        logger.success('Homepage', `Loaded ${data.items.length} playlists from cache`);
       } else {
-        console.error("[Homepage] Playlists API error:", data.error);
+        logger.error('Homepage', `Playlists API error: ${data.error}`);
       }
     } else {
-      console.error("[Homepage] Failed to fetch playlists:", playlistsResponse.status, playlistsResponse.statusText);
+      logger.error('Homepage', `Failed to fetch playlists: ${playlistsResponse.status} ${playlistsResponse.statusText}`);
     }
   } catch (error: any) {
-    console.error("[Homepage] Error fetching playlists:", error.message);
+    logger.error('Homepage', `Error fetching playlists: ${error.message}`);
   }
 
   // Get Featured Songs from Contentful
@@ -81,22 +83,22 @@ async function getData() {
           if (tracksResponse.ok) {
             const tracksData = await tracksResponse.json();
             curatedTracks = tracksData.tracks || [];
-            console.log(`[Homepage] ✓ Loaded ${curatedTracks.length} curated tracks from cache`);
+            logger.success('Homepage', `Loaded ${curatedTracks.length} curated tracks from cache`);
           }
-        } catch (error) {
-          console.error("[Homepage] Error fetching curated tracks:", error);
+        } catch (error: any) {
+          logger.error('Homepage', `Error fetching curated tracks: ${error.message}`);
         }
       }
     }
-  } catch (error) {
-    console.error("Error fetching featured songs:", error);
+  } catch (error: any) {
+    logger.error('Homepage', `Error fetching featured songs: ${error.message}`);
   }
 
   return {
     playlists,
     curatedTracks,
   };
-}
+});
 
 export default async function Home() {
   const { playlists, curatedTracks } = await getData();

@@ -2,13 +2,15 @@
  * Spotify API Utilities
  */
 
+import { cache } from 'react';
 import { logger } from './logger';
 
 /**
  * Fetches a Spotify access token using the refresh token
  * Uses Next.js Data Cache with 50-minute TTL
+ * Wrapped with React cache() to deduplicate requests within a single render
  */
-export async function getSpotifyAccessToken(): Promise<string> {
+export const getSpotifyAccessToken = cache(async (): Promise<string> => {
   const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } = process.env;
 
   const token = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
@@ -43,7 +45,7 @@ export async function getSpotifyAccessToken(): Promise<string> {
     logger.error('Spotify', `Failed to get access token: ${error.message}`);
     throw error;
   }
-}
+});
 
 /**
  * Spotify API configuration constants

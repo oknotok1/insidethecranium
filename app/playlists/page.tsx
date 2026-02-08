@@ -1,5 +1,7 @@
+import { cache } from 'react';
 import PlaylistCard from "@/components/PlaylistCard";
 import { UserPlaylists } from "@/types/spotify";
+import { logger } from "@/utils/logger";
 
 export const metadata = {
   title: "All Playlists - Inside The Cranium",
@@ -9,12 +11,12 @@ export const metadata = {
 // Cache page for 24 hours (static content)
 export const revalidate = 86400;
 
-async function getAllPlaylists(): Promise<UserPlaylists> {
+const getAllPlaylists = cache(async (): Promise<UserPlaylists> => {
   try {
     const playlistsResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=50`,
       {
-        next: { 
+        next: {
           revalidate: 86400, // Cache for 24 hours
           tags: ['playlists']
         }
@@ -25,12 +27,12 @@ async function getAllPlaylists(): Promise<UserPlaylists> {
       const data = await playlistsResponse.json();
 
       if (!data.error && data.items) {
-        console.log(`[Playlists Page] ✓ Loaded ${data.items.length} playlists from cache`);
+        logger.success('Playlists Page', `Loaded ${data.items.length} playlists from cache`);
         return data;
       }
     }
   } catch (error: any) {
-    console.error("[Playlists Page] Error fetching playlists:", error.message);
+    logger.error('Playlists Page', `Error fetching playlists: ${error.message}`);
   }
 
   return {
@@ -42,13 +44,13 @@ async function getAllPlaylists(): Promise<UserPlaylists> {
     href: "",
     previous: null
   } as UserPlaylists;
-}
+});
 
 export default async function PlaylistsPage() {
   const playlists = await getAllPlaylists();
 
   return (
-    <section className="mt-16 py-10 min-h-screen">
+    <section className="pt-20 sm:pt-24 pb-8 sm:pb-12 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 sm:mb-12">
           <h1 className="mb-2 text-3xl sm:text-4xl md:text-5xl">All Playlists</h1>

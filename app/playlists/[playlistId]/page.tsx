@@ -1,12 +1,35 @@
+import { cache } from 'react';
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Music, Clock, User, ExternalLink } from "lucide-react";
 import { ImageWithFallback } from "@/figma/ImageWithFallback";
 import PlaylistGenres from "@/components/PlaylistGenres";
 import PlaylistArtists from "@/components/PlaylistArtists";
+import { logger } from "@/utils/logger";
+import { SPOTIFY_API } from "@/utils/spotify";
 
 // Cache playlist pages for 24 hours
 export const revalidate = 86400;
+
+// Render all other playlists on-demand (not at build time)
+// This prevents cold start avalanche from building too many pages simultaneously
+export const dynamicParams = true;
+
+/**
+ * Generate static params for only the first few playlists at build time
+ * This prevents cold start issues while still providing good performance
+ */
+export async function generateStaticParams() {
+  // Don't pre-render any playlists at build time to avoid cold start avalanche
+  // All playlists will be rendered on-demand and cached for 24 hours
+  return [];
+  
+  // Alternative: Pre-render only your top 3-5 playlists
+  // return [
+  //   { playlistId: 'your-top-playlist-id-1' },
+  //   { playlistId: 'your-top-playlist-id-2' },
+  // ];
+}
 
 interface PlaylistTrack {
   added_at: string;
@@ -74,45 +97,50 @@ interface ArtistDataAPI {
   }>;
 }
 
-async function getSpotifyAccessToken(): Promise<string> {
-  try {
-    // Use our cached token endpoint with GET for better caching
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/token`,
-      {
-        method: "GET",
-        next: {
-          revalidate: 3000, // Token cache (50 minutes, tokens last 1 hour)
-          tags: ['spotify-token']
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to get access token");
-    }
-
-    const data = await response.json();
-    return data.access_token;
-  } catch (error) {
-    console.error("Error fetching access token:", error);
-    throw new Error("Failed to get Spotify access token");
+// Helper to get access token (inlined to avoid import issues with unstable_cache)
+async function getAccessToken(): Promise<string> {
+  const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } = process.env;
+  const token = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
+  const params = new URLSearchParams();
+  params.append('grant_type', 'refresh_token');
+  if (SPOTIFY_REFRESH_TOKEN) {
+    params.append('refresh_token', SPOTIFY_REFRESH_TOKEN);
   }
+
+  const response = await fetch(SPOTIFY_API.TOKEN_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${token}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params,
+    next: {
+      revalidate: 3000, // Cache for 50 minutes
+      tags: ['spotify-token'],
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.access_token;
 }
 
-async function getPlaylistDetails(
-  playlistId: string,
-  accessToken: string,
-): Promise<PlaylistDetails> {
+// Fetch playlist details with Next.js unstable_cache to deduplicate across metadata + page render
+async function fetchPlaylistDetails(playlistId: string): Promise<PlaylistDetails> {
   try {
+    const accessToken = await getAccessToken();
+    
     // Validate and clean playlist ID
     const cleanPlaylistId = decodeURIComponent(playlistId).trim();
 
-    console.log(`[Playlist Detail] Fetching playlist: ${cleanPlaylistId}`);
+    logger.log('Playlist Detail', `Fetching playlist: ${cleanPlaylistId}`);
 
     // Use fetch with aggressive caching for static playlist data
     const response = await fetch(
-      `https://api.spotify.com/v1/playlists/${cleanPlaylistId}`,
+      `${SPOTIFY_API.BASE_URL}/playlists/${cleanPlaylistId}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -127,27 +155,22 @@ async function getPlaylistDetails(
     if (!response.ok) {
       const error: any = new Error("Failed to fetch playlist");
       error.status = response.status;
-      console.error(`[Playlist Detail] ✗ Failed: ${response.status}`);
+      logger.error('Playlist Detail', `Failed: ${response.status}`);
       throw error;
     }
 
     const data = await response.json();
-    console.log(`[Playlist Detail] ✓ Fetched playlist with ${data.tracks.total} tracks`);
+    logger.success('Playlist Detail', `Fetched playlist with ${data.tracks.total} tracks`);
     return data;
   } catch (error: any) {
-    console.error("Error fetching playlist:", {
-      playlistId,
-      status: error.status || error.response?.status,
-      message: error.response?.data?.error?.message || error.message,
-      data: error.response?.data,
-    });
+    logger.error('Playlist Detail', `Error fetching playlist ${playlistId}: ${error.status || ''} ${error.message}`);
 
     if (error.status === 404 || error.response?.status === 404) {
       notFound();
     }
 
     if (error.status === 400 || error.response?.status === 400) {
-      console.error("Bad request - invalid playlist ID:", playlistId);
+      logger.error('Playlist Detail', `Bad request - invalid playlist ID: ${playlistId}`);
       notFound();
     }
 
@@ -155,14 +178,21 @@ async function getPlaylistDetails(
   }
 }
 
-async function getArtistDetails(
+// Use React cache() to deduplicate calls within same request (metadata + page render)
+// The inner fetch already has Next.js data cache with revalidate
+const getPlaylistDetails = cache(async (playlistId: string): Promise<PlaylistDetails> => {
+  return fetchPlaylistDetails(playlistId);
+});
+
+// Fetch artist details - returns plain object (not Map) for cache serialization
+async function fetchArtistDetails(
   artistIds: string[],
-  accessToken: string,
-): Promise<Map<string, ArtistDataAPI>> {
-  if (artistIds.length === 0) return new Map();
+): Promise<Record<string, ArtistDataAPI>> {
+  if (artistIds.length === 0) return {};
 
   try {
-    console.log(`[Playlist Detail] Fetching ${artistIds.length} artists`);
+    const accessToken = await getAccessToken();
+    logger.log('Playlist Detail', `Fetching ${artistIds.length} artists`);
 
     // Use our cached API endpoint with indefinite caching
     const response = await fetch(
@@ -179,31 +209,37 @@ async function getArtistDetails(
     );
 
     if (!response.ok) {
-      console.error(`[Playlist Detail] ✗ Failed to fetch artists: ${response.statusText}`);
+      logger.error('Playlist Detail', `Failed to fetch artists: ${response.status} ${response.statusText}`);
       throw new Error(`Failed to fetch artists: ${response.statusText}`);
     }
 
     const data = await response.json();
-    const artistMap = new Map<string, ArtistDataAPI>();
+    const artistMap: Record<string, ArtistDataAPI> = {};
 
     data.artists.forEach((artist: ArtistDataAPI) => {
       if (artist) {
-        artistMap.set(artist.id, {
+        artistMap[artist.id] = {
           id: artist.id,
           name: artist.name,
           genres: artist.genres || [],
           images: artist.images || [],
-        });
+        };
       }
     });
 
-    console.log(`[Playlist Detail] ✓ Mapped ${artistMap.size} artists`);
+    logger.success('Playlist Detail', `Mapped ${Object.keys(artistMap).length} artists`);
     return artistMap;
-  } catch (error) {
-    console.error("Error fetching artist details:", error);
-    return new Map();
+  } catch (error: any) {
+    logger.error('Playlist Detail', `Error fetching artist details: ${error.message}`);
+    return {};
   }
 }
+
+// Use React cache() to deduplicate calls within same request
+// The inner fetch already has Next.js data cache
+const getArtistDetails = cache(async (artistIds: string[]): Promise<Record<string, ArtistDataAPI>> => {
+  return fetchArtistDetails(artistIds);
+});
 
 function formatDuration(ms: number): string {
   const minutes = Math.floor(ms / 60000);
@@ -240,8 +276,7 @@ export default async function PlaylistDetailPage({
   const { playlistId } = await params;
 
   try {
-    const accessToken = await getSpotifyAccessToken();
-    const playlist = await getPlaylistDetails(playlistId, accessToken);
+    const playlist = await getPlaylistDetails(playlistId);
 
     // Get unique artist IDs from tracks
     const artistIds = Array.from(
@@ -253,7 +288,7 @@ export default async function PlaylistDetailPage({
     );
 
     // Fetch artist details including genres and images
-    const artistMap = await getArtistDetails(artistIds, accessToken);
+    const artistMap = await getArtistDetails(artistIds);
 
     // Calculate total duration
     const totalDuration = playlist.tracks.items
@@ -266,7 +301,7 @@ export default async function PlaylistDetailPage({
       .filter((item) => item.track)
       .forEach((item) => {
         item.track.artists.forEach((artist) => {
-          const artistData = artistMap.get(artist.id);
+          const artistData = artistMap[artist.id];
           const genres = artistData?.genres || [];
           genres.forEach((genre) => {
             if (!genreCounts.has(genre)) {
@@ -303,7 +338,7 @@ export default async function PlaylistDetailPage({
       .forEach((item) => {
         item.track.artists.forEach((artist) => {
           const existing = artistCounts.get(artist.id);
-          const artistData = artistMap.get(artist.id);
+          const artistData = artistMap[artist.id];
           const image =
             artistData?.images && artistData.images.length > 0
               ? artistData.images[artistData.images.length - 1].url
@@ -346,7 +381,7 @@ export default async function PlaylistDetailPage({
 
             <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
               {/* Playlist Image */}
-              <div className="flex-shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5">
+              <div className="shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5">
                 {playlist.images && playlist.images.length > 0 ? (
                   <ImageWithFallback
                     src={playlist.images[0].url}
@@ -444,7 +479,7 @@ export default async function PlaylistDetailPage({
                 const track = item.track;
                 const trackGenres = track.artists
                   .flatMap((artist) => {
-                    const artistData = artistMap.get(artist.id);
+                    const artistData = artistMap[artist.id];
                     return artistData?.genres || [];
                   })
                   .slice(0, 2);
@@ -458,12 +493,12 @@ export default async function PlaylistDetailPage({
                     className="group flex items-center space-x-2 sm:space-x-4 p-2 sm:p-4 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors min-h-[72px] sm:min-h-[80px]"
                   >
                     {/* Track Number */}
-                    <div className="flex-shrink-0 w-6 sm:w-8 text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500">
+                    <div className="shrink-0 w-6 sm:w-8 text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500">
                       {originalIndex + 1}
                     </div>
 
                     {/* Album Art */}
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
+                    <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
                       {track.album.images && track.album.images.length > 0 ? (
                         <ImageWithFallback
                           src={track.album.images[track.album.images.length - 1].url}
@@ -480,7 +515,7 @@ export default async function PlaylistDetailPage({
                     {/* Track Info */}
                     <div className="flex-1 min-w-0 flex items-center justify-between">
                       {/* Left: Song & Artist */}
-                      <div className="min-w-0 flex-shrink">
+                      <div className="min-w-0 shrink">
                         <div className="mb-0.5 text-sm sm:text-base font-medium truncate text-gray-900 dark:text-white">
                           {track.name}
                         </div>
@@ -496,12 +531,12 @@ export default async function PlaylistDetailPage({
                       </div>
 
                       {/* Right: Album & Genre chips (Desktop only) */}
-                      <div className="hidden sm:flex items-center gap-3 flex-shrink-0 ml-4 max-w-[400px]">
+                      <div className="hidden sm:flex items-center gap-3 shrink-0 ml-4 max-w-[400px]">
                         <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate min-w-0">
                           {track.album.name}
                         </span>
                         {trackGenres.length > 0 && (
-                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
                             {trackGenres.map((genre, idx) => (
                               <span
                                 key={idx}
@@ -516,7 +551,7 @@ export default async function PlaylistDetailPage({
                     </div>
 
                     {/* Duration */}
-                    <div className="flex-shrink-0 text-xs sm:text-sm text-gray-500 dark:text-gray-500 font-mono">
+                    <div className="shrink-0 text-xs sm:text-sm text-gray-500 dark:text-gray-500 font-mono">
                       {formatDuration(track.duration_ms)}
                     </div>
                   </a>
@@ -527,8 +562,8 @@ export default async function PlaylistDetailPage({
         </div>
       </div>
     );
-  } catch (error) {
-    console.error("Error loading playlist:", error);
+  } catch (error: any) {
+    logger.error('Playlist Detail', `Error loading playlist: ${error.message}`);
     return (
       <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
@@ -559,8 +594,7 @@ export async function generateMetadata({
   const { playlistId } = await params;
 
   try {
-    const accessToken = await getSpotifyAccessToken();
-    const playlist = await getPlaylistDetails(playlistId, accessToken);
+    const playlist = await getPlaylistDetails(playlistId);
 
     return {
       title: `${playlist.name} - Inside The Cranium`,
@@ -568,8 +602,8 @@ export async function generateMetadata({
         ? decodeHtmlEntities(playlist.description)
         : `Listen to ${playlist.name} playlist`,
     };
-  } catch (error) {
-    console.error("Error in generateMetadata:", error);
+  } catch (error: any) {
+    logger.error('Playlist Detail', `Error in generateMetadata: ${error.message}`);
     return {
       title: "Playlist - Inside The Cranium",
       description: "Explore this playlist",

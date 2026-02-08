@@ -1,5 +1,7 @@
 import "@/styles/tailwind.css";
 import "@/styles/globals.scss";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 import { AppContext } from "@/contexts/AppContext";
 import ThemeProvider from "@/components/Theme/ThemeProvider";
 import Navbar from "@/components/(Layout)/Navbar";
@@ -36,6 +38,8 @@ export default function RootLayout({
             <ScrollToTop />
             {/* <WebPlayerControls /> */}
           </AppContext>
+          <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>

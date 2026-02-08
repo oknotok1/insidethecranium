@@ -6,6 +6,7 @@ import Navbar from "@/components/(Layout)/Navbar";
 import Footer from "@/components/(Layout)/Footer";
 import WebPlayerControls from "@/components/WebPlayerControls";
 import ScrollToTop from "@/components/ScrollToTop";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title: "Inside The Cranium",
@@ -37,6 +38,7 @@ export default function RootLayout({
             {/* <WebPlayerControls /> */}
           </AppContext>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

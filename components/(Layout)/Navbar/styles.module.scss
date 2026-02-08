@@ -1,7 +1,7 @@
 @reference "../../../styles/tailwind.css";
 
 .navbar {
-  @apply fixed top-0 left-0 right-0 z-50;
+  @apply fixed top-0 left-0 right-0 z-40;
   @apply backdrop-blur-sm;
   @apply border-b;
 }
@@ -50,7 +50,8 @@
 }
 
 .mobileNav {
-  @apply lg:hidden border-t;
+  @apply lg:hidden border-t relative;
+  @apply backdrop-blur-sm;
 }
 
 .mobileNavContent {

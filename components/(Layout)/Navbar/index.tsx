@@ -45,45 +45,56 @@ export default function Navbar() {
   }, [pathname]);
 
   return (
-    <nav
-      className={`${styles.navbar} bg-white/80 dark:bg-black/80 border-gray-200 dark:border-white/10`}
-    >
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <NavbarLogo handleLinkClick={handleLinkClick} />
+    <>
+      <nav
+        className={`${styles.navbar} bg-white/80 dark:bg-black/80 border-gray-200 dark:border-white/10`}
+      >
+        <div className={styles.container}>
+          <div className={styles.content}>
+            <NavbarLogo handleLinkClick={handleLinkClick} />
 
-          <DesktopLinks
-            links={links.filter((link) => !link.mobileOnly)}
-            pathname={pathname}
-          />
+            <DesktopLinks
+              links={links.filter((link) => !link.mobileOnly)}
+              pathname={pathname}
+            />
 
-          {/* Mobile-only items */}
-          <div className="flex items-center justify-end gap-3 lg:hidden flex-1 min-w-0">
-            <NowPlaying className="flex-shrink min-w-0 max-w-[6rem] md:max-w-[10rem]" />
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`${styles.mobileMenuButton} text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100`}
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
+            {/* Mobile-only items */}
+            <div className="flex items-center justify-end gap-3 lg:hidden flex-1 min-w-0">
+              <NowPlaying className="flex-shrink min-w-0 max-w-[6rem] md:max-w-[10rem]" />
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={`${styles.mobileMenuButton} text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100`}
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Navigation - Direct child of nav */}
-      <MobileMenu
-        isMenuOpen={isMenuOpen}
-        links={links}
-        pathname={pathname}
-        handleLinkClick={handleLinkClick}
-        playlistName={playlistName}
-      />
-    </nav>
+        {/* Mobile Navigation - Direct child of nav */}
+        <MobileMenu
+          isMenuOpen={isMenuOpen}
+          links={links}
+          pathname={pathname}
+          handleLinkClick={handleLinkClick}
+          playlistName={playlistName}
+        />
+      </nav>
+
+      {/* Backdrop - rendered outside nav for proper click handling */}
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 top-16 bg-black/20 dark:bg-black/40 z-30 lg:hidden"
+          onClick={() => setIsMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+    </>
   );
 }
 
@@ -155,7 +166,7 @@ const MobileMenu = ({
 
   return (
     <div
-      className={`${styles.mobileNav} border-gray-200 dark:border-white/10 bg-white/95 dark:bg-black/95`}
+      className={`${styles.mobileNav} border-gray-200 dark:border-white/10 bg-white/70 dark:bg-black/70`}
     >
       <div className={styles.mobileNavContent}>
         {links.map(({ href, label, icon: Icon, disabled }) => {

@@ -1,0 +1,69 @@
+import Link from "next/link";
+import { Item as SpotifyPlaylist } from "@/types/spotify";
+import { Music } from "lucide-react";
+import { ImageWithFallback } from "@/figma/ImageWithFallback";
+
+interface PlaylistCardProps {
+  playlist: SpotifyPlaylist;
+}
+
+export default function PlaylistCard({ playlist }: PlaylistCardProps) {
+  const genres = playlist.topGenres || [];
+  const songCount = playlist.tracks.total;
+  const imageUrl = playlist.images[0]?.url || "";
+  const description = playlist.description;
+  const playlistUrl = `/playlists/${playlist.id}`;
+
+  return (
+    <Link
+      href={playlistUrl}
+      className="group flex flex-col self-start rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors h-full"
+    >
+      <div
+        className="aspect-square relative overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(61, 56, 245, 0.1) 0%, rgba(139, 135, 255, 0.05) 100%)",
+        }}
+      >
+        <ImageWithFallback
+          src={imageUrl}
+          alt={playlist.name}
+          className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+        />
+      </div>
+
+      <div className="p-4 flex flex-col flex-1">
+        <h3 className={`line-clamp-1 text-gray-900 dark:text-white ${description || genres.length > 0 ? "mb-2" : ""}`}>
+          {playlist.name}
+        </h3>
+
+        {description && (
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+            {description}
+          </p>
+        )}
+
+        {genres.length > 0 && (
+          <div className="flex flex-wrap gap-x-1 gap-y-1.5 mb-3">
+            {genres.slice(0, 3).map((genre) => (
+              <span
+                key={genre}
+                className="px-2 py-0.5 text-[10px] sm:text-xs rounded-full bg-gray-300 dark:bg-white/5 text-gray-700 dark:text-gray-400"
+              >
+                {genre}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+          <Music className="w-4 h-4" />
+          <span>
+            {songCount} {songCount === 1 ? "song" : "songs"}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}

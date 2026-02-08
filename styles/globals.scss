@@ -1,42 +1,43 @@
 // @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap');
-// Import Bootstrap's variables and functions
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins';
-
-$background: #282c34;
-$primary: #00818a;
-$secondary: #5e5e5e;
-$highlight1: #8cd881;
-$highlight2: #f9f871;
-$text: #FFFFFF;
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
 
 html,
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  // font-family: 'Noto Sans JP', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 html,
-main,
-body:first-child {
+body {
   min-height: 100svh;
-  background-color: $background;
-  color: $text;
+  background-color: #ffffff;
+  color: #1a1a1a; // Dark gray for light mode
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-section:nth-of-type(even) {
-  background-color: lighten($background, 3.142%) !important;
+.dark {
+  html,
+  body {
+    background-color: #000000;
+    color: #ffffff; // White for dark mode
+  }
+}
+
+main {
+  min-height: calc(100svh - 346px); // Full height minus estimated footer height
+  padding-top: 4rem; // Account for fixed navbar height (h-16 = 4rem = 64px)
+  
+  // Remove padding for pages with full-height hero
+  &.has-hero {
+    padding-top: 0;
+  }
+}
+
+// Alternating section backgrounds for visual separation
+main > section {
+  position: relative;
 }
 
 code {
@@ -44,42 +45,300 @@ code {
     monospace;
 }
 
-::-webkit-scrollbar {
-  width: 0.5rem;
+// // ========================================
+// // COMMON UTILITY CLASSES
+// // ========================================
+
+// // Container
+// .container {
+//   max-width: $container-max-width;
+//   margin: 0 auto;
+//   padding: $spacing-xl $spacing-xl;
+
+//   @media (max-width: $breakpoint-sm) {
+//     padding: $spacing-lg $spacing-md;
+//   }
+// }
+
+// // Cards
+// .card {
+//   background: rgba(255, 255, 255, 0.05);
+//   border-radius: $radius-md;
+//   border: 1px solid rgba(255, 255, 255, 0.1);
+//   backdrop-filter: blur(10px);
+//   transition: all $transition-base;
+
+//   &:hover {
+//     transform: translateY(-4px);
+//     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+//     border-color: rgba($primary, 0.5);
+//   }
+// }
+
+// // Buttons
+// .btn {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   padding: $spacing-sm $spacing-lg;
+//   font-size: $font-size-sm;
+//   font-weight: $font-weight-medium;
+//   letter-spacing: 0.1px;
+//   border-radius: $radius-sm;
+//   border: none;
+//   cursor: pointer;
+//   transition: all $transition-base;
+//   text-decoration: none;
+//   white-space: nowrap;
+
+//   &:disabled,
+//   &[aria-disabled="true"] {
+//     opacity: 0.38;
+//     pointer-events: none;
+//     cursor: not-allowed;
+//   }
+// }
+
+// .btn-primary {
+//   background: linear-gradient(135deg, $primary 0%, $primary-light 100%);
+//   color: $text;
+
+//   &:hover {
+//     transform: translateY(-2px);
+//     box-shadow: 0 4px 12px rgba($primary, 0.4);
+//   }
+// }
+
+// .btn-accent {
+//   background: $accent;
+//   color: $text;
+
+//   &:hover {
+//     background: $accent-hover;
+//     transform: scale(1.05);
+//   }
+// }
+
+// .btn-ghost {
+//   background: transparent;
+//   color: $text;
+
+//   &:hover {
+//     background: rgba(255, 255, 255, 0.08);
+//   }
+
+//   &:active {
+//     background: rgba(255, 255, 255, 0.12);
+//   }
+// }
+
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --custom-accent: #3d38f5;
+  --custom-accent-hover: #2f2bc7;
+  --custom-accent-light: #8b87ff;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: grey;
-  border-radius: 1rem;
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+  --custom-accent: #3d38f5;
+  --custom-accent-hover: #2f2bc7;
+  --custom-accent-light: #8b87ff;
 }
 
-::-webkit-scrollbar-track {
-  background-color: grey darken(grey, 15%);
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-custom-accent: var(--custom-accent);
+  --color-custom-accent-hover: var(--custom-accent-hover);
+  --color-custom-accent-light: var(--custom-accent-light);
 }
 
-// firefox scrollbar
-* {
-  scrollbar-width: 0.5rem;
-  scrollbar-color: grey darken(grey, 15%);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-// @include media-breakpoint-down(xl) {
-//   outline: 1px solid green;
-//   padding: 1.5rem;
-// }
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
 
-// @include media-breakpoint-down(lg) {
-//   outline: 1xp solid blue;
-// }
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
 
-// @include media-breakpoint-down(md) {
-//   outline: 1px solid red;
-// }
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
 
-// @include media-breakpoint-down(sm) {
-//   outline: 1px solid yellow;
-// }
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
 
-// @include media-breakpoint-down(xs) {
-//   outline: 1px solid orange;
-// }
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* Marquee Animation for Now Playing */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+  will-change: transform;
+}

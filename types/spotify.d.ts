@@ -41,6 +41,7 @@ export interface Item {
   tracks: Tracks;
   type: ItemType;
   uri: string;
+  topGenres?: string[]; // Top genres extracted from playlist artists
 }
 
 export interface Owner {

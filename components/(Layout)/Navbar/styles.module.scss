@@ -1,0 +1,84 @@
+@reference "../../../styles/tailwind.css";
+
+.navbar {
+  @apply fixed top-0 left-0 right-0 z-50;
+  @apply backdrop-blur-sm;
+  @apply border-b;
+}
+
+.container {
+  @apply max-w-7xl mx-auto;
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+.content {
+  @apply flex items-center justify-between h-16 gap-2;
+}
+
+.logo {
+  @apply flex items-center space-x-2;
+  @apply transition-colors;
+}
+
+.logoText {
+  @apply text-nowrap font-semibold text-sm sm:text-base;
+}
+
+.desktopNav {
+  @apply hidden lg:flex items-center space-x-8;
+}
+
+.navLink {
+  @apply flex items-center space-x-2 transition-colors;
+
+  &.disabled {
+    @apply opacity-40 cursor-not-allowed;
+    pointer-events: auto; // Allow cursor to show
+  }
+}
+
+.mobileMenuButton {
+  @apply lg:hidden p-2 -ml-2;
+  @apply transition-colors;
+  @apply flex-shrink-0;
+}
+
+.themeToggle {
+  @apply p-2 transition-colors;
+  @apply text-gray-600 hover:text-gray-900;
+  @apply dark:text-gray-400 dark:hover:text-white;
+}
+
+.mobileNav {
+  @apply lg:hidden border-t;
+}
+
+.mobileNavContent {
+  @apply px-4 py-4 space-y-2;
+}
+
+.mobileNavLink {
+  @apply flex items-center space-x-3 px-3 py-2 rounded-lg;
+  @apply transition-colors;
+
+  &.disabled {
+    @apply opacity-40 cursor-not-allowed;
+    pointer-events: auto; // Allow cursor to show
+  }
+}
+
+.mobileThemeToggle {
+  @apply flex items-center space-x-3 px-3 py-2 rounded-lg;
+  @apply transition-colors;
+
+  // Override button styles to match nav links
+  button {
+    @apply p-0 h-auto w-5;
+    min-width: 1.25rem;
+  }
+
+  svg {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+}

@@ -1,0 +1,145 @@
+@reference "../../../styles/tailwind.css";
+
+.heroSection {
+  @apply flex items-center justify-center;
+  @apply relative overflow-hidden;
+  min-height: calc(100vh - 4rem); // Full height minus navbar
+}
+
+
+.content {
+  @apply relative z-10;
+  @apply w-full max-w-7xl;
+  @apply px-4 sm:px-6 lg:px-8;
+  @apply flex flex-col items-center justify-center;
+  @apply text-center;
+
+  .albumContainer {
+    @apply flex justify-center;
+    @apply mb-6 sm:mb-8;
+
+    .albumArtwork {
+      @apply flex;
+      @apply w-48 h-48 sm:w-64 sm:h-64;
+      @apply rounded-lg overflow-hidden shadow-2xl;
+      @apply bg-gray-200;
+      @apply border border-gray-300/50;
+
+      :global(.dark) & {
+        @apply bg-white/5;
+        @apply border-white/10;
+      }
+
+      .albumImage {
+        @apply w-full h-full object-cover;
+      }
+    }
+  }
+
+  .placeholderIcon {
+    @apply flex items-center justify-center;
+    @apply w-24 h-24 mb-8 rounded-full;
+    @apply bg-gray-200 backdrop-blur-sm;
+    @apply border border-gray-300;
+
+    :global(.dark) & {
+      @apply bg-white/5 border-white/10;
+    }
+  }
+
+  .listeningLabel {
+    @apply mb-3 sm:mb-4;
+    @apply text-xs sm:text-sm;
+    @apply text-gray-600;
+
+    :global(.dark) & {
+      @apply text-gray-400;
+    }
+  }
+
+  .title {
+    @apply mb-2;
+    @apply text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-balance;
+    @apply leading-tight;
+    @apply text-gray-900;
+
+    :global(.dark) & {
+      @apply text-white;
+    }
+  }
+
+  .artist {
+    @apply mb-2;
+    @apply text-lg sm:text-xl md:text-2xl;
+    @apply text-gray-700;
+
+    :global(.dark) & {
+      @apply text-gray-300;
+    }
+  }
+
+  .album {
+    @apply mb-6 sm:mb-8;
+    @apply text-xs sm:text-sm;
+    @apply text-gray-600;
+    @apply italic;
+
+    :global(.dark) & {
+      @apply text-gray-400;
+    }
+  }
+
+  .metadata {
+    @apply flex items-center justify-center flex-wrap;
+    @apply gap-5 sm:gap-8;
+    @apply text-xs sm:text-sm;
+    @apply text-gray-600;
+
+    :global(.dark) & {
+      @apply text-gray-400;
+    }
+
+    .metadataSeparator {
+      @apply inline;
+    }
+  }
+
+  .spotifyLinkContainer {
+    @apply flex justify-center;
+    @apply mt-6 sm:mt-8;
+
+    .spotifyLink {
+      @apply inline-flex items-center;
+      @apply gap-2;
+      @apply px-4 py-2 sm:px-5 sm:py-2.5;
+      @apply rounded-full;
+      @apply bg-gray-900/10 hover:bg-gray-900/20;
+      @apply border border-gray-300;
+      @apply text-xs sm:text-sm;
+      @apply text-gray-900;
+      @apply transition-colors;
+
+      :global(.dark) & {
+        @apply bg-white/10 hover:bg-white/20;
+        @apply border-white/20;
+        @apply text-white;
+      }
+    }
+  }
+
+  .timestampContainer {
+    @apply flex flex-col items-center;
+    @apply mt-8 sm:mt-12 pt-6 sm:pt-8;
+    @apply border-t border-gray-300;
+    @apply w-3/4 sm:w-full;
+
+    :global(.dark) & {
+      @apply border-white/10;
+    }
+
+    .timestamp {
+      @apply text-xs sm:text-sm text-gray-500;
+    }
+  }
+}
+

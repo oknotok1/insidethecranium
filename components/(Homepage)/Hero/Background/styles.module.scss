@@ -1,0 +1,90 @@
+@reference "../../../../styles/tailwind.css";
+
+.background {
+  @apply absolute inset-0;
+  @apply bg-gradient-to-br from-gray-50 via-white to-gray-100;
+  z-index: 0;
+
+  :global(.dark) & {
+    @apply from-black via-black to-black;
+  }
+
+  .backgroundOverlay {
+    @apply absolute inset-0 opacity-30;
+    z-index: 1;
+  }
+}
+
+.animatedBackground {
+  @apply absolute inset-0;
+  @apply overflow-hidden pointer-events-none;
+  z-index: 2;
+
+  .gradientBlobLeft {
+    @apply absolute;
+    top: 25%;
+    left: 25%;
+    width: 24rem;
+    height: 24rem;
+    @apply rounded-full;
+    filter: blur(80px);
+    animation: float-left 20s ease-in-out infinite;
+    opacity: 1;
+    
+    :global(.dark) & {
+      opacity: 0.6;
+    }
+
+    @media (min-width: 640px) {
+      width: 32rem;
+      height: 32rem;
+      filter: blur(100px);
+    }
+  }
+
+  .gradientBlobRight {
+    @apply absolute;
+    bottom: 25%;
+    right: 25%;
+    width: 24rem;
+    height: 24rem;
+    @apply rounded-full;
+    filter: blur(80px);
+    animation: float-right 25s ease-in-out infinite;
+    opacity: 1;
+    
+    :global(.dark) & {
+      opacity: 0.6;
+    }
+
+    @media (min-width: 640px) {
+      width: 32rem;
+      height: 32rem;
+      filter: blur(100px);
+    }
+  }
+}
+
+@keyframes float-left {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(30px, 50px) scale(0.9);
+  }
+}
+
+@keyframes float-right {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(50px, 30px) scale(0.9);
+  }
+  66% {
+    transform: translate(-50px, -30px) scale(1.1);
+  }
+}

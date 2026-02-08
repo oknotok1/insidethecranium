@@ -1,0 +1,70 @@
+import PlaylistCard from "@/components/PlaylistCard";
+import { UserPlaylists } from "@/types/spotify";
+
+export const metadata = {
+  title: "All Playlists - Inside The Cranium",
+  description: "Browse all of Jeff's curated Spotify playlists",
+};
+
+// Enable caching for this page
+export const revalidate = 300; // Revalidate every 5 minutes
+
+async function getAllPlaylists(): Promise<UserPlaylists> {
+  try {
+    const playlistsResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/playlists?limit=50`,
+      {
+        next: { revalidate: 300 } // Cache for 5 minutes
+      }
+    );
+
+    if (playlistsResponse.ok) {
+      const data = await playlistsResponse.json();
+
+      if (!data.error && data.items) {
+        return data;
+      }
+    }
+  } catch (error: any) {
+    console.error("Error fetching playlists:", error.message);
+  }
+
+  return {
+    items: [],
+    total: 0,
+    offset: 0,
+    limit: 0,
+    next: null,
+    href: "",
+    previous: null
+  } as UserPlaylists;
+}
+
+export default async function PlaylistsPage() {
+  const playlists = await getAllPlaylists();
+
+  return (
+    <section className="mt-16 py-10 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="mb-2 text-3xl sm:text-4xl md:text-5xl">All Playlists</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            I have curated <strong>{playlists.total || playlists.items.length}</strong> playlists thus far. They're mostly grouped by genres, and or moods. I know it's excessive, but I can't help it. I'll be creating a directory soon to help you navigate through them.
+          </p>
+        </div>
+
+        {playlists.items.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+            {playlists.items.map((playlist) => (
+              <PlaylistCard key={playlist.id} playlist={playlist} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-600 dark:text-gray-400 text-center py-12">
+            No playlists available at the moment.
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}

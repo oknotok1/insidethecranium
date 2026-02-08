@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Music, Menu, X } from "lucide-react";
@@ -19,14 +19,30 @@ interface MobileMenuProps {
   links: NavigationLink[];
   pathname: string;
   handleLinkClick: () => void;
+  playlistName?: string;
 }
 
 export default function Navbar() {
   const pathname = usePathname();
   const links = getNavbarLinks();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [playlistName, setPlaylistName] = useState<string>("");
 
   const handleLinkClick = () => setIsMenuOpen(false);
+
+  // Extract playlist name from document title when on playlist detail page
+  useEffect(() => {
+    const isPlaylistDetailPage =
+      pathname.startsWith("/playlists/") && pathname !== "/playlists";
+    if (isPlaylistDetailPage) {
+      // Extract playlist name from document title (format: "Playlist Name - Inside The Cranium")
+      const title = document.title;
+      const playlistTitle = title.split(" - ")[0];
+      setPlaylistName(playlistTitle || "Playlist");
+    } else {
+      setPlaylistName("");
+    }
+  }, [pathname]);
 
   return (
     <nav
@@ -65,6 +81,7 @@ export default function Navbar() {
         links={links}
         pathname={pathname}
         handleLinkClick={handleLinkClick}
+        playlistName={playlistName}
       />
     </nav>
   );
@@ -129,8 +146,12 @@ const MobileMenu = ({
   links,
   pathname,
   handleLinkClick,
+  playlistName,
 }: MobileMenuProps) => {
   if (!isMenuOpen) return null;
+
+  const isPlaylistDetailPage =
+    pathname.startsWith("/playlists/") && pathname !== "/playlists";
 
   return (
     <div
@@ -138,7 +159,10 @@ const MobileMenu = ({
     >
       <div className={styles.mobileNavContent}>
         {links.map(({ href, label, icon: Icon, disabled }) => {
-          const isActive = pathname === href;
+          // Highlight Playlists link when on /playlists or /playlists/[id]
+          const isActive =
+            pathname === href ||
+            (href === "/playlists" && pathname.startsWith("/playlists"));
 
           if (disabled) {
             return (
@@ -169,8 +193,23 @@ const MobileMenu = ({
                   : undefined
               }
             >
-              <Icon className="w-5 h-5" />
-              <span>{label}</span>
+              <Icon className="w-5 h-5 shrink-0" />
+              <span className="flex items-center gap-2 min-w-0">
+                <span className="shrink-0">{label}</span>
+                {/* Show playlist name with pipe separator when on detail page */}
+                {href === "/playlists" &&
+                  isPlaylistDetailPage &&
+                  playlistName && (
+                    <>
+                      <span className="text-gray-400 dark:text-gray-600 shrink-0">
+                        |
+                      </span>
+                      <span className="text-gray-500 dark:text-gray-500 truncate">
+                        {playlistName}
+                      </span>
+                    </>
+                  )}
+              </span>
             </Link>
           );
         })}

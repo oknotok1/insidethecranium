@@ -37,14 +37,12 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
   const [expandedGenre, setExpandedGenre] = useState<string | null>(null);
   const [showAllGenres, setShowAllGenres] = useState(false);
 
-  const displayedGenres = showAllGenres
-    ? genreStats
-    : genreStats.slice(0, 5);
+  const displayedGenres = showAllGenres ? genreStats : genreStats.slice(0, 5);
 
   return (
-    <div className="pb-8 sm:pb-12">
+    <section className="py-6 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="mb-3 sm:mb-4 text-xl sm:text-2xl text-gray-900 dark:text-white">
+        <h2 className="mb-6 text-xl sm:text-2xl text-gray-900 dark:text-white">
           Genres
         </h2>
         <div className="space-y-2 sm:space-y-3">
@@ -54,10 +52,11 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
             return (
               <div key={genreData.genre}>
                 <button
-                  className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-left transition-all text-sm sm:text-base ${isExpanded
-                    ? "text-white"
-                    : "bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white"
-                    }`}
+                  className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-left transition-all text-sm sm:text-base ${
+                    isExpanded
+                      ? "text-white"
+                      : "bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white"
+                  }`}
                   style={
                     isExpanded ? { backgroundColor: "#3d38f5" } : undefined
                   }
@@ -68,11 +67,12 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{genreData.genre}</span>
                     <span
-                      className={`text-xs sm:text-sm ${isExpanded ? "text-white/90" : ""
-                        }`}
+                      className={`text-xs sm:text-sm ${
+                        isExpanded ? "text-white/90" : ""
+                      }`}
                     >
-                      {genreData.count} song{genreData.count !== 1 ? "s" : ""}{" "}
-                      • {genreData.percentage}%
+                      {genreData.count} song{genreData.count !== 1 ? "s" : ""} •{" "}
+                      {genreData.percentage}%
                     </span>
                   </div>
                 </button>
@@ -87,7 +87,7 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
                         >
                           <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
                             {track.album.images &&
-                              track.album.images.length > 0 ? (
+                            track.album.images.length > 0 ? (
                               <ImageWithFallback
                                 src={
                                   track.album.images[
@@ -129,6 +129,6 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
           </button>
         )}
       </div>
-    </div>
+    </section>
   );
 }

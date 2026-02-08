@@ -1,4 +1,4 @@
-import { cache } from 'react';
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Music, Clock, User, ExternalLink } from "lucide-react";
@@ -23,7 +23,7 @@ export async function generateStaticParams() {
   // Don't pre-render any playlists at build time to avoid cold start avalanche
   // All playlists will be rendered on-demand and cached for 24 hours
   return [];
-  
+
   // Alternative: Pre-render only your top 3-5 playlists
   // return [
   //   { playlistId: 'your-top-playlist-id-1' },
@@ -99,24 +99,27 @@ interface ArtistDataAPI {
 
 // Helper to get access token (inlined to avoid import issues with unstable_cache)
 async function getAccessToken(): Promise<string> {
-  const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } = process.env;
-  const token = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
+  const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } =
+    process.env;
+  const token = Buffer.from(
+    `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
+  ).toString("base64");
   const params = new URLSearchParams();
-  params.append('grant_type', 'refresh_token');
+  params.append("grant_type", "refresh_token");
   if (SPOTIFY_REFRESH_TOKEN) {
-    params.append('refresh_token', SPOTIFY_REFRESH_TOKEN);
+    params.append("refresh_token", SPOTIFY_REFRESH_TOKEN);
   }
 
   const response = await fetch(SPOTIFY_API.TOKEN_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
       Authorization: `Basic ${token}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: params,
     next: {
       revalidate: 3000, // Cache for 50 minutes
-      tags: ['spotify-token'],
+      tags: ["spotify-token"],
     },
   });
 
@@ -129,14 +132,16 @@ async function getAccessToken(): Promise<string> {
 }
 
 // Fetch playlist details with Next.js unstable_cache to deduplicate across metadata + page render
-async function fetchPlaylistDetails(playlistId: string): Promise<PlaylistDetails> {
+async function fetchPlaylistDetails(
+  playlistId: string,
+): Promise<PlaylistDetails> {
   try {
     const accessToken = await getAccessToken();
-    
+
     // Validate and clean playlist ID
     const cleanPlaylistId = decodeURIComponent(playlistId).trim();
 
-    logger.log('Playlist Detail', `Fetching playlist: ${cleanPlaylistId}`);
+    logger.log("Playlist Detail", `Fetching playlist: ${cleanPlaylistId}`);
 
     // Use fetch with aggressive caching for static playlist data
     const response = await fetch(
@@ -147,30 +152,39 @@ async function fetchPlaylistDetails(playlistId: string): Promise<PlaylistDetails
         },
         next: {
           revalidate: false, // Cache indefinitely
-          tags: ['playlists', `playlist:${cleanPlaylistId}`]
-        }
-      }
+          tags: ["playlists", `playlist:${cleanPlaylistId}`],
+        },
+      },
     );
 
     if (!response.ok) {
       const error: any = new Error("Failed to fetch playlist");
       error.status = response.status;
-      logger.error('Playlist Detail', `Failed: ${response.status}`);
+      logger.error("Playlist Detail", `Failed: ${response.status}`);
       throw error;
     }
 
     const data = await response.json();
-    logger.success('Playlist Detail', `Fetched playlist with ${data.tracks.total} tracks`);
+    logger.success(
+      "Playlist Detail",
+      `Fetched playlist with ${data.tracks.total} tracks`,
+    );
     return data;
   } catch (error: any) {
-    logger.error('Playlist Detail', `Error fetching playlist ${playlistId}: ${error.status || ''} ${error.message}`);
+    logger.error(
+      "Playlist Detail",
+      `Error fetching playlist ${playlistId}: ${error.status || ""} ${error.message}`,
+    );
 
     if (error.status === 404 || error.response?.status === 404) {
       notFound();
     }
 
     if (error.status === 400 || error.response?.status === 400) {
-      logger.error('Playlist Detail', `Bad request - invalid playlist ID: ${playlistId}`);
+      logger.error(
+        "Playlist Detail",
+        `Bad request - invalid playlist ID: ${playlistId}`,
+      );
       notFound();
     }
 
@@ -180,9 +194,11 @@ async function fetchPlaylistDetails(playlistId: string): Promise<PlaylistDetails
 
 // Use React cache() to deduplicate calls within same request (metadata + page render)
 // The inner fetch already has Next.js data cache with revalidate
-const getPlaylistDetails = cache(async (playlistId: string): Promise<PlaylistDetails> => {
-  return fetchPlaylistDetails(playlistId);
-});
+const getPlaylistDetails = cache(
+  async (playlistId: string): Promise<PlaylistDetails> => {
+    return fetchPlaylistDetails(playlistId);
+  },
+);
 
 // Fetch artist details - returns plain object (not Map) for cache serialization
 async function fetchArtistDetails(
@@ -192,7 +208,7 @@ async function fetchArtistDetails(
 
   try {
     const accessToken = await getAccessToken();
-    logger.log('Playlist Detail', `Fetching ${artistIds.length} artists`);
+    logger.log("Playlist Detail", `Fetching ${artistIds.length} artists`);
 
     // Use our cached API endpoint with indefinite caching
     const response = await fetch(
@@ -203,13 +219,16 @@ async function fetchArtistDetails(
         },
         next: {
           revalidate: false, // Cache indefinitely
-          tags: ['artist-genres']
-        }
-      }
+          tags: ["artist-genres"],
+        },
+      },
     );
 
     if (!response.ok) {
-      logger.error('Playlist Detail', `Failed to fetch artists: ${response.status} ${response.statusText}`);
+      logger.error(
+        "Playlist Detail",
+        `Failed to fetch artists: ${response.status} ${response.statusText}`,
+      );
       throw new Error(`Failed to fetch artists: ${response.statusText}`);
     }
 
@@ -227,19 +246,27 @@ async function fetchArtistDetails(
       }
     });
 
-    logger.success('Playlist Detail', `Mapped ${Object.keys(artistMap).length} artists`);
+    logger.success(
+      "Playlist Detail",
+      `Mapped ${Object.keys(artistMap).length} artists`,
+    );
     return artistMap;
   } catch (error: any) {
-    logger.error('Playlist Detail', `Error fetching artist details: ${error.message}`);
+    logger.error(
+      "Playlist Detail",
+      `Error fetching artist details: ${error.message}`,
+    );
     return {};
   }
 }
 
 // Use React cache() to deduplicate calls within same request
 // The inner fetch already has Next.js data cache
-const getArtistDetails = cache(async (artistIds: string[]): Promise<Record<string, ArtistDataAPI>> => {
-  return fetchArtistDetails(artistIds);
-});
+const getArtistDetails = cache(
+  async (artistIds: string[]): Promise<Record<string, ArtistDataAPI>> => {
+    return fetchArtistDetails(artistIds);
+  },
+);
 
 function formatDuration(ms: number): string {
   const minutes = Math.floor(ms / 60000);
@@ -358,7 +385,7 @@ export default async function PlaylistDetailPage({
       });
 
     const artistStats = Array.from(artistCounts.values()).sort(
-      (a, b) => b.songCount - a.songCount
+      (a, b) => b.songCount - a.songCount,
     );
 
     // Decode HTML entities in description
@@ -367,9 +394,9 @@ export default async function PlaylistDetailPage({
       : "";
 
     return (
-      <div className="min-h-screen">
+      <main className="flex flex-col">
         {/* Header */}
-        <div className="pt-20 sm:pt-24 pb-8 sm:pb-12">
+        <section className="py-6 sm:py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Link
               href="/playlists"
@@ -400,11 +427,11 @@ export default async function PlaylistDetailPage({
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
                   Playlist
                 </div>
-                <h1 className="mb-3 sm:mb-4 text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight text-gray-900 dark:text-white">
+                <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight text-gray-900 dark:text-white">
                   {playlist.name}
                 </h1>
                 {decodedDescription && (
-                  <p className="mb-4 sm:mb-6 text-sm sm:text-base text-gray-700 dark:text-gray-300 line-clamp-3">
+                  <p className="mb-8 text-sm sm:text-base text-gray-700 dark:text-gray-300 line-clamp-3">
                     {decodedDescription}
                   </p>
                 )}
@@ -458,7 +485,7 @@ export default async function PlaylistDetailPage({
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Genres */}
         {genreStats.length > 0 && <PlaylistGenres genreStats={genreStats} />}
@@ -467,9 +494,9 @@ export default async function PlaylistDetailPage({
         {artistStats.length > 0 && <PlaylistArtists artists={artistStats} />}
 
         {/* Tracks */}
-        <div className="pb-12 sm:pb-20">
+        <section className="py-6 sm:py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-3 sm:mb-4 text-xl sm:text-2xl text-gray-900 dark:text-white">
+            <h2 className="mb-6 text-xl sm:text-2xl text-gray-900 dark:text-white">
               Tracks
             </h2>
             <div className="space-y-2">
@@ -501,7 +528,10 @@ export default async function PlaylistDetailPage({
                     <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
                       {track.album.images && track.album.images.length > 0 ? (
                         <ImageWithFallback
-                          src={track.album.images[track.album.images.length - 1].url}
+                          src={
+                            track.album.images[track.album.images.length - 1]
+                              .url
+                          }
                           alt={track.album.name}
                           className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
                         />
@@ -520,12 +550,16 @@ export default async function PlaylistDetailPage({
                           {track.name}
                         </div>
                         <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
-                          {track.artists.map((artist) => artist.name).join(", ")}
+                          {track.artists
+                            .map((artist) => artist.name)
+                            .join(", ")}
                         </div>
                         {/* Mobile: genres dot-separated on third line */}
                         {trackGenres.length > 0 && (
                           <div className="sm:hidden text-xs text-gray-500 dark:text-gray-500 mt-1 truncate">
-                            {trackGenres.length > 0 ? trackGenres.join(" • ") : "\u00A0"}
+                            {trackGenres.length > 0
+                              ? trackGenres.join(" • ")
+                              : "\u00A0"}
                           </div>
                         )}
                       </div>
@@ -559,29 +593,31 @@ export default async function PlaylistDetailPage({
               })}
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     );
   } catch (error: any) {
-    logger.error('Playlist Detail', `Error loading playlist: ${error.message}`);
+    logger.error("Playlist Detail", `Error loading playlist: ${error.message}`);
     return (
-      <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="mb-4 text-4xl text-gray-900 dark:text-white">
-            Error Loading Playlist
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            There was a problem loading this playlist. Please try again later.
-          </p>
-          <Link
-            href="/playlists"
-            className="inline-flex items-center space-x-2 text-[#3d38f5] hover:text-[#2d28e5] transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Playlists</span>
-          </Link>
-        </div>
-      </div>
+      <main className="flex flex-col">
+        <section className="py-8 sm:py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="mb-4 text-4xl text-gray-900 dark:text-white">
+              Error Loading Playlist
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              There was a problem loading this playlist. Please try again later.
+            </p>
+            <Link
+              href="/playlists"
+              className="inline-flex items-center space-x-2 text-[#3d38f5] hover:text-[#2d28e5] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Playlists</span>
+            </Link>
+          </div>
+        </section>
+      </main>
     );
   }
 }
@@ -603,7 +639,10 @@ export async function generateMetadata({
         : `Listen to ${playlist.name} playlist`,
     };
   } catch (error: any) {
-    logger.error('Playlist Detail', `Error in generateMetadata: ${error.message}`);
+    logger.error(
+      "Playlist Detail",
+      `Error in generateMetadata: ${error.message}`,
+    );
     return {
       title: "Playlist - Inside The Cranium",
       description: "Explore this playlist",

@@ -7,8 +7,8 @@
  * @returns Formatted timestamp string
  */
 export function getTimestampGMT8(): string {
-  return new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Singapore',
+  return new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Singapore",
     hour12: false,
   });
 }

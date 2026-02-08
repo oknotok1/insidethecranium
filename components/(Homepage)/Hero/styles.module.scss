@@ -6,7 +6,6 @@
   min-height: calc(100vh - 4rem); // Full height minus navbar
 }
 
-
 .content {
   @apply relative z-10;
   @apply w-full max-w-7xl;
@@ -142,4 +141,3 @@
     }
   }
 }
-

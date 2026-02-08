@@ -9,7 +9,10 @@ export default function HomepageSectionSkeleton() {
 
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5">
+            <div
+              key={i}
+              className="rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5"
+            >
               {/* Image skeleton */}
               <div className="aspect-square bg-gray-200 dark:bg-white/10 animate-pulse"></div>
 

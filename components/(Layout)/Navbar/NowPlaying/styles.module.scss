@@ -77,8 +77,17 @@
 
     .gradientLayer2 {
       @apply absolute inset-0;
-      background: radial-gradient(circle at 30% 50%, rgba(61, 56, 245, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 70% 50%, rgba(139, 135, 255, 0.12) 0%, transparent 50%);
+      background:
+        radial-gradient(
+          circle at 30% 50%,
+          rgba(61, 56, 245, 0.15) 0%,
+          transparent 50%
+        ),
+        radial-gradient(
+          circle at 70% 50%,
+          rgba(139, 135, 255, 0.12) 0%,
+          transparent 50%
+        );
     }
   }
 

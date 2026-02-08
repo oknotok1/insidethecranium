@@ -30,7 +30,7 @@
     filter: blur(80px);
     animation: float-left 20s ease-in-out infinite;
     opacity: 1;
-    
+
     :global(.dark) & {
       opacity: 0.6;
     }
@@ -52,7 +52,7 @@
     filter: blur(80px);
     animation: float-right 25s ease-in-out infinite;
     opacity: 1;
-    
+
     :global(.dark) & {
       opacity: 0.6;
     }
@@ -66,7 +66,8 @@
 }
 
 @keyframes float-left {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
   33% {
@@ -78,7 +79,8 @@
 }
 
 @keyframes float-right {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
   33% {

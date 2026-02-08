@@ -22,18 +22,15 @@ export async function GET(request: NextRequest) {
       const response = await client.getEntry(entryId);
 
       if (!response) {
-        return NextResponse.json(
-          { error: "Entry not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Entry not found" }, { status: 404 });
       }
 
       return NextResponse.json(response.fields.featuredSongs);
     } catch (error: any) {
-      logger.error('Contentful API', `Error fetching entry: ${error.message}`);
+      logger.error("Contentful API", `Error fetching entry: ${error.message}`);
       return NextResponse.json(
         { error: "Internal Server Error" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } else {
@@ -43,16 +40,19 @@ export async function GET(request: NextRequest) {
       if (response.items.length === 0) {
         return NextResponse.json(
           { error: "No entries found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       return NextResponse.json(response.items);
     } catch (error: any) {
-      logger.error('Contentful API', `Error fetching entries: ${error.message}`);
+      logger.error(
+        "Contentful API",
+        `Error fetching entries: ${error.message}`,
+      );
       return NextResponse.json(
         { error: "Internal Server Error" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }

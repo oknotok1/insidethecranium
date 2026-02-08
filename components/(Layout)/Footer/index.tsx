@@ -32,7 +32,11 @@ const BrandSection = () => (
   </div>
 );
 
-const QuickLinksSection = ({ links }: { links: ReturnType<typeof getFooterLinks> }) => (
+const QuickLinksSection = ({
+  links,
+}: {
+  links: ReturnType<typeof getFooterLinks>;
+}) => (
   <div className={styles.section}>
     <h3 className={styles.sectionTitle}>Quick Links</h3>
     <nav className={styles.nav}>
@@ -50,11 +54,7 @@ const QuickLinksSection = ({ links }: { links: ReturnType<typeof getFooterLinks>
         }
 
         return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={styles.navLink}
-          >
+          <Link key={link.href} href={link.href} className={styles.navLink}>
             {link.label}
           </Link>
         );
@@ -82,7 +82,6 @@ const ConnectSection = () => (
       <span>Follow me on Spotify</span>
     </a>
   </div>
-
 );
 
 const CopyrightSection = () => (

@@ -1,4 +1,4 @@
-import { cache } from 'react';
+import { cache } from "react";
 import * as contentful from "contentful";
 import HeroSection from "@/components/(Homepage)/Hero";
 import CuratedSongs from "@/components/(Homepage)/CuratedSongs";
@@ -18,18 +18,18 @@ const getData = cache(async () => {
     limit: 0,
     next: null,
     href: "",
-    previous: null
+    previous: null,
   };
 
   try {
     const playlistsResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=50`,
       {
-        next: { 
+        next: {
           revalidate: 86400, // Cache for 24 hours
-          tags: ['playlists'] // Tag for on-demand invalidation
-        }
-      }
+          tags: ["playlists"], // Tag for on-demand invalidation
+        },
+      },
     );
 
     if (playlistsResponse.ok) {
@@ -37,15 +37,21 @@ const getData = cache(async () => {
 
       if (!data.error && data.items) {
         playlists = data;
-        logger.success('Homepage', `Loaded ${data.items.length} playlists from cache`);
+        logger.success(
+          "Homepage",
+          `Loaded ${data.items.length} playlists from cache`,
+        );
       } else {
-        logger.error('Homepage', `Playlists API error: ${data.error}`);
+        logger.error("Homepage", `Playlists API error: ${data.error}`);
       }
     } else {
-      logger.error('Homepage', `Failed to fetch playlists: ${playlistsResponse.status} ${playlistsResponse.statusText}`);
+      logger.error(
+        "Homepage",
+        `Failed to fetch playlists: ${playlistsResponse.status} ${playlistsResponse.statusText}`,
+      );
     }
   } catch (error: any) {
-    logger.error('Homepage', `Error fetching playlists: ${error.message}`);
+    logger.error("Homepage", `Error fetching playlists: ${error.message}`);
   }
 
   // Get Featured Songs from Contentful
@@ -62,36 +68,44 @@ const getData = cache(async () => {
 
     // Fetch tracks from Spotify (server-side with caching)
     if (featuredSongs.length > 0) {
-      const songIds = featuredSongs.map((song: any) => {
-        const urlParts = song.url.split("/");
-        const trackPart = urlParts[urlParts.length - 1];
-        return trackPart.split("?")[0];
-      }).filter((id: string) => id && id.length > 0);
+      const songIds = featuredSongs
+        .map((song: any) => {
+          const urlParts = song.url.split("/");
+          const trackPart = urlParts[urlParts.length - 1];
+          return trackPart.split("?")[0];
+        })
+        .filter((id: string) => id && id.length > 0);
 
       if (songIds.length > 0) {
         try {
           const tracksResponse = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/tracks?ids=${songIds.join(",")}`,
             {
-              next: { 
+              next: {
                 revalidate: false, // Cache forever (curated tracks are static)
-                tags: ['curated-tracks']
-              }
-            }
+                tags: ["curated-tracks"],
+              },
+            },
           );
 
           if (tracksResponse.ok) {
             const tracksData = await tracksResponse.json();
             curatedTracks = tracksData.tracks || [];
-            logger.success('Homepage', `Loaded ${curatedTracks.length} curated tracks from cache`);
+            logger.success(
+              "Homepage",
+              `Loaded ${curatedTracks.length} curated tracks from cache`,
+            );
           }
         } catch (error: any) {
-          logger.error('Homepage', `Error fetching curated tracks: ${error.message}`);
+          logger.error(
+            "Homepage",
+            `Error fetching curated tracks: ${error.message}`,
+          );
         }
       }
     }
   } catch (error: any) {
-    logger.error('Homepage', `Error fetching featured songs: ${error.message}`);
+    logger.error("Homepage", `Error fetching featured songs: ${error.message}`);
   }
 
   return {
@@ -104,7 +118,7 @@ export default async function Home() {
   const { playlists, curatedTracks } = await getData();
 
   return (
-    <main>
+    <main className="flex flex-col">
       <HeroSection />
       {/* <HomepageSectionSkeleton /> */}
       <CuratedSongs tracks={curatedTracks} />

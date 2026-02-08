@@ -2,9 +2,9 @@
 
 html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -14,7 +14,9 @@ body {
   min-height: 100svh;
   background-color: #ffffff;
   color: #1a1a1a; // Dark gray for light mode
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .dark {
@@ -28,7 +30,7 @@ body {
 main {
   min-height: calc(100svh - 346px); // Full height minus estimated footer height
   padding-top: 4rem; // Account for fixed navbar height (h-16 = 4rem = 64px)
-  
+
   // Remove padding for pages with full-height hero
   &.has-hero {
     padding-top: 0;
@@ -41,8 +43,8 @@ main > section {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 // // ========================================
@@ -131,7 +133,6 @@ code {
 //     background: rgba(255, 255, 255, 0.12);
 //   }
 // }
-
 
 @custom-variant dark (&:is(.dark *));
 
@@ -279,7 +280,7 @@ code {
  * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
  */
 @layer base {
-  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
     h1 {
       font-size: var(--text-2xl);
       font-weight: var(--font-weight-medium);

@@ -29,12 +29,17 @@ export default function Navbar() {
   const handleLinkClick = () => setIsMenuOpen(false);
 
   return (
-    <nav className={`${styles.navbar} bg-white/80 dark:bg-black/80 border-gray-200 dark:border-white/10`}>
+    <nav
+      className={`${styles.navbar} bg-white/80 dark:bg-black/80 border-gray-200 dark:border-white/10`}
+    >
       <div className={styles.container}>
         <div className={styles.content}>
           <NavbarLogo handleLinkClick={handleLinkClick} />
 
-          <DesktopLinks links={links.filter(link => !link.mobileOnly)} pathname={pathname} />
+          <DesktopLinks
+            links={links.filter((link) => !link.mobileOnly)}
+            pathname={pathname}
+          />
 
           {/* Mobile-only items */}
           <div className="flex items-center justify-end gap-3 lg:hidden flex-1 min-w-0">
@@ -44,7 +49,11 @@ export default function Navbar() {
               className={`${styles.mobileMenuButton} text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100`}
               aria-label="Toggle menu"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -57,12 +66,16 @@ export default function Navbar() {
         pathname={pathname}
         handleLinkClick={handleLinkClick}
       />
-    </nav >
+    </nav>
   );
 }
 
 const NavbarLogo = ({ handleLinkClick }: { handleLinkClick: () => void }) => (
-  <Link href="/" className={`${styles.logo} text-gray-900 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-100`} onClick={handleLinkClick}>
+  <Link
+    href="/"
+    className={`${styles.logo} text-gray-900 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-100`}
+    onClick={handleLinkClick}
+  >
     <Music className="w-6 h-6" />
     <span className={styles.logoText}>Inside The Cranium</span>
   </Link>
@@ -90,10 +103,11 @@ const DesktopLinks = ({ links, pathname }: DesktopLinksProps) => (
         <Link
           key={href}
           href={href}
-          className={`${styles.navLink} ${isActive
-            ? "text-gray-900 dark:text-white"
-            : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-            }`}
+          className={`${styles.navLink} ${
+            isActive
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          }`}
         >
           <Icon className="w-4 h-4" />
           <span>{label}</span>
@@ -119,7 +133,9 @@ const MobileMenu = ({
   if (!isMenuOpen) return null;
 
   return (
-    <div className={`${styles.mobileNav} border-gray-200 dark:border-white/10 bg-white/95 dark:bg-black/95`}>
+    <div
+      className={`${styles.mobileNav} border-gray-200 dark:border-white/10 bg-white/95 dark:bg-black/95`}
+    >
       <div className={styles.mobileNavContent}>
         {links.map(({ href, label, icon: Icon, disabled }) => {
           const isActive = pathname === href;
@@ -142,10 +158,11 @@ const MobileMenu = ({
               key={href}
               href={href}
               onClick={handleLinkClick}
-              className={`${styles.mobileNavLink} ${isActive
-                ? "text-gray-900 dark:text-white"
-                : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                }`}
+              className={`${styles.mobileNavLink} ${
+                isActive
+                  ? "text-gray-900 dark:text-white"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              }`}
               style={
                 isActive
                   ? { backgroundColor: "rgba(61, 56, 245, 0.2)" }
@@ -157,7 +174,9 @@ const MobileMenu = ({
             </Link>
           );
         })}
-        <div className={`${styles.mobileThemeToggle} text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5`}>
+        <div
+          className={`${styles.mobileThemeToggle} text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5`}
+        >
           <ThemeToggle />
           <span>Theme</span>
         </div>

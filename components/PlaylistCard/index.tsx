@@ -34,7 +34,9 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
       </div>
 
       <div className="p-4 flex flex-col flex-1">
-        <h3 className={`line-clamp-1 text-gray-900 dark:text-white ${description || genres.length > 0 ? "mb-2" : ""}`}>
+        <h3
+          className={`line-clamp-1 text-gray-900 dark:text-white ${description || genres.length > 0 ? "mb-2" : ""}`}
+        >
           {playlist.name}
         </h3>
 

@@ -1,4 +1,4 @@
-@use '@/styles/variables' as *;
+@use "@/styles/variables" as *;
 
 .container {
   position: fixed;
@@ -80,8 +80,10 @@
 .progressFill {
   height: 100%;
   background: $accent;
-  transition: width $transition-base, opacity $transition-base;
-  
+  transition:
+    width $transition-base,
+    opacity $transition-base;
+
   &.paused {
     opacity: 0.3;
   }
@@ -94,7 +96,7 @@
   min-width: 35px;
   text-align: center;
   transition: opacity $transition-base;
-  
+
   &.paused {
     opacity: 0.5;
   }
@@ -139,12 +141,12 @@
       background: $accent-hover;
     }
   }
-  
+
   svg {
     width: 16px;
     height: 16px;
   }
-  
+
   &.playButton svg {
     width: 20px;
     height: 20px;

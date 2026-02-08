@@ -62,7 +62,13 @@ export default function MusicCard({
   return <div className={cardClasses}>{content}</div>;
 }
 
-const AlbumArtwork = ({ artwork, title }: { artwork?: string, title: string }) => (
+const AlbumArtwork = ({
+  artwork,
+  title,
+}: {
+  artwork?: string;
+  title: string;
+}) => (
   <div className="aspect-square relative overflow-hidden bg-gray-200 dark:bg-white/5">
     {artwork ? (
       <ImageWithFallback
@@ -89,4 +95,4 @@ const Genres = ({ genres }: { genres: string[] }) => (
       </span>
     ))}
   </div>
-)
+);

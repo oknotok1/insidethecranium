@@ -5,7 +5,10 @@ interface Track {
   artists: Array<{ id: string; name: string }>;
 }
 
-export const useTrackGenres = (track: Track | undefined, accessToken: string | undefined) => {
+export const useTrackGenres = (
+  track: Track | undefined,
+  accessToken: string | undefined,
+) => {
   const [genres, setGenres] = useState<string[]>([]);
 
   useEffect(() => {
@@ -20,15 +23,19 @@ export const useTrackGenres = (track: Track | undefined, accessToken: string | u
         const response = await fetch(
           `/api/spotify/artists/genres?artistIds=${artistIds}`,
           {
-            headers: accessToken ? {
-              'access_token': accessToken,
-            } : {},
-          }
+            headers: accessToken
+              ? {
+                  access_token: accessToken,
+                }
+              : {},
+          },
         );
 
         if (!response.ok) {
           // Log but don't throw - handle gracefully
-          console.warn(`[useTrackGenres] API returned ${response.status}, falling back to no genres`);
+          console.warn(
+            `[useTrackGenres] API returned ${response.status}, falling back to no genres`,
+          );
           setGenres([]);
           return;
         }
@@ -37,16 +44,19 @@ export const useTrackGenres = (track: Track | undefined, accessToken: string | u
 
         // Handle case where API returns error with empty artists array
         if (!data.artists || data.artists.length === 0) {
-          console.warn('[useTrackGenres] No artists data returned');
+          console.warn("[useTrackGenres] No artists data returned");
           setGenres([]);
           return;
         }
 
         // Collect all unique genres from all artists, limit to 3
         const allGenres = data.artists.flatMap(
-          (artist: any) => artist.genres || []
+          (artist: any) => artist.genres || [],
         );
-        const uniqueGenres = [...new Set<string>(allGenres as string[])].slice(0, 3);
+        const uniqueGenres = [...new Set<string>(allGenres as string[])].slice(
+          0,
+          3,
+        );
         setGenres(uniqueGenres);
       } catch (error) {
         console.error("[useTrackGenres] Failed to fetch genres:", error);

@@ -13,16 +13,22 @@ const formatTime = (ms: number): string => {
 };
 
 export default function WebPlayerControls() {
-  const { webPlayer, isListening, enableWebPlayer, setEnableWebPlayer, nowPlayingTrack } = useAppContext();
+  const {
+    webPlayer,
+    isListening,
+    enableWebPlayer,
+    setEnableWebPlayer,
+    nowPlayingTrack,
+  } = useAppContext();
   const [currentPosition, setCurrentPosition] = useState(0);
 
   // Update position every second when playing
   useEffect(() => {
     if (isListening && nowPlayingTrack?.progress_ms !== undefined) {
       setCurrentPosition(nowPlayingTrack.progress_ms);
-      
+
       const interval = setInterval(() => {
-        setCurrentPosition(prev => {
+        setCurrentPosition((prev) => {
           const newPosition = prev + 1000;
           const duration = nowPlayingTrack?.item?.duration_ms || 0;
           return newPosition < duration ? newPosition : duration;
@@ -33,14 +39,18 @@ export default function WebPlayerControls() {
     } else if (nowPlayingTrack?.progress_ms !== undefined) {
       setCurrentPosition(nowPlayingTrack.progress_ms);
     }
-  }, [isListening, nowPlayingTrack?.progress_ms, nowPlayingTrack?.item?.duration_ms]);
+  }, [
+    isListening,
+    nowPlayingTrack?.progress_ms,
+    nowPlayingTrack?.item?.duration_ms,
+  ]);
 
   return (
     <div className={styles.container}>
       {!enableWebPlayer && (
         <div className={styles.playerStatus}>
           <p className={styles.statusText}>Want to control playback?</p>
-          <button 
+          <button
             onClick={() => setEnableWebPlayer(true)}
             className={styles.enableButton}
           >
@@ -67,24 +77,30 @@ export default function WebPlayerControls() {
             {nowPlayingTrack?.item && (
               <>
                 <div className={styles.trackInfo}>
-                  <span className={styles.trackName}>{nowPlayingTrack.item.name}</span>
+                  <span className={styles.trackName}>
+                    {nowPlayingTrack.item.name}
+                  </span>
                   <span className={styles.trackArtist}>
                     {nowPlayingTrack.item.artists[0]?.name}
                   </span>
                 </div>
                 <div className={styles.progressSection}>
-                  <span className={`${styles.time} ${!isListening ? styles.paused : ''}`}>
+                  <span
+                    className={`${styles.time} ${!isListening ? styles.paused : ""}`}
+                  >
                     {formatTime(currentPosition)}
                   </span>
                   <div className={styles.progressBar}>
-                    <div 
-                      className={`${styles.progressFill} ${!isListening ? styles.paused : ''}`}
-                      style={{ 
-                        width: `${(currentPosition / (nowPlayingTrack.item.duration_ms || 1)) * 100}%` 
+                    <div
+                      className={`${styles.progressFill} ${!isListening ? styles.paused : ""}`}
+                      style={{
+                        width: `${(currentPosition / (nowPlayingTrack.item.duration_ms || 1)) * 100}%`,
                       }}
                     />
                   </div>
-                  <span className={`${styles.time} ${!isListening ? styles.paused : ''}`}>
+                  <span
+                    className={`${styles.time} ${!isListening ? styles.paused : ""}`}
+                  >
                     {formatTime(nowPlayingTrack.item.duration_ms)}
                   </span>
                 </div>

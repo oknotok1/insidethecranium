@@ -31,7 +31,7 @@ export default function HeroSection() {
   const displayTrack = useDisplayTrack(
     isListening,
     nowPlayingTrack,
-    recentlyPlayedTrack
+    recentlyPlayedTrack,
   );
 
   // Fetch genres for the current track
@@ -229,4 +229,3 @@ const Timestamp = ({ date, time, isLive = false }: TimestampProps) => {
     </div>
   );
 };
-

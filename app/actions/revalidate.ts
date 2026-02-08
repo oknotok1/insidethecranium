@@ -1,14 +1,14 @@
-'use server';
+"use server";
 
-import { revalidateTag } from 'next/cache';
+import { revalidateTag } from "next/cache";
 
 /**
  * Invalidate recently played cache when track changes
  * Uses stale-while-revalidate for better UX
  */
 export async function invalidateRecentlyPlayed() {
-  console.log('[Server Action] Invalidating recently-played cache');
-  revalidateTag('recently-played', 'max');
+  console.log("[Server Action] Invalidating recently-played cache");
+  revalidateTag("recently-played", "max");
 }
 
 /**
@@ -16,6 +16,6 @@ export async function invalidateRecentlyPlayed() {
  * Uses stale-while-revalidate for better UX
  */
 export async function invalidatePlaylists() {
-  console.log('[Server Action] Invalidating playlists cache');
-  revalidateTag('playlists', 'max');
+  console.log("[Server Action] Invalidating playlists cache");
+  revalidateTag("playlists", "max");
 }

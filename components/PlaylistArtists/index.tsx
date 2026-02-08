@@ -23,9 +23,9 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
     : artists.slice(0, initialArtistCount);
 
   return (
-    <div className="pb-8 sm:pb-12">
+    <section className="py-6 sm:py-8 bg-gray-50 dark:bg-white/[0.02]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="mb-3 sm:mb-4 text-xl sm:text-2xl text-gray-900 dark:text-white">
+        <h2 className="mb-4 text-xl sm:text-2xl text-gray-900 dark:text-white">
           Artists
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
@@ -72,6 +72,6 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
           </button>
         )}
       </div>
-    </div>
+    </section>
   );
 }

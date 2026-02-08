@@ -14,24 +14,24 @@ export default function Loading() {
             <div key={i} className="flex flex-col space-y-3">
               {/* Image Skeleton */}
               <div className="aspect-square bg-gray-200 dark:bg-white/10 rounded-lg animate-pulse" />
-              
+
               {/* Content Skeleton */}
               <div className="space-y-2 px-1">
                 {/* Title */}
                 <div className="h-4 w-3/4 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
-                
+
                 {/* Description */}
                 <div className="space-y-1">
                   <div className="h-3 w-full bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
                   <div className="h-3 w-2/3 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
                 </div>
-                
+
                 {/* Genres */}
                 <div className="flex flex-wrap gap-1">
                   <div className="h-5 w-12 bg-gray-200 dark:bg-white/10 rounded-full animate-pulse" />
                   <div className="h-5 w-16 bg-gray-200 dark:bg-white/10 rounded-full animate-pulse" />
                 </div>
-                
+
                 {/* Song Count */}
                 <div className="h-3 w-20 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
               </div>

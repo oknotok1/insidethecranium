@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
 
   const user_id = "21h6osgmy2twlu7ichm7ygfhq";
 
-  logger.log('Playlists API', `Fetching playlists - offset: ${offset}, limit: ${limit}`);
+  logger.log(
+    "Playlists API",
+    `Fetching playlists - offset: ${offset}, limit: ${limit}`,
+  );
 
   try {
     const accessToken = await getSpotifyAccessToken();
@@ -26,9 +29,9 @@ export async function GET(request: NextRequest) {
         },
         next: {
           revalidate: 86400, // Cache for 24 hours
-          tags: ['playlists', `user-playlists:${user_id}`]
-        }
-      }
+          tags: ["playlists", `user-playlists:${user_id}`],
+        },
+      },
     );
 
     if (!response.ok) {
@@ -37,7 +40,10 @@ export async function GET(request: NextRequest) {
 
     const playlists = await response.json();
 
-    logger.success('Playlists API', `Fetched ${playlists.items?.length} playlists`);
+    logger.success(
+      "Playlists API",
+      `Fetched ${playlists.items?.length} playlists`,
+    );
 
     // Decode HTML entities and strip HTML tags
     const decodeHtmlEntities = (text: string): string => {
@@ -67,7 +73,10 @@ export async function GET(request: NextRequest) {
       next: playlists.next,
     });
   } catch (error: any) {
-    logger.error('Playlists API', `Error: ${error.response?.status || ''} ${error.message}`);
+    logger.error(
+      "Playlists API",
+      `Error: ${error.response?.status || ""} ${error.message}`,
+    );
 
     return NextResponse.json(
       { error: "Failed to fetch playlists" },

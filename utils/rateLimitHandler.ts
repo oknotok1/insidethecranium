@@ -18,14 +18,14 @@ export interface RateLimitResult {
 export function shouldRetryRateLimit(
   retryAfterSeconds: number,
   retryCount: number,
-  maxRetries: number
+  maxRetries: number,
 ): RateLimitResult {
   const retryMinutes = (retryAfterSeconds / 60).toFixed(1);
-  
+
   // Calculate when the rate limit will expire
   const retryAvailableAt = new Date(Date.now() + retryAfterSeconds * 1000);
-  const retryAvailableTime = retryAvailableAt.toLocaleString('en-US', {
-    timeZone: 'Asia/Singapore',
+  const retryAvailableTime = retryAvailableAt.toLocaleString("en-US", {
+    timeZone: "Asia/Singapore",
     hour12: false,
   });
 

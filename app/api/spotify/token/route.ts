@@ -6,17 +6,17 @@ import { logger } from "@/utils/logger";
 export const revalidate = 3000;
 
 async function refreshAccessToken() {
-  logger.log('Token API', 'Refreshing access token');
+  logger.log("Token API", "Refreshing access token");
 
   try {
     const accessToken = await getSpotifyAccessToken();
-    logger.success('Token API', 'Token refreshed successfully');
+    logger.success("Token API", "Token refreshed successfully");
     return NextResponse.json({ access_token: accessToken });
   } catch (err: any) {
-    logger.error('Token API', `Fatal error: ${err.message}`);
+    logger.error("Token API", `Fatal error: ${err.message}`);
     return NextResponse.json(
       { error: "Failed to refresh access token" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

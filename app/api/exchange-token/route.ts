@@ -23,17 +23,14 @@ export async function POST(request: NextRequest) {
     params.append("client_id", SPOTIFY_CLIENT_ID || "");
     params.append("client_secret", SPOTIFY_CLIENT_SECRET || "");
 
-    const response = await fetch(
-      SPOTIFY_API.TOKEN_URL,
-      {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: params,
-        cache: 'no-store', // OAuth tokens should not be cached
-      }
-    );
+    const response = await fetch(SPOTIFY_API.TOKEN_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params,
+      cache: "no-store", // OAuth tokens should not be cached
+    });
 
     if (!response.ok) {
       const error = await response.json();
@@ -49,7 +46,7 @@ export async function POST(request: NextRequest) {
       expires_in: data.expires_in,
     });
   } catch (err: any) {
-    logger.error('Token Exchange API', err.message);
+    logger.error("Token Exchange API", err.message);
     return NextResponse.json(
       {
         error: "Failed to exchange token",

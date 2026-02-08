@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   if (!accessToken) {
     return NextResponse.json(
       { error: "Access token required" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -22,24 +22,24 @@ export async function GET(request: NextRequest) {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      cache: 'no-store', // Don't cache real-time data
+      cache: "no-store", // Don't cache real-time data
     });
 
     if (!response.ok) {
       const error = await response.json();
       return NextResponse.json(
         { error: "Failed to fetch currently playing" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     const data = await response.json();
     return NextResponse.json(data);
   } catch (err: any) {
-    logger.error('Currently Playing API', err.message);
+    logger.error("Currently Playing API", err.message);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

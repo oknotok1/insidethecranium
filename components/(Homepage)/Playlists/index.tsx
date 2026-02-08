@@ -19,9 +19,9 @@ export default function Playlists({ playlists }: { playlists: UserPlaylists }) {
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gray-50 dark:bg-white/[0.02]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 sm:mb-12 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-8 sm:mb-12 gap-4">
           <div>
-            <h2 className="mb-2 text-2xl sm:text-3xl md:text-4xl">
+            <h2 className="mb-4 text-2xl sm:text-3xl md:text-4xl">
               My Playlists
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">

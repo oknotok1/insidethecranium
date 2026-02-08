@@ -14,7 +14,11 @@ interface TrackWithGenres {
   genres: string[];
 }
 
-export default function CuratedSongs({ tracks = [] }: { tracks?: TrackWithGenres[] }) {
+export default function CuratedSongs({
+  tracks = [],
+}: {
+  tracks?: TrackWithGenres[];
+}) {
   const [showAll, setShowAll] = useState(false);
 
   if (!tracks || tracks.length === 0) return null;
@@ -26,7 +30,9 @@ export default function CuratedSongs({ tracks = [] }: { tracks?: TrackWithGenres
   const mobileLimit = 6;
   const desktopLimit = 10;
 
-  const displayedTracks = showAll ? tracks : tracks.slice(0, Math.max(mobileLimit, desktopLimit));
+  const displayedTracks = showAll
+    ? tracks
+    : tracks.slice(0, Math.max(mobileLimit, desktopLimit));
   const hasMore = tracks.length > Math.max(mobileLimit, desktopLimit);
 
   const handleToggle = () => {
@@ -44,7 +50,9 @@ export default function CuratedSongs({ tracks = [] }: { tracks?: TrackWithGenres
     <section id="featured-songs" className="py-12 sm:py-16 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 sm:mb-12">
-          <h2 className="mb-2 text-2xl sm:text-3xl md:text-4xl">Current Earworms</h2>
+          <h2 className="mb-4 text-2xl sm:text-3xl md:text-4xl">
+            Current Earworms
+          </h2>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
             I'm digging these songs
           </p>

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const url = `${SPOTIFY_API.BASE_URL}/me/player/recently-played?limit=1`;
   const accessToken = request.headers.get("access_token");
 
-  logger.log('Recently Played API', 'Fetching recently played track');
+  logger.log("Recently Played API", "Fetching recently played track");
 
   if (!accessToken) {
     return NextResponse.json(
@@ -26,13 +26,16 @@ export async function GET(request: NextRequest) {
       },
       next: {
         revalidate: false, // Cache forever
-        tags: ['recently-played'] // Tag for invalidation
-      }
+        tags: ["recently-played"], // Tag for invalidation
+      },
     });
 
     if (!response.ok) {
       const error = await response.json();
-      logger.error('Recently Played API', `Error: ${response.status} - ${error.error?.message || 'Unknown'}`);
+      logger.error(
+        "Recently Played API",
+        `Error: ${response.status} - ${error.error?.message || "Unknown"}`,
+      );
       return NextResponse.json(
         {
           error: "Failed to fetch recently played tracks",
@@ -43,10 +46,10 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    logger.success('Recently Played API', 'Cached recently played track');
+    logger.success("Recently Played API", "Cached recently played track");
     return NextResponse.json(data);
   } catch (err: any) {
-    logger.error('Recently Played API', `Fatal error: ${err.message}`);
+    logger.error("Recently Played API", `Fatal error: ${err.message}`);
     return NextResponse.json(
       {
         error: "Failed to fetch recently played tracks",

@@ -17,15 +17,17 @@ Personal project demonstrating modern web development practices with server-side
 ## Key Features
 
 ### 🎵 Real-Time Music Integration
+
 - Live "Now Playing" status with Spotify Web Playback SDK
 - Dynamic playlist exploration with genre categorization
 - Artist metadata aggregation from multiple API sources
 - Smooth client-side polling with SWR (stale-while-revalidate)
 
 ### ⚡ Performance Optimizations
+
 - **Aggressive Server-Side Caching**: Next.js Data Cache with indefinite TTL for static content
 - **Smart Revalidation**: Tag-based cache invalidation with on-demand purging
-- **Rate Limit Handling**: 
+- **Rate Limit Handling**:
   - Exponential backoff with capped retry delays
   - Fail-fast strategy for deep rate limits (>60s)
   - Sequential batch processing to prevent concurrent API hammering
@@ -34,12 +36,14 @@ Personal project demonstrating modern web development practices with server-side
 ### 🛠️ Engineering Highlights
 
 #### API Architecture
+
 - Centralized utility functions following DRY principles
 - Shared rate limit handler across all Spotify endpoints
 - Unified logging system with GMT+8 timestamped output
 - Type-safe error handling with graceful degradation
 
 #### Caching Strategy
+
 ```
 Static Data (Tracks/Artists/Genres) → Cache: Indefinite
 Access Tokens                       → Cache: 50 minutes
@@ -49,11 +53,13 @@ Recently Played                     → Cache: Indefinite (on-demand revalidatio
 ```
 
 #### Admin Dashboard
+
 - Password-protected cache management interface
 - Manual cache purging with tag-specific revalidation
 - OAuth token refresh helper for Spotify API
 
 ### 🎨 UI/UX Features
+
 - System-aware dark mode with smooth transitions
 - Responsive design (mobile-first approach)
 - Scrolling marquee animations for overflowing text
@@ -62,16 +68,20 @@ Recently Played                     → Cache: Indefinite (on-demand revalidatio
 ## Architecture Decisions
 
 ### Why Server Components?
+
 Moved data fetching to RSC to leverage Next.js Data Cache and reduce client bundle size. This enabled better cache control and eliminated the need for state management libraries.
 
 ### Rate Limit Mitigation
+
 Implemented a multi-layered approach:
+
 1. **Cache Layer**: Minimize API calls through aggressive caching
 2. **Retry Logic**: Smart exponential backoff with 60-second threshold
 3. **Sequential Processing**: Batch requests with 500ms delays
 4. **Fail Fast**: Skip retries for deep rate limits to prevent timeouts
 
 ### Monorepo Structure
+
 Organized by feature with clear separation between server/client components, utilities, and API routes for better maintainability and scalability.
 
 ## Performance Metrics

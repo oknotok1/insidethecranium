@@ -130,7 +130,7 @@
     @apply rounded-md shadow-md;
     @apply min-w-32 p-1;
   }
-  
+
   [data-slot="dropdown-menu-item"] {
     @apply relative flex items-center;
     @apply rounded-sm px-2 py-1.5;
@@ -138,12 +138,12 @@
     @apply outline-none select-none;
     @apply transition-colors;
   }
-  
+
   [data-slot="dropdown-menu-item"]:hover,
   [data-slot="dropdown-menu-item"]:focus {
     @apply bg-accent text-accent-foreground;
   }
-  
+
   [data-slot="dropdown-menu-item"][data-disabled] {
     @apply pointer-events-none opacity-50;
   }

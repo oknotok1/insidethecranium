@@ -67,7 +67,7 @@ const ConnectSection = () => (
   <div className={styles.section}>
     <h3 className={styles.sectionTitle}>Connect</h3>
     <a
-      href="https://open.spotify.com"
+      href="https://open.spotify.com/user/21h6osgmy2twlu7ichm7ygfhq?si=5c0c7f2a15fa4444"
       target="_blank"
       rel="noopener noreferrer"
       className={styles.connectLink}

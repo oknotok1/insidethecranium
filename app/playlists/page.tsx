@@ -6,15 +6,18 @@ export const metadata = {
   description: "Browse all of Jeff's curated Spotify playlists",
 };
 
-// Enable caching for this page
-export const revalidate = 300; // Revalidate every 5 minutes
+// Cache page for 24 hours (static content)
+export const revalidate = 86400;
 
 async function getAllPlaylists(): Promise<UserPlaylists> {
   try {
     const playlistsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/playlists?limit=50`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=50`,
       {
-        next: { revalidate: 300 } // Cache for 5 minutes
+        next: { 
+          revalidate: 86400, // Cache for 24 hours
+          tags: ['playlists']
+        }
       }
     );
 
@@ -22,11 +25,12 @@ async function getAllPlaylists(): Promise<UserPlaylists> {
       const data = await playlistsResponse.json();
 
       if (!data.error && data.items) {
+        console.log(`[Playlists Page] ✓ Loaded ${data.items.length} playlists from cache`);
         return data;
       }
     }
   } catch (error: any) {
-    console.error("Error fetching playlists:", error.message);
+    console.error("[Playlists Page] Error fetching playlists:", error.message);
   }
 
   return {

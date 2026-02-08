@@ -11,7 +11,6 @@ import React, {
   SetStateAction,
   useEffect,
 } from "react";
-import axios from "axios";
 import useSWR from "swr";
 import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
 
@@ -99,12 +98,17 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [recentlyPlayedTrack, setRecentlyPlayedTrack] = useState<RecentlyPlayedTrack | null>(null);
   const [enableWebPlayer, setEnableWebPlayer] = useState<boolean>(false);
   const [nowPlayingGenres, setNowPlayingGenres] = useState<string[]>([]);
+  const [previousTrackId, setPreviousTrackId] = useState<string | null>(null);
 
   // Initialize Spotify Web Player SDK only when enabled
   const spotifyPlayer = useSpotifyPlayer(enableWebPlayer ? accessToken : undefined);
 
-  // Fetch access token
-  const tokenFetcher = (url: string) => axios.post(url).then((res) => res.data.access_token);
+  // Fetch access token using native fetch
+  const tokenFetcher = (url: string) => 
+    fetch(url, { method: 'GET' })
+      .then((res) => res.json())
+      .then((data) => data.access_token);
+  
   const { data: fetchedAccessToken } = useSWR<string>(
     "/api/spotify/token",
     tokenFetcher,
@@ -120,15 +124,17 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [fetchedAccessToken]);
 
-  // Fetch currently playing track
+  // Fetch currently playing track using native fetch
   const trackFetcher = (url: string) =>
-    axios
-      .get(url, {
-        headers: {
-          access_token: accessToken,
-        },
+    fetch(url, {
+      headers: accessToken ? {
+        'access_token': accessToken,
+      } : {},
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
       })
-      .then((res) => res.data)
       .catch((err) => {
         console.error(err);
         return null;
@@ -171,22 +177,27 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   // Separate fetcher for recently played (fails silently)
   const recentlyPlayedFetcher = (url: string) =>
-    axios
-      .get(url, {
-        headers: {
-          access_token: accessToken,
-        },
+    fetch(url, {
+      headers: accessToken ? {
+        'access_token': accessToken,
+      } : {},
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
       })
-      .then((res) => res.data)
       .catch(() => null); // Fail silently
 
-  // Fetch recently played track
+  // Fetch recently played track (cached indefinitely, invalidated on-demand)
   const { data: recentlyPlayed, mutate: mutateRecentlyPlayed } = useSWR(
     accessToken ? "/api/spotify/recently-played" : null,
     recentlyPlayedFetcher,
     {
-      refreshInterval: 30000, // Refresh every 30 seconds
+      revalidateOnMount: true, // Fetch on mount
+      revalidateOnFocus: false, // Don't refetch on focus
+      revalidateOnReconnect: false, // Don't refetch on reconnect
       shouldRetryOnError: false, // Don't retry on error
+      // No refreshInterval - cache is used until explicitly invalidated
     }
   );
 
@@ -207,28 +218,68 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
 
       try {
         const artistIds = nowPlayingTrack.item.artists.map((a) => a.id).join(",");
-        const response = await axios.get(
+        const response = await fetch(
           `/api/spotify/artists/genres?artistIds=${artistIds}`,
           {
-            headers: {
-              access_token: accessToken,
-            },
+            headers: accessToken ? {
+              'access_token': accessToken,
+            } : {},
           }
         );
 
+        if (!response.ok) {
+          // Log but don't throw - handle gracefully
+          console.warn(`[AppContext] Genre API returned ${response.status}, falling back to no genres`);
+          setNowPlayingGenres([]);
+          return;
+        }
+
+        const data = await response.json();
+
+        // Handle case where API returns error with empty artists array
+        if (!data.artists || data.artists.length === 0) {
+          console.warn('[AppContext] No artists data returned for now playing');
+          setNowPlayingGenres([]);
+          return;
+        }
+
         // Collect all unique genres from all artists, limit to 3
-        const allGenres = response.data.artists.flatMap(
+        const allGenres = data.artists.flatMap(
           (artist: any) => artist.genres || []
         );
         const uniqueGenres = [...new Set<string>(allGenres as string[])].slice(0, 3);
         setNowPlayingGenres(uniqueGenres);
-      } catch (error) {
-        setNowPlayingGenres([]);
+      } catch (error: any) {
+        console.error('[AppContext] Failed to fetch genres:', error.message);
+        setNowPlayingGenres([]); // Gracefully degrade to no genres
       }
     };
 
     fetchGenres();
   }, [nowPlayingTrack?.item?.id, accessToken]);
+
+  // Invalidate recently played cache when track changes
+  useEffect(() => {
+    const currentTrackId = nowPlayingTrack?.item?.id;
+    
+    if (currentTrackId && currentTrackId !== previousTrackId) {
+      // Track has changed - invalidate recently played cache
+      console.log('[AppContext] Track changed, invalidating recently-played cache');
+      
+      // Import and call server action
+      import('@/app/actions/revalidate').then(({ invalidateRecentlyPlayed }) => {
+        invalidateRecentlyPlayed();
+      });
+      
+      // Update tracking
+      setPreviousTrackId(currentTrackId);
+      
+      // Trigger SWR revalidation after short delay
+      setTimeout(() => {
+        mutateRecentlyPlayed();
+      }, 2000);
+    }
+  }, [nowPlayingTrack?.item?.id, previousTrackId, mutateRecentlyPlayed]);
 
   // When user stops listening, immediately fetch recently played
   useEffect(() => {

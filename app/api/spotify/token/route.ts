@@ -1,33 +1,31 @@
-import axios from "axios";
 import { NextResponse } from "next/server";
+import { getSpotifyAccessToken } from "@/utils/spotify";
+import { logger } from "@/utils/logger";
 
-const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } =
-  process.env;
+// Cache tokens for 50 minutes (tokens last 1 hour)
+export const revalidate = 3000;
 
-export async function POST() {
-  const token = Buffer.from(
-    `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
-  ).toString("base64");
-  const url = "https://accounts.spotify.com/api/token";
-  const params = new URLSearchParams();
-  params.append("grant_type", "refresh_token");
-  SPOTIFY_REFRESH_TOKEN &&
-    params.append("refresh_token", SPOTIFY_REFRESH_TOKEN);
+async function refreshAccessToken() {
+  logger.log('Token API', 'Refreshing access token');
 
   try {
-    const { data } = await axios.post(url, params, {
-      headers: {
-        Authorization: `Basic ${token}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-
-    return NextResponse.json({ access_token: data.access_token });
-  } catch (err) {
-    console.error(err);
+    const accessToken = await getSpotifyAccessToken();
+    logger.success('Token API', 'Token refreshed successfully');
+    return NextResponse.json({ access_token: accessToken });
+  } catch (err: any) {
+    logger.error('Token API', `Fatal error: ${err.message}`);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to refresh access token" },
       { status: 500 }
     );
   }
+}
+
+// Support both GET and POST for better compatibility
+export async function GET() {
+  return refreshAccessToken();
+}
+
+export async function POST() {
+  return refreshAccessToken();
 }

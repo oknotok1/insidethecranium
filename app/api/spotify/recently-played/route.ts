@@ -1,12 +1,15 @@
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+import { SPOTIFY_API } from "@/utils/spotify";
+import { logger } from "@/utils/logger";
 
-// Short cache to prevent API hammering (30 seconds)
-export const revalidate = 30;
+// Cache indefinitely - invalidated on-demand when track changes
+export const revalidate = false;
 
 export async function GET(request: NextRequest) {
-  const url = `https://api.spotify.com/v1/me/player/recently-played?limit=1`;
+  const url = `${SPOTIFY_API.BASE_URL}/me/player/recently-played?limit=1`;
   const accessToken = request.headers.get("access_token");
+
+  logger.log('Recently Played API', 'Fetching recently played track');
 
   if (!accessToken) {
     return NextResponse.json(
@@ -16,21 +19,40 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { data } = await axios.get(url, {
+    // Fetch with cache tag for on-demand invalidation
+    const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      next: {
+        revalidate: false, // Cache forever
+        tags: ['recently-played'] // Tag for invalidation
+      }
     });
 
+    if (!response.ok) {
+      const error = await response.json();
+      logger.error('Recently Played API', `Error: ${response.status} - ${error.error?.message || 'Unknown'}`);
+      return NextResponse.json(
+        {
+          error: "Failed to fetch recently played tracks",
+          details: error.error?.message || "Unknown error",
+        },
+        { status: response.status },
+      );
+    }
+
+    const data = await response.json();
+    logger.success('Recently Played API', 'Cached recently played track');
     return NextResponse.json(data);
   } catch (err: any) {
-    console.error("Recently played error:", err.response?.data || err.message);
+    logger.error('Recently Played API', `Fatal error: ${err.message}`);
     return NextResponse.json(
       {
         error: "Failed to fetch recently played tracks",
-        details: err.response?.data?.error?.message || "Unknown error",
+        details: err.message || "Unknown error",
       },
-      { status: err.response?.status || 500 },
+      { status: 500 },
     );
   }
 }

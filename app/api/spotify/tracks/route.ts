@@ -1,12 +1,15 @@
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
+import { logger } from "@/utils/logger";
 
-// Cache for 5 minutes
-export const revalidate = 300;
+// Cache tracks indefinitely (static content)
+export const revalidate = false;
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const trackIds = searchParams.get("ids");
+
+  logger.log('Tracks API', `Fetching ${trackIds?.split(',').length || 0} tracks`);
 
   if (!trackIds) {
     return NextResponse.json(
@@ -18,9 +21,9 @@ export async function GET(request: NextRequest) {
   try {
     // Get access token
     const tokenResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/spotify/token`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/token`,
       {
-        method: "POST",
+        method: "GET",
         next: { revalidate: 3000 } // Token cache
       }
     );
@@ -30,18 +33,75 @@ export async function GET(request: NextRequest) {
     }
 
     const { access_token } = await tokenResponse.json();
+    logger.success('Tracks API', 'Got access token');
 
-    // Fetch tracks from Spotify
-    const tracksResponse = await axios.get(
-      `https://api.spotify.com/v1/tracks?ids=${trackIds}`,
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
+    // Fetch tracks from Spotify with retry logic for rate limiting
+    let tracksData;
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    while (retryCount <= maxRetries) {
+      const tracksResponse = await fetch(
+        `https://api.spotify.com/v1/tracks?ids=${trackIds}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+          next: {
+            revalidate: false, // Cache forever
+            tags: ['tracks', ...trackIds.split(',').map(id => `track:${id}`)]
+          }
+        }
+      );
+
+      // Handle rate limiting with retry
+      if (tracksResponse.status === 429) {
+        const retryAfterHeader = tracksResponse.headers.get('retry-after');
+        const retryAfterSeconds = parseInt(retryAfterHeader || '5');
+        
+        const result = shouldRetryRateLimit(retryAfterSeconds, retryCount, maxRetries);
+        
+        if (!result.shouldRetry) {
+          logger.error('Tracks API', result.message);
+          return NextResponse.json(
+            { 
+              error: "Rate limited", 
+              tracks: []
+            },
+            { status: 429 }
+          );
+        }
+        
+        logger.warn('Tracks API', result.message);
+        await waitForRetry(result.retryAfter);
+        retryCount++;
+        continue;
       }
-    );
 
-    const validTracks = tracksResponse.data.tracks.filter((track: any) => track !== null);
+      if (!tracksResponse.ok) {
+        // Try to parse error as JSON, fall back to text
+        let errorMessage = "Failed to fetch tracks";
+        try {
+          const error = await tracksResponse.json();
+          errorMessage = error.error?.message || errorMessage;
+        } catch {
+          errorMessage = await tracksResponse.text();
+        }
+        
+        logger.error('Tracks API', `Spotify API error: ${tracksResponse.status} - ${errorMessage}`);
+        return NextResponse.json(
+          { error: errorMessage, tracks: [] },
+          { status: tracksResponse.status }
+        );
+      }
+
+      // Success - break retry loop
+      tracksData = await tracksResponse.json();
+      break;
+    }
+
+    const validTracks = tracksData.tracks.filter((track: any) => track !== null);
+    logger.success('Tracks API', `Got ${validTracks.length} valid tracks`);
 
     // Fetch genres for all artists
     const allArtistIds = validTracks.flatMap((track: any) =>
@@ -53,18 +113,23 @@ export async function GET(request: NextRequest) {
 
     if (uniqueArtistIds.length > 0) {
       try {
+        logger.log('Tracks API', `Fetching genres for ${uniqueArtistIds.length} artists`);
         const genresResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/spotify/artists/genres?artistIds=${uniqueArtistIds.join(",")}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/artists/genres?artistIds=${uniqueArtistIds.join(",")}`,
           {
             headers: {
               access_token: access_token,
             },
-            next: { revalidate: 300 }
+            next: { 
+              revalidate: false, // Cache forever
+              tags: ['artist-genres']
+            }
           }
         );
 
         if (genresResponse.ok) {
           const genresData = await genresResponse.json();
+          logger.success('Tracks API', `Got genres for ${genresData.artists?.length || 0} artists`);
 
           // Create a map of artist ID to genres
           const artistGenresMap = new Map();
@@ -85,9 +150,12 @@ export async function GET(request: NextRequest) {
               genres: Array.from(trackGenres).slice(0, 3),
             };
           });
+          logger.success('Tracks API', 'Added genres to tracks');
+        } else {
+          logger.error('Tracks API', `Failed to fetch genres: ${genresResponse.status}`);
         }
-      } catch (genreError) {
-        console.error("Failed to fetch genres:", genreError);
+      } catch (genreError: any) {
+        logger.error('Tracks API', `Genre fetch error: ${genreError.message}`);
         // Return tracks without genres
         tracksWithGenres = validTracks.map((track: any) => ({
           ...track,
@@ -96,14 +164,15 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    logger.log('Tracks API', `Returning ${tracksWithGenres.length} tracks with genres`);
     return NextResponse.json({
       tracks: tracksWithGenres,
     });
   } catch (err: any) {
-    console.error("Error fetching tracks:", err.response?.data || err);
+    logger.error('Tracks API', `Fatal error: ${err.message}`);
     return NextResponse.json(
-      { error: err.response?.data?.error?.message || "Internal Server Error" },
-      { status: err.response?.status || 500 }
+      { error: err.error?.message || "Internal Server Error" },
+      { status: err.status || 500 }
     );
   }
 }

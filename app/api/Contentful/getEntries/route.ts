@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "contentful";
+import { logger } from "@/utils/logger";
 
 const { CONTENTFUL_SPACE_ID, CONTENTFUL_ACCESS_TOKEN } = process.env;
 
@@ -28,8 +29,8 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.json(response.fields.featuredSongs);
-    } catch (error) {
-      console.error("Error fetching entry from Contentful:", error);
+    } catch (error: any) {
+      logger.error('Contentful API', `Error fetching entry: ${error.message}`);
       return NextResponse.json(
         { error: "Internal Server Error" },
         { status: 500 }
@@ -47,8 +48,8 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.json(response.items);
-    } catch (error) {
-      console.error("Error fetching entries from Contentful:", error);
+    } catch (error: any) {
+      logger.error('Contentful API', `Error fetching entries: ${error.message}`);
       return NextResponse.json(
         { error: "Internal Server Error" },
         { status: 500 }

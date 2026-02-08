@@ -1,5 +1,6 @@
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+import { SPOTIFY_API } from "@/utils/spotify";
+import { logger } from "@/utils/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,15 +23,24 @@ export async function POST(request: NextRequest) {
     params.append("client_id", SPOTIFY_CLIENT_ID || "");
     params.append("client_secret", SPOTIFY_CLIENT_SECRET || "");
 
-    const { data } = await axios.post(
-      "https://accounts.spotify.com/api/token",
-      params,
+    const response = await fetch(
+      SPOTIFY_API.TOKEN_URL,
       {
+        method: 'POST',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      },
+        body: params,
+        cache: 'no-store', // OAuth tokens should not be cached
+      }
     );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error_description || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
 
     return NextResponse.json({
       success: true,
@@ -39,11 +49,11 @@ export async function POST(request: NextRequest) {
       expires_in: data.expires_in,
     });
   } catch (err: any) {
-    console.error("Token exchange error:", err.response?.data || err.message);
+    logger.error('Token Exchange API', err.message);
     return NextResponse.json(
       {
         error: "Failed to exchange token",
-        details: err.response?.data || err.message,
+        details: err.message,
       },
       { status: 500 },
     );

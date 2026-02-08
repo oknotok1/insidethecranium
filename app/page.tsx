@@ -4,8 +4,8 @@ import CuratedSongs from "@/components/(Homepage)/CuratedSongs";
 import Playlists from "@/components/(Homepage)/Playlists";
 import HomepageSectionSkeleton from "@/components/(Homepage)/Skeleton";
 
-// Enable caching for this page
-export const revalidate = 300; // Revalidate every 5 minutes
+// Cache page for 24 hours (static content that rarely changes)
+export const revalidate = 86400;
 
 async function getData() {
   // Get enriched playlists with genres and clean descriptions from our API
@@ -21,9 +21,12 @@ async function getData() {
 
   try {
     const playlistsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/playlists?limit=15`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=50`,
       {
-        next: { revalidate: 300 } // Cache for 5 minutes
+        next: { 
+          revalidate: 86400, // Cache for 24 hours
+          tags: ['playlists'] // Tag for on-demand invalidation
+        }
       }
     );
 
@@ -32,14 +35,15 @@ async function getData() {
 
       if (!data.error && data.items) {
         playlists = data;
+        console.log(`[Homepage] ✓ Loaded ${data.items.length} playlists from cache`);
       } else {
-        console.error("Playlists API error:", data.error);
+        console.error("[Homepage] Playlists API error:", data.error);
       }
     } else {
-      console.error("Failed to fetch playlists:", playlistsResponse.status, playlistsResponse.statusText);
+      console.error("[Homepage] Failed to fetch playlists:", playlistsResponse.status, playlistsResponse.statusText);
     }
   } catch (error: any) {
-    console.error("Error fetching playlists:", error.message);
+    console.error("[Homepage] Error fetching playlists:", error.message);
   }
 
   // Get Featured Songs from Contentful
@@ -65,18 +69,22 @@ async function getData() {
       if (songIds.length > 0) {
         try {
           const tracksResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/spotify/tracks?ids=${songIds.join(",")}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/tracks?ids=${songIds.join(",")}`,
             {
-              next: { revalidate: 300 } // Cache for 5 minutes
+              next: { 
+                revalidate: false, // Cache forever (curated tracks are static)
+                tags: ['curated-tracks']
+              }
             }
           );
 
           if (tracksResponse.ok) {
             const tracksData = await tracksResponse.json();
             curatedTracks = tracksData.tracks || [];
+            console.log(`[Homepage] ✓ Loaded ${curatedTracks.length} curated tracks from cache`);
           }
         } catch (error) {
-          console.error("Error fetching curated tracks:", error);
+          console.error("[Homepage] Error fetching curated tracks:", error);
         }
       }
     }

@@ -1,11 +1,12 @@
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+import { SPOTIFY_API } from "@/utils/spotify";
+import { logger } from "@/utils/logger";
 
-// Short cache to prevent API hammering (30 seconds)
-export const revalidate = 30;
+// Don't cache currently playing (real-time data)
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
-  const url = `https://api.spotify.com/v1/me/player/currently-playing`;
+  const url = `${SPOTIFY_API.BASE_URL}/me/player/currently-playing`;
   const accessToken = request.headers.get("access_token");
 
   if (!accessToken) {
@@ -16,15 +17,26 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { data } = await axios.get(url, {
+    // Use native fetch for consistency
+    const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      cache: 'no-store', // Don't cache real-time data
     });
 
+    if (!response.ok) {
+      const error = await response.json();
+      return NextResponse.json(
+        { error: "Failed to fetch currently playing" },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
     return NextResponse.json(data);
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
+    logger.error('Currently Playing API', err.message);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

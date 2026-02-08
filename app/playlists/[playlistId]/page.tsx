@@ -5,8 +5,8 @@ import { ImageWithFallback } from "@/figma/ImageWithFallback";
 import PlaylistGenres from "@/components/PlaylistGenres";
 import PlaylistArtists from "@/components/PlaylistArtists";
 
-// Enable caching for this page
-export const revalidate = 300; // Revalidate every 5 minutes
+// Cache playlist pages for 24 hours
+export const revalidate = 86400;
 
 interface PlaylistTrack {
   added_at: string;
@@ -76,12 +76,15 @@ interface ArtistDataAPI {
 
 async function getSpotifyAccessToken(): Promise<string> {
   try {
-    // Use our cached token endpoint
+    // Use our cached token endpoint with GET for better caching
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/spotify/token`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/token`,
       {
-        method: "POST",
-        next: { revalidate: 3000 }, // Token cache (50 minutes, tokens last 1 hour)
+        method: "GET",
+        next: {
+          revalidate: 3000, // Token cache (50 minutes, tokens last 1 hour)
+          tags: ['spotify-token']
+        }
       }
     );
 
@@ -105,24 +108,31 @@ async function getPlaylistDetails(
     // Validate and clean playlist ID
     const cleanPlaylistId = decodeURIComponent(playlistId).trim();
 
-    // Use fetch with caching instead of axios for better Next.js caching
+    console.log(`[Playlist Detail] Fetching playlist: ${cleanPlaylistId}`);
+
+    // Use fetch with aggressive caching for static playlist data
     const response = await fetch(
       `https://api.spotify.com/v1/playlists/${cleanPlaylistId}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-        next: { revalidate: 300 }, // Cache for 5 minutes
+        next: {
+          revalidate: false, // Cache indefinitely
+          tags: ['playlists', `playlist:${cleanPlaylistId}`]
+        }
       }
     );
 
     if (!response.ok) {
       const error: any = new Error("Failed to fetch playlist");
       error.status = response.status;
+      console.error(`[Playlist Detail] ✗ Failed: ${response.status}`);
       throw error;
     }
 
     const data = await response.json();
+    console.log(`[Playlist Detail] ✓ Fetched playlist with ${data.tracks.total} tracks`);
     return data;
   } catch (error: any) {
     console.error("Error fetching playlist:", {
@@ -152,24 +162,30 @@ async function getArtistDetails(
   if (artistIds.length === 0) return new Map();
 
   try {
-    // Use our cached API endpoint instead of direct Spotify API call
+    console.log(`[Playlist Detail] Fetching ${artistIds.length} artists`);
+
+    // Use our cached API endpoint with indefinite caching
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/spotify/artists/genres?artistIds=${artistIds.join(",")}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/artists/genres?artistIds=${artistIds.join(",")}`,
       {
         headers: {
           access_token: accessToken,
         },
-        next: { revalidate: 300 }, // Cache for 5 minutes
+        next: {
+          revalidate: false, // Cache indefinitely
+          tags: ['artist-genres']
+        }
       }
     );
 
     if (!response.ok) {
+      console.error(`[Playlist Detail] ✗ Failed to fetch artists: ${response.statusText}`);
       throw new Error(`Failed to fetch artists: ${response.statusText}`);
     }
 
     const data = await response.json();
     const artistMap = new Map<string, ArtistDataAPI>();
-    
+
     data.artists.forEach((artist: ArtistDataAPI) => {
       if (artist) {
         artistMap.set(artist.id, {
@@ -181,6 +197,7 @@ async function getArtistDetails(
       }
     });
 
+    console.log(`[Playlist Detail] ✓ Mapped ${artistMap.size} artists`);
     return artistMap;
   } catch (error) {
     console.error("Error fetching artist details:", error);
@@ -471,9 +488,11 @@ export default async function PlaylistDetailPage({
                           {track.artists.map((artist) => artist.name).join(", ")}
                         </div>
                         {/* Mobile: genres dot-separated on third line */}
-                        <div className="sm:hidden text-xs text-gray-500 dark:text-gray-500 mt-1 truncate">
-                          {trackGenres.length > 0 ? trackGenres.join(" • ") : "\u00A0"}
-                        </div>
+                        {trackGenres.length > 0 && (
+                          <div className="sm:hidden text-xs text-gray-500 dark:text-gray-500 mt-1 truncate">
+                            {trackGenres.length > 0 ? trackGenres.join(" • ") : "\u00A0"}
+                          </div>
+                        )}
                       </div>
 
                       {/* Right: Album & Genre chips (Desktop only) */}

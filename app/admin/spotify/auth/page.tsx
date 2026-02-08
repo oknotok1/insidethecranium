@@ -3,8 +3,9 @@
 import { useState } from "react";
 
 export default function SpotifyAuthPage() {
-  const [clientId] = useState("e40037a58f3f4b9f91aa4622a13bdac5");
-  const [redirectUri] = useState("http://127.0.0.1:3000/api/callback");
+  // Note: CLIENT_ID is public and safe to expose (it's used in browser anyway)
+  const [clientId] = useState(process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "");
+  const [redirectUri] = useState(`${process.env.NEXT_PUBLIC_BASE_URL}/api/callback`);
 
   const scopes = [
     "user-read-currently-playing",

@@ -38,7 +38,7 @@ export default function Navbar() {
       // Extract playlist name from document title (format: "Playlist Name - Inside The Cranium")
       const title = document.title;
       const playlistTitle = title.split(" - ")[0];
-      setPlaylistName(playlistTitle || "Playlist");
+      setPlaylistName(playlistTitle);
     } else {
       setPlaylistName("");
     }
@@ -224,12 +224,7 @@ const MobileMenu = ({
             </Link>
           );
         })}
-        <div
-          className={`${styles.mobileThemeToggle} text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5`}
-        >
-          <ThemeToggle />
-          <span>Theme</span>
-        </div>
+        <ThemeToggle isMobile />
       </div>
     </div>
   );

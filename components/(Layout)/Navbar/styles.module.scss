@@ -67,19 +67,3 @@
     pointer-events: auto; // Allow cursor to show
   }
 }
-
-.mobileThemeToggle {
-  @apply flex items-center space-x-3 px-3 py-2 rounded-lg;
-  @apply transition-colors;
-
-  // Override button styles to match nav links
-  button {
-    @apply p-0 h-auto w-5;
-    min-width: 1.25rem;
-  }
-
-  svg {
-    width: 1.25rem !important;
-    height: 1.25rem !important;
-  }
-}

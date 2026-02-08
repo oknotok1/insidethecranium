@@ -284,15 +284,15 @@ function formatTotalDuration(ms: number): string {
 }
 
 function decodeHtmlEntities(text: string): string {
-  const entities: { [key: string]: string } = {
-    "&amp;": "&",
-    "&lt;": "<",
-    "&gt;": ">",
-    "&quot;": '"',
-    "&#39;": "'",
-    "&apos;": "'",
-  };
-  return text.replace(/&[#\w]+;/g, (entity) => entities[entity] || entity);
+  return text
+    .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16))) // Hex entities like &#x27;
+    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec)) // Decimal entities like &#39;
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&apos;/g, "'")
+    .replace(/<[^>]*>/g, ""); // Strip HTML tags
 }
 
 export default async function PlaylistDetailPage({

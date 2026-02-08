@@ -138,7 +138,14 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
         : {},
     })
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          // Handle rate limiting gracefully - don't throw, just return null
+          if (res.status === 429) {
+            console.warn(`[AppContext] Rate limited on ${url}`);
+            return null;
+          }
+          throw new Error(`HTTP ${res.status}`);
+        }
         return res.json();
       })
       .catch((err) => {

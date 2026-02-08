@@ -3,7 +3,7 @@
 .heroSection {
   @apply flex items-center justify-center;
   @apply relative overflow-hidden;
-  min-height: calc(100vh - 4rem); // Full height minus navbar
+  min-height: calc(100svh - 4rem); // Full height minus navbar
 }
 
 .content {

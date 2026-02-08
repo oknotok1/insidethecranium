@@ -1,8 +1,8 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen">
+    <main className="flex flex-col">
       {/* Header Skeleton */}
-      <div className="pt-20 sm:pt-24 pb-8 sm:pb-12">
+      <section className="py-6 sm:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button Skeleton */}
           <div className="h-5 w-32 bg-gray-200 dark:bg-white/10 rounded mb-6 sm:mb-8 animate-pulse" />
@@ -28,10 +28,10 @@ export default function Loading() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Genres Skeleton */}
-      <div className="pb-8 sm:pb-12">
+      <section className="py-6 sm:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-7 w-24 bg-gray-200 dark:bg-white/10 rounded mb-4 animate-pulse" />
           <div className="space-y-2">
@@ -43,10 +43,10 @@ export default function Loading() {
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Artists Skeleton */}
-      <div className="pb-8 sm:pb-12">
+      <section className="py-6 sm:py-8 bg-gray-50 dark:bg-white/[0.02]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-7 w-24 bg-gray-200 dark:bg-white/10 rounded mb-4 animate-pulse" />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
@@ -59,10 +59,10 @@ export default function Loading() {
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Tracks Skeleton */}
-      <div className="pb-12 sm:pb-20">
+      <section className="py-6 sm:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-7 w-24 bg-gray-200 dark:bg-white/10 rounded mb-4 animate-pulse" />
           <div className="space-y-2">
@@ -74,7 +74,7 @@ export default function Loading() {
             ))}
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

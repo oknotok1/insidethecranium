@@ -10,10 +10,11 @@ interface NowPlayingProps {
 }
 
 export default function NowPlaying({ className }: NowPlayingProps) {
-  const { nowPlayingTrack, nowPlayingGenres } = useAppContext();
+  const { nowPlayingTrack, nowPlayingGenres, isListening } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!nowPlayingTrack) return null;
+  // Only show if actively listening
+  if (!nowPlayingTrack || !isListening || !nowPlayingTrack.item) return null;
 
   return (
     <div className={`${styles.nowPlaying} ${className || ""}`}>
@@ -23,11 +24,11 @@ export default function NowPlaying({ className }: NowPlayingProps) {
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#3d38f5] to-[#8b87ff] text-white text-xs transition-all hover:shadow-lg hover:scale-[1.02] active:scale-100 w-full min-w-0"
+        className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white text-xs transition-all hover:shadow-lg hover:scale-[1.02] active:scale-100 w-full min-w-0"
         aria-label="Now playing"
         style={{ cursor: "pointer" }}
       >
-        <Play className="w-3 h-3 fill-current flex-shrink-0" />
+        <Play className="w-3 h-3 fill-current shrink-0" />
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="whitespace-nowrap inline-block animate-marquee">
             <div className="inline-block">
@@ -66,7 +67,7 @@ export default function NowPlaying({ className }: NowPlayingProps) {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-[60] bg-transparent cursor-default"
+            className="fixed inset-0 z-60 bg-transparent cursor-default"
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen(false);
@@ -74,12 +75,12 @@ export default function NowPlaying({ className }: NowPlayingProps) {
             aria-label="Close popover"
           />
           <div
-            className="fixed left-1/2 -translate-x-1/2 top-20 lg:absolute lg:top-full lg:mt-2 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-[70] overflow-hidden"
+            className="fixed left-1/2 -translate-x-1/2 top-20 lg:absolute lg:top-full lg:mt-2 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-70 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Background gradient */}
             <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900" />
+              <div className="absolute inset-0 bg-linear-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900" />
               <div
                 className="absolute inset-0"
                 style={{

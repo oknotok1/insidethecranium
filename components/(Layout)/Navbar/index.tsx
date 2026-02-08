@@ -59,8 +59,8 @@ export default function Navbar() {
             />
 
             {/* Mobile-only items */}
-            <div className="flex items-center justify-end gap-3 lg:hidden flex-1 min-w-0">
-              <NowPlaying className="flex-shrink min-w-0 max-w-[6rem] md:max-w-[10rem]" />
+          <div className="flex items-center justify-end gap-3 lg:hidden flex-1 min-w-0">
+            <NowPlaying className="shrink min-w-0 max-w-24 md:max-w-40" />
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className={`${styles.mobileMenuButton} text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100`}
@@ -144,7 +144,7 @@ const DesktopLinks = ({ links, pathname }: DesktopLinksProps) => (
     })}
 
     {/* Now Playing - Desktop */}
-    <NowPlaying className="hidden lg:flex min-w-0 max-w-[15rem]" />
+    <NowPlaying className="hidden lg:flex min-w-0 max-w-60" />
 
     <div className="-ml-2">
       <ThemeToggle />

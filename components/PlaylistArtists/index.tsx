@@ -23,7 +23,7 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
     : artists.slice(0, initialArtistCount);
 
   return (
-    <section className="py-6 sm:py-8 bg-gray-50 dark:bg-white/[0.02]">
+    <section className="py-6 sm:py-8 bg-gray-50 dark:bg-white/2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="mb-4 text-xl sm:text-2xl text-gray-900 dark:text-white">
           Artists
@@ -37,7 +37,7 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
               rel="noopener noreferrer"
               className="flex flex-col items-center text-center space-y-2 p-3 sm:p-4 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
             >
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#3d38f5]/20 to-[#8b87ff]/10">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center bg-linear-to-br from-[#3d38f5]/20 to-[#8b87ff]/10">
                 {artist.image ? (
                   <img
                     src={artist.image}

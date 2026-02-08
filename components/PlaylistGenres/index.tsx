@@ -85,7 +85,7 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
                           key={track.id}
                           className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                         >
-                          <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
+                          <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
                             {track.album.images &&
                             track.album.images.length > 0 ? (
                               <ImageWithFallback

@@ -15,7 +15,7 @@
 
   .albumContainer {
     @apply flex justify-center;
-    @apply mb-6 sm:mb-8;
+    @apply mb-5 sm:mb-6 lg:mb-8;
 
     .albumArtwork {
       @apply flex;
@@ -47,8 +47,9 @@
   }
 
   .listeningLabel {
-    @apply mb-3 sm:mb-4;
-    @apply text-xs sm:text-sm;
+    @apply mb-5 sm:mb-6 lg:mb-8;
+    @apply text-sm sm:text-base;
+    @apply font-medium;
     @apply text-gray-600;
 
     :global(.dark) & {
@@ -58,7 +59,7 @@
 
   .title {
     @apply mb-2;
-    @apply text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-balance;
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-balance;
     @apply leading-tight;
     @apply text-gray-900;
 
@@ -68,7 +69,7 @@
   }
 
   .artist {
-    @apply mb-2;
+    @apply mb-1.5 sm:mb-2;
     @apply text-lg sm:text-xl md:text-2xl;
     @apply text-gray-700;
 
@@ -78,7 +79,7 @@
   }
 
   .album {
-    @apply mb-6 sm:mb-8;
+    @apply mb-5 sm:mb-6;
     @apply text-xs sm:text-sm;
     @apply text-gray-600;
     @apply italic;
@@ -90,9 +91,10 @@
 
   .metadata {
     @apply flex items-center justify-center flex-wrap;
-    @apply gap-5 sm:gap-8;
+    @apply gap-4 sm:gap-6 lg:gap-8;
     @apply text-xs sm:text-sm;
     @apply text-gray-600;
+    @apply mb-5 sm:mb-6;
 
     :global(.dark) & {
       @apply text-gray-400;
@@ -105,7 +107,6 @@
 
   .spotifyLinkContainer {
     @apply flex justify-center;
-    @apply mt-6 sm:mt-8;
 
     .spotifyLink {
       @apply inline-flex items-center;

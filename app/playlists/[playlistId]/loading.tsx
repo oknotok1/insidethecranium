@@ -9,7 +9,7 @@ export default function Loading() {
 
           <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
             {/* Image Skeleton */}
-            <div className="flex-shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg bg-gray-200 dark:bg-white/10 animate-pulse" />
+            <div className="shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg bg-gray-200 dark:bg-white/10 animate-pulse" />
 
             {/* Info Skeleton */}
             <div className="flex-1 flex flex-col justify-end space-y-4">
@@ -46,7 +46,7 @@ export default function Loading() {
       </section>
 
       {/* Artists Skeleton */}
-      <section className="py-6 sm:py-8 bg-gray-50 dark:bg-white/[0.02]">
+      <section className="py-6 sm:py-8 bg-gray-50 dark:bg-white/2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-7 w-24 bg-gray-200 dark:bg-white/10 rounded mb-4 animate-pulse" />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">

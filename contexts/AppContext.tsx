@@ -174,17 +174,13 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       setNowPlayingTrack(currentlyPlayingTrack);
       setIsListening(currentlyPlayingTrack.is_playing);
 
-      // Adjust polling speed based on playback state
-      if (currentlyPlayingTrack.is_playing) {
-        setRefreshInterval(5000); // Poll every 5s when playing
-      } else {
-        setRefreshInterval(15000); // Poll every 15s when paused (save bandwidth)
-      }
+      // Keep consistent 5s polling for responsive UI
+      setRefreshInterval(5000);
     } else {
       // Don't clear nowPlayingTrack - keep it to show last played song
       // Only update the listening state
       setIsListening(false);
-      setRefreshInterval(15000); // Slow down when nothing is playing
+      setRefreshInterval(5000); // Keep 5s polling for responsive updates
     }
   }, [currentlyPlayingTrack]);
 

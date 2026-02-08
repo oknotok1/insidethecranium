@@ -65,6 +65,12 @@ export default function HeroSection() {
       <HeroBackground />
 
       <div className={styles.content}>
+        <div className={styles.listeningLabel}>
+          {isListening
+            ? "I'm currently listening to"
+            : lastPlayedTimeForLabel || "Last played"}
+        </div>
+
         <AlbumArtwork artwork={songData.albumArtwork} album={songData.album} />
 
         <SongInfo
@@ -135,12 +141,6 @@ const SongInfo = ({
   lastPlayedTime?: string;
 }) => (
   <>
-    <div className={styles.listeningLabel}>
-      {isListening
-        ? "I'm currently listening to"
-        : lastPlayedTime || "Last played"}
-    </div>
-
     <h1 className={styles.title}>{title}</h1>
 
     <p className={styles.artist}>{artist}</p>

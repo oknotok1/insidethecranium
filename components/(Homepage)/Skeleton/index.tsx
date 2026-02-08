@@ -1,6 +1,6 @@
 export default function HomepageSectionSkeleton() {
   return (
-    <section className="py-12 sm:py-16 lg:py-20 bg-gray-50 dark:bg-white/[0.02]">
+    <section className="py-12 sm:py-16 lg:py-20 bg-gray-50 dark:bg-white/2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 sm:mb-12">
           <div className="h-8 sm:h-10 w-64 bg-gray-200 dark:bg-white/10 rounded-lg animate-pulse mb-3"></div>

@@ -1,5 +1,5 @@
 import { cache } from "react";
-import PlaylistCard from "@/components/PlaylistCard";
+import PlaylistsGrid from "@/components/PlaylistsGrid";
 import { UserPlaylists } from "@/types/spotify";
 import { logger } from "@/utils/logger";
 
@@ -11,10 +11,11 @@ export const metadata = {
 // Cache page for 24 hours (static content)
 export const revalidate = 86400;
 
-const getAllPlaylists = cache(async (): Promise<UserPlaylists> => {
+const getInitialPlaylists = cache(async (): Promise<UserPlaylists> => {
   try {
+    // Fetch first batch with genres (10 playlists)
     const playlistsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=50`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=10&offset=0&includeGenres=true`,
       {
         next: {
           revalidate: 86400, // Cache for 24 hours
@@ -29,7 +30,7 @@ const getAllPlaylists = cache(async (): Promise<UserPlaylists> => {
       if (!data.error && data.items) {
         logger.success(
           "Playlists Page",
-          `Loaded ${data.items.length} playlists from cache`,
+          `Loaded initial ${data.items.length} playlists`,
         );
         return data;
       }
@@ -53,7 +54,7 @@ const getAllPlaylists = cache(async (): Promise<UserPlaylists> => {
 });
 
 export default async function PlaylistsPage() {
-  const playlists = await getAllPlaylists();
+  const initialData = await getInitialPlaylists();
 
   return (
     <main className="flex flex-col">
@@ -65,19 +66,18 @@ export default async function PlaylistsPage() {
             </h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               I have curated{" "}
-              <strong>{playlists.total || playlists.items.length}</strong>{" "}
+              <strong>{initialData.total}</strong>{" "}
               playlists thus far. They're mostly grouped by genres, and or
               moods. I know it's excessive, but I can't help it. I'll be
               creating a directory soon to help you navigate through them.
             </p>
           </div>
 
-          {playlists.items.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-              {playlists.items.map((playlist) => (
-                <PlaylistCard key={playlist.id} playlist={playlist} />
-              ))}
-            </div>
+          {initialData.items.length > 0 ? (
+            <PlaylistsGrid
+              initialPlaylists={initialData.items}
+              totalCount={initialData.total}
+            />
           ) : (
             <p className="text-gray-600 dark:text-gray-400 text-center py-12">
               No playlists available at the moment.

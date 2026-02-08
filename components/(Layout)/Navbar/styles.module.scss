@@ -40,7 +40,7 @@
 .mobileMenuButton {
   @apply lg:hidden p-2 -ml-2;
   @apply transition-colors;
-  @apply flex-shrink-0;
+  @apply shrink-0;
 }
 
 .themeToggle {

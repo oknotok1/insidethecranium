@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   try {
     // Get access token
     const tokenResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/token`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/auth/token`,
       {
         method: "GET",
         next: { revalidate: 3000 }, // Token cache

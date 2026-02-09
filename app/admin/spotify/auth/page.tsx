@@ -6,7 +6,7 @@ export default function SpotifyAuthPage() {
   // Note: CLIENT_ID is public and safe to expose (it's used in browser anyway)
   const [clientId] = useState(process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "");
   const [redirectUri] = useState(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/callback`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/auth/callback`,
   );
 
   const scopes = [

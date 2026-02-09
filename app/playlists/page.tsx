@@ -15,7 +15,7 @@ const getInitialPlaylists = cache(async (): Promise<UserPlaylists> => {
   try {
     // Fetch first batch with genres (10 playlists)
     const playlistsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=10&offset=0&includeGenres=true`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/playlists?limit=10&offset=0&includeGenres=true`,
       {
         next: {
           revalidate: 86400, // Cache for 24 hours

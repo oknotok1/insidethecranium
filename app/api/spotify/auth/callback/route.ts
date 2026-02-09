@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
           
           async function exchangeToken() {
             try {
-              const response = await fetch('/api/exchange-token', {
+              const response = await fetch('/api/spotify/auth/exchange', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

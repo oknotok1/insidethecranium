@@ -106,7 +106,7 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       .then((data) => data.access_token);
 
   const { data: accessToken } = useSWR<string>(
-    "/api/spotify/token",
+    "/api/spotify/auth/token",
     tokenFetcher,
     {
       refreshInterval: 3600000, // 1 hour in milliseconds
@@ -148,7 +148,7 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       });
 
   const { data: currentlyPlayingTrack, isLoading: isLoadingCurrentlyPlaying } = useSWR(
-    accessToken ? "/api/spotify/currently-playing" : null,
+    accessToken ? "/api/spotify/player/currently-playing" : null,
     trackFetcher,
     {
       refreshInterval: 5000, // 5s polling for responsive UI
@@ -190,7 +190,7 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   // Fetch recently played track (cached indefinitely, invalidated on-demand)
   const { data: recentlyPlayed, mutate: mutateRecentlyPlayed, isLoading: isLoadingRecentlyPlayed } = useSWR(
-    accessToken ? "/api/spotify/recently-played" : null,
+    accessToken ? "/api/spotify/player/recently-played" : null,
     recentlyPlayedFetcher,
     {
       revalidateOnMount: true,
@@ -247,7 +247,7 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     if (!isListening && accessToken) {
       const timer = setTimeout(() => {
-        import("@/app/actions/revalidate").then(
+        import("../app/actions/revalidate").then(
           ({ invalidateRecentlyPlayed }) => invalidateRecentlyPlayed(),
         );
         mutateRecentlyPlayed();

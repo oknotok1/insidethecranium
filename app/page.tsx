@@ -23,7 +23,7 @@ const getData = cache(async () => {
 
   try {
     const playlistsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/playlists?limit=50`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/playlists?limit=50`,
       {
         next: {
           revalidate: 86400, // Cache for 24 hours

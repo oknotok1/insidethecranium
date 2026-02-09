@@ -31,8 +31,8 @@ export function getSpotifyAuthUrl(clientId: string, redirectUri: string) {
 export function logAuthUrl() {
   const clientId = process.env.SPOTIFY_CLIENT_ID || "YOUR_CLIENT_ID";
   const redirectUri = process.env.NEXT_PUBLIC_BASE_URL
-    ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/callback`
-    : "http://127.0.0.1:3000/api/callback";
+    ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/auth/callback`
+    : "http://127.0.0.1:3000/api/spotify/auth/callback";
 
   const url = getSpotifyAuthUrl(clientId, redirectUri);
   return url;

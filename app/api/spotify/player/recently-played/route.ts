@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    logger.success("Recently Played API", "Cached recently played track");
+    logger.success("Recently Played API", "✓ Cached recently played track");
     return NextResponse.json(data);
   } catch (err: any) {
     logger.error("Recently Played API", `Fatal error: ${err.message}`);

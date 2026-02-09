@@ -39,7 +39,7 @@ export default function PlaylistsGrid({
         try {
           // Skip genre fetching for client-side batches to avoid rate limiting
           const response = await fetch(
-            `/api/playlists?limit=${BATCH_SIZE}&offset=${currentOffset}&includeGenres=false`,
+            `/api/spotify/playlists?limit=${BATCH_SIZE}&offset=${currentOffset}&includeGenres=false`,
           );
 
           if (!response.ok) {

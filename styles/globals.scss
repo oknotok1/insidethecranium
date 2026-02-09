@@ -28,7 +28,7 @@ body {
 }
 
 main {
-  min-height: calc(100svh - 346px); // Full height minus estimated footer height
+  min-height: calc(100svh - 4rem); // Full height minus estimated footer height
   padding-top: 4rem; // Account for fixed navbar height (h-16 = 4rem = 64px)
 
   // Remove padding for pages with full-height hero

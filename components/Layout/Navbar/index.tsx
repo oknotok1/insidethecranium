@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Music, Menu, X } from "lucide-react";
 import ThemeToggle from "@/components/Theme/ThemeToggle";
-import NowPlaying from "@/components/(Layout)/Navbar/NowPlaying";
+import NowPlaying from "@/components/Layout/Navbar/NowPlaying";
 import { getNavbarLinks, NavigationLink } from "@/lib/navigation";
 import styles from "./styles.module.scss";
 

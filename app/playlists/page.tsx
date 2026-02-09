@@ -1,5 +1,5 @@
 import { cache } from "react";
-import PlaylistsGrid from "@/components/PlaylistsGrid";
+import PlaylistsGrid from "@/components/Playlists/PlaylistsGrid";
 import { UserPlaylists } from "@/types/spotify";
 import { logger } from "@/utils/logger";
 

@@ -4,10 +4,10 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { AppContext } from "@/contexts/AppContext";
 import ThemeProvider from "@/components/Theme/ThemeProvider";
-import Navbar from "@/components/(Layout)/Navbar";
-import Footer from "@/components/(Layout)/Footer";
-import WebPlayerControls from "@/components/WebPlayerControls";
-import ScrollToTop from "@/components/ScrollToTop";
+import Navbar from "@/components/Layout/Navbar";
+import Footer from "@/components/Layout/Footer";
+import WebPlayerControls from "@/components/Music/WebPlayerControls";
+import ScrollToTop from "@/components/common/ScrollToTop";
 
 export const metadata = {
   title: "Inside The Cranium",

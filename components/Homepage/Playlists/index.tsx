@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PlaylistCard from "@/components/PlaylistCard";
+import PlaylistCard from "@/components/Playlists/PlaylistCard";
 import { ArrowRight } from "lucide-react";
 import { UserPlaylists } from "@/types/spotify";
 

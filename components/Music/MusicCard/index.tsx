@@ -1,5 +1,5 @@
 import { Play } from "lucide-react";
-import { ImageWithFallback } from "@/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 
 interface MusicCardProps {
   title: string;

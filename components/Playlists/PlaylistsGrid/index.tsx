@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import PlaylistCard from "@/components/PlaylistCard";
+import PlaylistCard from "@/components/Playlists/PlaylistCard";
 import { Item as SpotifyPlaylist } from "@/types/spotify";
 import { Loader2 } from "lucide-react";
 

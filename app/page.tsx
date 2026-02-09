@@ -1,9 +1,9 @@
 import { cache } from "react";
 import * as contentful from "contentful";
-import HeroSection from "@/components/(Homepage)/Hero";
-import CuratedSongs from "@/components/(Homepage)/CuratedSongs";
-import Playlists from "@/components/(Homepage)/Playlists";
-import HomepageSectionSkeleton from "@/components/(Homepage)/Skeleton";
+import HeroSection from "@/components/Homepage/Hero";
+import CuratedSongs from "@/components/Homepage/CuratedSongs";
+import Playlists from "@/components/Homepage/Playlists";
+import HomepageSectionSkeleton from "@/components/Homepage/Skeleton";
 import { logger } from "@/utils/logger";
 
 // Cache page for 24 hours (static content that rarely changes)

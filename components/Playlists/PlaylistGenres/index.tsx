@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ImageWithFallback } from "@/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { Music } from "lucide-react";
 
 interface Track {

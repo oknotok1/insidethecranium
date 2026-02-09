@@ -2,9 +2,9 @@ import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Music, Clock, User, ExternalLink } from "lucide-react";
-import { ImageWithFallback } from "@/figma/ImageWithFallback";
-import PlaylistGenres from "@/components/PlaylistGenres";
-import PlaylistArtists from "@/components/PlaylistArtists";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
+import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
+import PlaylistArtists from "@/components/Playlists/PlaylistArtists";
 import { logger } from "@/utils/logger";
 import { SPOTIFY_API } from "@/utils/spotify";
 

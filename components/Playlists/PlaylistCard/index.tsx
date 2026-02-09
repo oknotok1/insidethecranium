@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Item as SpotifyPlaylist } from "@/types/spotify";
 import { Music } from "lucide-react";
-import { ImageWithFallback } from "@/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 
 interface PlaylistCardProps {
   playlist: SpotifyPlaylist;

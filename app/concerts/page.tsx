@@ -1,4 +1,4 @@
-import ComingSoon from "@/components/ComingSoon";
+import ComingSoon from "@/components/common/ComingSoon";
 
 export const metadata = {
   title: "Concert Memories - Inside The Cranium",

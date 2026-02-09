@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import MusicCard from "@/components/MusicCard";
+import MusicCard from "@/components/Music/MusicCard";
 
 interface TrackWithGenres {
   id: string;

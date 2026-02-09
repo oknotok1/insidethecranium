@@ -12,7 +12,7 @@ import React, {
   useEffect,
 } from "react";
 import useSWR from "swr";
-import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
+import { useSpotifyPlayer } from "./hooks/useSpotifyPlayer";
 
 // Define interfaces for context state
 export interface NowPlayingTrack {

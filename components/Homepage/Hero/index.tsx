@@ -3,7 +3,7 @@
 import { ExternalLink, Music2 } from "lucide-react";
 import React, { useEffect } from "react";
 import { useAppContext } from "@/contexts/AppContext";
-import { ImageWithFallback } from "@/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { HeroBackground } from "./Background";
 import { HeroSkeleton } from "./HeroSkeleton";
 import { useTrackGenres } from "./hooks/useTrackGenres";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Play } from "lucide-react";
 import { useAppContext } from "@/contexts/AppContext";
 import styles from "./styles.module.scss";
@@ -67,7 +68,7 @@ export default function NowPlaying({ className }: NowPlayingProps) {
         {/* Popover - child of wrapper for proper positioning */}
         {isOpen && (
           <div
-            className="fixed left-1/2 -translate-x-1/2 top-[4.5rem] lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-full lg:mt-2 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-70 overflow-hidden"
+            className="fixed left-1/2 -translate-x-1/2 top-18 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-full lg:mt-2 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-70 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Background gradient */}
@@ -91,11 +92,13 @@ export default function NowPlaying({ className }: NowPlayingProps) {
               {/* Album Artwork */}
               {nowPlayingTrack?.item?.album?.images[0]?.url && (
                 <div className="flex justify-center mb-3">
-                  <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5 shadow-xl border border-gray-300/50 dark:border-white/10">
-                    <img
+                  <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5 shadow-xl border border-gray-300/50 dark:border-white/10">
+                    <Image
                       src={nowPlayingTrack?.item?.album?.images[0]?.url}
                       alt={nowPlayingTrack?.item?.album?.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="128px"
+                      className="object-cover"
                     />
                   </div>
                 </div>

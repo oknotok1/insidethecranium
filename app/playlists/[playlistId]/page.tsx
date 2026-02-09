@@ -408,12 +408,15 @@ export default async function PlaylistDetailPage({
 
             <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
               {/* Playlist Image */}
-              <div className="shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5">
+              <div className="relative shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5">
                 {playlist.images && playlist.images.length > 0 ? (
                   <ImageWithFallback
                     src={playlist.images[0].url}
                     alt={playlist.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -525,7 +528,7 @@ export default async function PlaylistDetailPage({
                     </div>
 
                     {/* Album Art */}
-                    <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
+                    <div className="relative shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
                       {track.album.images && track.album.images.length > 0 ? (
                         <ImageWithFallback
                           src={
@@ -533,7 +536,9 @@ export default async function PlaylistDetailPage({
                               .url
                           }
                           alt={track.album.name}
-                          className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                          fill
+                          sizes="(max-width: 640px) 40px, 48px"
+                          className="object-cover group-hover:scale-102 transition-transform duration-300"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

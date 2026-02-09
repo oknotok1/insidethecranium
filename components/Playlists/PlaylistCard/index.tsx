@@ -26,7 +26,9 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
         <ImageWithFallback
           src={imageUrl}
           alt={playlist.name}
-          className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className="object-cover group-hover:scale-102 transition-transform duration-300"
         />
       </div>
 

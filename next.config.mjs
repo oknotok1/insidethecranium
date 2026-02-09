@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
+      // Spotify CDN domains
       {
         protocol: 'https',
         hostname: 'image-cdn-fa.spotifycdn.com',
@@ -26,6 +27,15 @@ const nextConfig = {
         hostname: 'mosaic.scdn.co',
         port: '',
         pathname: '/**',
+      },
+      // External site favicons and images (for SiteCard)
+      {
+        protocol: 'https',
+        hostname: '**', // Allow all HTTPS domains for site favicons
+      },
+      {
+        protocol: 'http',
+        hostname: '**', // Allow all HTTP domains for site favicons
       },
     ],
   },

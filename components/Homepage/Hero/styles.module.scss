@@ -19,7 +19,7 @@
     @apply mb-5 sm:mb-6 lg:mb-8;
 
     .albumArtwork {
-      @apply flex;
+      @apply relative flex;
       @apply w-48 h-48 sm:w-64 sm:h-64;
       @apply rounded-lg overflow-hidden shadow-2xl;
       @apply bg-gray-200;
@@ -31,7 +31,7 @@
       }
 
       .albumImage {
-        @apply w-full h-full object-cover;
+        @apply object-cover;
       }
     }
   }

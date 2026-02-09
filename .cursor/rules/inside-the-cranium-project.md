@@ -348,6 +348,59 @@ When creating or modifying UI components, **always**:
 
 ## Performance & Optimization
 
+### Image Optimization
+1. **Next.js Image Component**:
+   - **Always** use `next/image` via `ImageWithFallback` component - never use raw `<img>` tags
+   - Provides automatic optimization, responsive images, lazy loading, and blur placeholders
+   - Significantly improves RES (Real Experience Score) and Core Web Vitals
+   - All external domains configured in `next.config.mjs` `remotePatterns`
+
+2. **ImageWithFallback Component** (`@/components/common/ImageWithFallback`):
+   - Wraps Next.js Image with error handling and fallback to placeholder
+   - **Required props**:
+     - `src`: Image URL
+     - `alt`: Alt text
+     - `fill` OR `width`/`height`: Choose based on container
+   - **Recommended props**:
+     - `sizes`: Responsive sizes hint (e.g., `"(max-width: 640px) 50vw, 33vw"`)
+     - `priority`: Set to `true` for above-the-fold images (Hero, first section)
+   ```tsx
+   // For aspect-ratio containers (most common)
+   <div className="relative aspect-square">
+     <ImageWithFallback
+       src={imageUrl}
+       alt="Description"
+       fill
+       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+       className="object-cover"
+     />
+   </div>
+   
+   // For fixed dimensions
+   <ImageWithFallback
+     src={imageUrl}
+     alt="Description"
+     width={256}
+     height={256}
+     className="object-cover"
+   />
+   
+   // Above-the-fold (Hero)
+   <ImageWithFallback
+     src={heroImage}
+     alt="Hero"
+     fill
+     priority
+     sizes="256px"
+   />
+   ```
+
+3. **Image Loading Strategy**:
+   - **Priority images**: Hero image, above-the-fold content (`priority={true}`)
+   - **Lazy loading**: All other images (default Next.js behavior)
+   - **External images**: Proxied through `/api/screenshot` for site previews to avoid CORS
+   - **Unoptimized**: Use `unoptimized={true}` for already-optimized external APIs
+
 ### Caching Strategy
 1. **Next.js Data Cache**:
    - Use `revalidate` for time-based invalidation

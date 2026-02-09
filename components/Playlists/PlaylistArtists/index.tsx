@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 interface ArtistData {
   id: string;
@@ -37,18 +38,23 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
               rel="noopener noreferrer"
               className="flex flex-col items-center text-center space-y-2 p-3 sm:p-4 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
             >
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center bg-linear-to-br from-[#3d38f5]/20 to-[#8b87ff]/10">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center bg-linear-to-br from-[#3d38f5]/20 to-[#8b87ff]/10">
                 {artist.image ? (
-                  <img
+                  <Image
                     src={artist.image}
                     alt={artist.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 80px, 96px"
+                    className="object-cover"
                   />
                 ) : (
-                  <img
+                  <Image
                     src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(artist.name)}&backgroundColor=3d38f5`}
                     alt={artist.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 80px, 96px"
+                    className="object-cover"
+                    unoptimized
                   />
                 )}
               </div>

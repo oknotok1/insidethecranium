@@ -112,6 +112,9 @@ const AlbumArtwork = ({
           <ImageWithFallback
             src={artwork}
             alt={`${album} album artwork`}
+            fill
+            priority
+            sizes="(max-width: 640px) 192px, 256px"
             className={styles.albumImage}
           />
         </div>

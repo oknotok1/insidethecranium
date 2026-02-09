@@ -21,7 +21,7 @@
  * 3. DuckDuckGo favicon - Alternative favicon source
  * 4. Microlink screenshot API - Full page screenshot (fallback if favicons fail)
  * 5. Globe icon fallback - Always works if all external sources fail
- * 
+ *
  * The system automatically cascades through these sources on error, ensuring
  * every site has a visual representation even if preferred sources fail.
  */
@@ -77,11 +77,12 @@ export const recommendedSites: RecommendedSite[] = [
   },
   {
     id: "reddit-spotify-playlists",
-    name: "Spotify Genre Playlists (Reddit)",
+    name: "Particle Detector (Spotify)",
     description:
       "Massive collection of 14,000+ Spotify-created genre playlists. Perfect supplement to Every Noise at Once for discovering niche genres.",
     url: "https://www.reddit.com/r/spotify/comments/4r3r1c/massive_dump_of_spotify_created_playlists_14k/",
     tags: ["Discovery"],
+    featured: true,
   },
   {
     id: "chosic",
@@ -101,8 +102,8 @@ export const recommendedSites: RecommendedSite[] = [
       "My primary music streaming platform with excellent playlist curation and discovery features.",
     url: "https://spotify.com",
     tags: ["Streaming", "Discovery"],
-    featured: true,
-    imageUrl: "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png",
+    imageUrl:
+      "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/tify_Logo_RGB_Green.png",
   },
   {
     id: "soundcloud",
@@ -111,7 +112,8 @@ export const recommendedSites: RecommendedSite[] = [
       "Platform for discovering emerging artists and underground music.",
     url: "https://soundcloud.com",
     tags: ["Streaming", "Discovery"],
-    imageUrl: "https://developers.soundcloud.com/assets/logo_big_white-1e8e4f4d.png",
+    imageUrl:
+      "https://developers.soundcloud.com/assets/logo_big_white-1e8e4f4d.png",
   },
   {
     id: "nts-radio",
@@ -121,7 +123,8 @@ export const recommendedSites: RecommendedSite[] = [
     url: "https://www.nts.live/radio",
     tags: ["Streaming", "Community"],
     featured: true,
-    imageUrl: "https://assets-global.website-files.com/5c7fdbdd4e3feeee8dd96dd2/6123a91c9e41ab0b45698e35_NTS_LOGO-p-500.png",
+    imageUrl:
+      "https://assets-global.website-files.com/5c7fdbdd4e3feeee8dd96dd2/6123a91c9e41ab0b45698e35_NTS_LOGO-p-500.png",
   },
   {
     id: "mixcloud",
@@ -130,7 +133,8 @@ export const recommendedSites: RecommendedSite[] = [
       "Platform for DJ mixes, radio shows, and podcasts. Listen to curated sets from DJs and radio hosts worldwide.",
     url: "https://www.mixcloud.com",
     tags: ["Streaming", "Community"],
-    imageUrl: "https://www.mixcloud.com/media/images/www/global/mixcloud-og.jpg",
+    imageUrl:
+      "https://www.mixcloud.com/media/images/www/global/mixcloud-og.jpg",
   },
   {
     id: "worldwide-fm",
@@ -140,7 +144,8 @@ export const recommendedSites: RecommendedSite[] = [
     url: "https://www.worldwidefm.net",
     tags: ["Streaming", "Community"],
     featured: true,
-    imageUrl: "https://assets-global.website-files.com/5e8e8f49d3c8a8e34e23a951/5e8eb504dba4d9656e0b1b2f_WWFM%20Logo%20Horizontal.png",
+    imageUrl:
+      "https://assets-global.website-files.com/5e8e8f49d3c8a8e34e23a951/5e8eb504dba4d9656e0b1b2f_WWFM%20Logo%20Horizontal.png",
   },
   {
     id: "poolsuite",
@@ -160,8 +165,8 @@ export const recommendedSites: RecommendedSite[] = [
       "Track your listening history and get personalized recommendations based on your scrobbling data.",
     url: "https://www.last.fm",
     tags: ["Analytics", "Discovery"],
-    featured: true,
-    imageUrl: "https://www.last.fm/static/images/lastfm_logo_facebook.15db3f5233d7.png",
+    imageUrl:
+      "https://www.last.fm/static/images/lastfm_logo_facebook.15db3f5233d7.png",
   },
   {
     id: "statsforspotify",
@@ -189,7 +194,6 @@ export const recommendedSites: RecommendedSite[] = [
       "Comprehensive music database and rating platform with active community discussions.",
     url: "https://rateyourmusic.com",
     tags: ["Community", "Discovery"],
-    featured: true,
   },
   {
     id: "derrick-gee",
@@ -198,7 +202,6 @@ export const recommendedSites: RecommendedSite[] = [
       "Professional music fan and tastemaker. Weekly Solid Air show, curated playlists, and trusted insights spanning music, hi-fi, and culture.",
     url: "https://www.derrickgee.com",
     tags: ["Community", "Discovery"],
-    featured: true,
   },
 
   // Commented out for now - may add later

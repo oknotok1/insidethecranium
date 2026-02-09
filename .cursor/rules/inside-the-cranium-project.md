@@ -161,8 +161,8 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
      - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, black 2%, transparent)` (darker tier)
      - Homepage hero: transparent (no background)
    - **Dark mode**: Automatic alternating 2-tier pattern using `color-mix`:
-     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, white 2.5%, transparent)` (light tier)
-     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, white 5%, transparent)` (darker tier)
+     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, white 4%, transparent)` (light tier)
+     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, white 6%, transparent)` (darker tier)
      - Homepage hero: transparent (no background)
    - **Card backgrounds**: `bg-gray-100 dark:bg-white/5` at rest, becomes `bg-gray-200 dark:bg-white/10` on hover for subtle feedback (matches legacy design)
    - **Card shadows**: Custom `shadow-card` (ultra-subtle: `0 1px 2px 0 rgba(0, 0, 0, 0.03)`) - stays consistent

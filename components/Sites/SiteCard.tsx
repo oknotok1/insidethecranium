@@ -22,12 +22,12 @@ export default function SiteCard({ site }: SiteCardProps) {
       >
         {/* Featured Badge */}
         {site.featured && (
-          <div className="absolute top-3 right-3 z-10">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
             <div
               className="p-1 rounded-full backdrop-blur-sm"
               style={{ backgroundColor: "rgba(61, 56, 245, 0.9)" }}
             >
-              <Star className="w-3.5 h-3.5 text-white fill-white" />
+              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white fill-white" />
             </div>
           </div>
         )}
@@ -40,20 +40,20 @@ export default function SiteCard({ site }: SiteCardProps) {
           preferFavicon={site.preferFavicon}
         />
 
-        {/* Content - M3 spacing: 8dp base unit (2 in Tailwind) */}
-        <div className="flex-1 flex flex-col p-4">
-          {/* Title - M3: 16sp */}
-          <h3 className="font-semibold text-base leading-tight text-gray-900 dark:text-white group-hover:text-[#3d38f5] dark:group-hover:text-[#8b87ff] transition-colors line-clamp-1 mb-2">
+        {/* Content */}
+        <div className="flex-1 flex flex-col p-3 sm:p-4">
+          {/* Title */}
+          <h3 className="font-medium text-sm sm:text-base leading-tight text-gray-900 dark:text-white group-hover:text-[#3d38f5] dark:group-hover:text-[#8b87ff] transition-colors line-clamp-1 mb-2">
             {site.name}
           </h3>
 
-          {/* Description - M3: 14sp, 8dp spacing from title */}
-          <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400 line-clamp-3 mb-4 flex-1">
+          {/* Description */}
+          <p className="text-xs sm:text-sm leading-relaxed text-gray-600 dark:text-gray-400 line-clamp-2 sm:line-clamp-3 mb-3 flex-1">
             {site.description}
           </p>
 
-          {/* Tags - M3: 12dp spacing from description, 8dp gap between chips */}
-          <div className="flex flex-wrap gap-2 mb-4">
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
             {site.tags.map((tag) => (
               <span
                 key={tag}
@@ -64,18 +64,18 @@ export default function SiteCard({ site }: SiteCardProps) {
             ))}
           </div>
 
-          {/* URL Footer - M3: 12sp, 12dp spacing from tags */}
+          {/* URL Footer */}
           <a
             href={site.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-white/10 group/link"
+            className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-200 dark:border-white/10 group/link"
             onClick={(e) => e.stopPropagation()}
           >
             <span className="text-xs text-gray-500 dark:text-gray-500 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] transition-colors truncate flex-1">
               {new URL(site.url).hostname.replace("www.", "")}
             </span>
-            <ExternalLink className="w-4 h-4 text-gray-400 dark:text-gray-600 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] group-hover/link:translate-x-1 transition-all shrink-0 ml-2" />
+            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-600 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] group-hover/link:translate-x-1 transition-all shrink-0 ml-2" />
           </a>
         </div>
       </InteractiveCard>

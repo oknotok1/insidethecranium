@@ -25,7 +25,7 @@ interface TimestampProps {
 }
 
 export default function HeroSection() {
-  const { nowPlayingTrack, recentlyPlayedTrack, isListening, accessToken } =
+  const { nowPlayingTrack, recentlyPlayedTrack, isListening, accessToken, isLoadingInitialData } =
     useAppContext();
 
   // Get the track to display (current or last played)
@@ -61,9 +61,9 @@ export default function HeroSection() {
   // Extract song data for display
   const songData = extractSongData(displayTrack, isListening, nowPlayingTrack);
 
-  // Show skeleton while loading data
+  // Show skeleton while loading initial data or if no track is available yet
   // Since skeleton has no dynamic content, it's safe for SSR
-  if (!displayTrack) return <HeroSkeleton />;
+  if (isLoadingInitialData || !displayTrack) return <HeroSkeleton />;
 
   return (
     <section id="now-playing" className={styles.heroSection}>
@@ -154,7 +154,9 @@ const SongInfo = ({
 
     <Metadata {...metadata} progress={progress} />
 
-    {spotifyUrl && <SpotifyLink url={spotifyUrl} />}
+    <div className={styles.spotifyLinkContainer} style={{ minHeight: spotifyUrl ? undefined : '2.5rem' }}>
+      {spotifyUrl && <SpotifyLink url={spotifyUrl} />}
+    </div>
   </>
 );
 
@@ -162,11 +164,9 @@ const Metadata = ({
   genres,
   duration,
 }: SongMetadata & { progress?: string }) => {
-  if (!genres || genres.length === 0) return null;
-
   return (
-    <div className={styles.metadata}>
-      {genres.map((genre, index) => (
+    <div className={styles.metadata} style={{ minHeight: genres?.length ? undefined : '1.5rem' }}>
+      {genres && genres.length > 0 && genres.map((genre, index) => (
         <React.Fragment key={index}>
           <span key={genre}>{genre}</span>
           {index < genres.length - 1 && (
@@ -187,17 +187,15 @@ const Metadata = ({
 };
 
 const SpotifyLink = ({ url }: { url: string }) => (
-  <div className={styles.spotifyLinkContainer}>
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={styles.spotifyLink}
-    >
-      <span>Listen on Spotify</span>
-      <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-    </a>
-  </div>
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={styles.spotifyLink}
+  >
+    <span>Listen on Spotify</span>
+    <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+  </a>
 );
 
 const Timestamp = ({ date, time, isLive = false }: TimestampProps) => {

@@ -61,6 +61,7 @@ interface AppContextType {
   recentlyPlayedTrack: RecentlyPlayedTrack | null;
   accessToken: string | undefined;
   nowPlayingGenres: string[];
+  isLoadingInitialData: boolean;
   // Web Player SDK
   webPlayer: {
     isReady: boolean;
@@ -85,6 +86,7 @@ const MyContext = createContext<AppContextType>({
   recentlyPlayedTrack: null,
   accessToken: undefined,
   nowPlayingGenres: [],
+  isLoadingInitialData: true,
   webPlayer: null,
   enableWebPlayer: false,
   setEnableWebPlayer: () => {},
@@ -93,19 +95,9 @@ const MyContext = createContext<AppContextType>({
 // Create a provider component
 export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isListening, setIsListening] = useState<boolean>(false);
-  const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
   const [nowPlayingTrack, setNowPlayingTrack] =
     useState<NowPlayingTrack | null>(null);
-  const [recentlyPlayedTrack, setRecentlyPlayedTrack] =
-    useState<RecentlyPlayedTrack | null>(null);
   const [enableWebPlayer, setEnableWebPlayer] = useState<boolean>(false);
-  const [nowPlayingGenres, setNowPlayingGenres] = useState<string[]>([]);
-  const [previousTrackId, setPreviousTrackId] = useState<string | null>(null);
-
-  // Initialize Spotify Web Player SDK only when enabled
-  const spotifyPlayer = useSpotifyPlayer(
-    enableWebPlayer ? accessToken : undefined,
-  );
 
   // Fetch access token using native fetch
   const tokenFetcher = (url: string) =>
@@ -113,7 +105,7 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       .then((res) => res.json())
       .then((data) => data.access_token);
 
-  const { data: fetchedAccessToken } = useSWR<string>(
+  const { data: accessToken } = useSWR<string>(
     "/api/spotify/token",
     tokenFetcher,
     {
@@ -121,12 +113,10 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     },
   );
 
-  // Update access token when a new one is fetched
-  useEffect(() => {
-    if (fetchedAccessToken) {
-      setAccessToken(fetchedAccessToken);
-    }
-  }, [fetchedAccessToken]);
+  // Initialize Spotify Web Player SDK only when enabled
+  const spotifyPlayer = useSpotifyPlayer(
+    enableWebPlayer ? accessToken : undefined,
+  );
 
   // Fetch currently playing track using native fetch
   const trackFetcher = (url: string) =>
@@ -153,36 +143,24 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
         return null;
       });
 
-  // Dynamic polling: faster when listening, slower when idle
-  const [refreshInterval, setRefreshInterval] = useState(5000);
-
-  const { data: currentlyPlayingTrack } = useSWR(
-    "/api/spotify/currently-playing",
+  const { data: currentlyPlayingTrack, isLoading: isLoadingCurrentlyPlaying } = useSWR(
+    accessToken ? "/api/spotify/currently-playing" : null,
     trackFetcher,
     {
-      refreshInterval, // Dynamic refresh interval
-      // Only refresh when window is focused
+      refreshInterval: 5000, // 5s polling for responsive UI
       refreshWhenHidden: false,
-      // Only refresh when online
       refreshWhenOffline: false,
+      onSuccess: (data) => {
+        if (data) {
+          setNowPlayingTrack(data);
+          setIsListening(data.is_playing);
+        } else {
+          // Don't clear nowPlayingTrack - keep it to show last played song
+          setIsListening(false);
+        }
+      },
     },
   );
-
-  // Update now playing state
-  useEffect(() => {
-    if (currentlyPlayingTrack) {
-      setNowPlayingTrack(currentlyPlayingTrack);
-      setIsListening(currentlyPlayingTrack.is_playing);
-
-      // Keep consistent 5s polling for responsive UI
-      setRefreshInterval(5000);
-    } else {
-      // Don't clear nowPlayingTrack - keep it to show last played song
-      // Only update the listening state
-      setIsListening(false);
-      setRefreshInterval(5000); // Keep 5s polling for responsive updates
-    }
-  }, [currentlyPlayingTrack]);
 
   // Separate fetcher for recently played (fails silently)
   const recentlyPlayedFetcher = (url: string) =>
@@ -200,125 +178,73 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       .catch(() => null); // Fail silently
 
   // Fetch recently played track (cached indefinitely, invalidated on-demand)
-  const { data: recentlyPlayed, mutate: mutateRecentlyPlayed } = useSWR(
-    "/api/spotify/recently-played",
+  const { data: recentlyPlayed, mutate: mutateRecentlyPlayed, isLoading: isLoadingRecentlyPlayed } = useSWR(
+    accessToken ? "/api/spotify/recently-played" : null,
     recentlyPlayedFetcher,
     {
-      revalidateOnMount: true, // Fetch on mount
-      revalidateOnFocus: false, // Don't refetch on focus
-      revalidateOnReconnect: false, // Don't refetch on reconnect
-      shouldRetryOnError: false, // Don't retry on error
-      // No refreshInterval - cache is used until explicitly invalidated
+      revalidateOnMount: true,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: false,
     },
   );
 
-  // Update recently played state
-  useEffect(() => {
-    if (recentlyPlayed) {
-      setRecentlyPlayedTrack(recentlyPlayed);
-    }
-  }, [recentlyPlayed]);
-
-  // Fetch genres for currently playing track
-  useEffect(() => {
-    const fetchGenres = async () => {
-      if (!nowPlayingTrack?.item?.artists?.length || !accessToken) {
-        setNowPlayingGenres([]);
-        return;
-      }
-
-      try {
-        const artistIds = nowPlayingTrack.item.artists
-          .map((a) => a.id)
-          .join(",");
-        const response = await fetch(
-          `/api/spotify/artists/genres?artistIds=${artistIds}`,
-          {
-            headers: accessToken
-              ? {
-                  access_token: accessToken,
-                }
-              : {},
-          },
-        );
-
-        if (!response.ok) {
-          // Log but don't throw - handle gracefully
-          console.warn(
-            `[AppContext] Genre API returned ${response.status}, falling back to no genres`,
-          );
-          setNowPlayingGenres([]);
-          return;
+  // Genre fetcher
+  const genreFetcher = (url: string) =>
+    fetch(url, {
+      headers: accessToken ? { access_token: accessToken } : {},
+    })
+      .then((res) => {
+        if (!res.ok) {
+          console.warn(`[AppContext] Genre API returned ${res.status}`);
+          return null;
         }
-
-        const data = await response.json();
-
-        // Handle case where API returns error with empty artists array
-        if (!data.artists || data.artists.length === 0) {
-          console.warn("[AppContext] No artists data returned for now playing");
-          setNowPlayingGenres([]);
-          return;
-        }
-
-        // Collect all unique genres from all artists, limit to 3
+        return res.json();
+      })
+      .then((data) => {
+        if (!data?.artists || data.artists.length === 0) return [];
         const allGenres = data.artists.flatMap(
           (artist: any) => artist.genres || [],
         );
-        const uniqueGenres = [...new Set<string>(allGenres as string[])].slice(
-          0,
-          3,
-        );
-        setNowPlayingGenres(uniqueGenres);
-      } catch (error: any) {
-        console.error("[AppContext] Failed to fetch genres:", error.message);
-        setNowPlayingGenres([]); // Gracefully degrade to no genres
-      }
-    };
+        return [...new Set<string>(allGenres as string[])].slice(0, 3);
+      })
+      .catch(() => []);
 
-    fetchGenres();
-  }, [nowPlayingTrack?.item?.id, accessToken]);
+  // Fetch genres for currently playing track
+  const artistIds = nowPlayingTrack?.item?.artists?.map((a) => a.id).join(",");
+  const { data: nowPlayingGenres = [] } = useSWR(
+    artistIds && accessToken
+      ? `/api/spotify/artists/genres?artistIds=${artistIds}`
+      : null,
+    genreFetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 60000, // Cache genres for 1 minute
+    },
+  );
 
-  // Invalidate recently played cache when track changes
-  useEffect(() => {
-    const currentTrackId = nowPlayingTrack?.item?.id;
+  // Derive loading state
+  const isLoadingInitialData = isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed;
 
-    if (currentTrackId && currentTrackId !== previousTrackId) {
-      // Track has changed - invalidate recently played cache
-      console.log(
-        "[AppContext] Track changed, invalidating recently-played cache",
-      );
-
-      // Import and call server action
-      import("@/app/actions/revalidate").then(
-        ({ invalidateRecentlyPlayed }) => {
-          invalidateRecentlyPlayed();
-        },
-      );
-
-      // Update tracking
-      setPreviousTrackId(currentTrackId);
-
-      // Trigger SWR revalidation after short delay
-      setTimeout(() => {
-        mutateRecentlyPlayed();
-      }, 2000);
-    }
-  }, [nowPlayingTrack?.item?.id, previousTrackId, mutateRecentlyPlayed]);
-
-  // When user stops listening, immediately fetch recently played
+  // Invalidate recently played when track changes or listening stops
   useEffect(() => {
     if (!isListening && accessToken) {
-      // Wait a moment for Spotify to register the track as played
       const timer = setTimeout(() => {
+        import("@/app/actions/revalidate").then(
+          ({ invalidateRecentlyPlayed }) => invalidateRecentlyPlayed(),
+        );
         mutateRecentlyPlayed();
-      }, 2000); // 2 second delay to ensure Spotify has updated
-
+      }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isListening, accessToken, mutateRecentlyPlayed]);
+  }, [nowPlayingTrack?.item?.id, isListening, accessToken, mutateRecentlyPlayed]);
 
-  // Track if web player is the active device
-  const [isWebPlayerActive, setIsWebPlayerActive] = useState(false);
+  // Derive if web player is the active device
+  const isWebPlayerActive =
+    currentlyPlayingTrack &&
+    spotifyPlayer.deviceId &&
+    currentlyPlayingTrack.device?.id === spotifyPlayer.deviceId;
 
   // Update state when SDK player state changes (only if web player is active)
   useEffect(() => {
@@ -349,27 +275,16 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [spotifyPlayer.playerState, isWebPlayerActive]);
 
-  // Check if current playback is from web player
-  useEffect(() => {
-    if (currentlyPlayingTrack && spotifyPlayer.deviceId) {
-      // Check if the current device matches our web player device ID
-      const isPlayingOnWebDevice =
-        currentlyPlayingTrack.device?.id === spotifyPlayer.deviceId;
-      setIsWebPlayerActive(isPlayingOnWebDevice);
-    } else {
-      setIsWebPlayerActive(false);
-    }
-  }, [currentlyPlayingTrack, spotifyPlayer.deviceId]);
-
   return (
     <MyContext.Provider
       value={{
         isListening,
         setIsListening,
         nowPlayingTrack,
-        recentlyPlayedTrack,
+        recentlyPlayedTrack: recentlyPlayed || null,
         accessToken,
         nowPlayingGenres,
+        isLoadingInitialData,
         enableWebPlayer,
         setEnableWebPlayer,
         webPlayer:

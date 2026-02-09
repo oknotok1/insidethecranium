@@ -2,22 +2,36 @@
 
 import { useState } from "react";
 import { Globe } from "lucide-react";
-import { getSiteImageSources } from "@/utils/site-image";
 
 interface SiteImageProps {
   url: string;
   name: string;
   customImageUrl?: string;
+  preferFavicon?: boolean;
 }
 
-export default function SiteImage({ url, name, customImageUrl }: SiteImageProps) {
+export default function SiteImage({ url, name, customImageUrl, preferFavicon }: SiteImageProps) {
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
   const [hasError, setHasError] = useState(false);
 
-  // Get all possible image sources
-  const imageSources = customImageUrl 
-    ? [{ type: "direct" as const, url: customImageUrl, priority: 0 }, ...getSiteImageSources(url)]
-    : getSiteImageSources(url);
+  const domain = new URL(url).hostname;
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
+  const screenshotUrl = `/api/screenshot?url=${encodeURIComponent(url)}`;
+  
+  // Build fallback chain based on preferFavicon flag
+  let imageSources: string[];
+  
+  if (customImageUrl) {
+    // Custom image always first
+    imageSources = preferFavicon
+      ? [customImageUrl, faviconUrl, screenshotUrl]
+      : [customImageUrl, screenshotUrl, faviconUrl];
+  } else {
+    // No custom image - use preferFavicon flag to determine order
+    imageSources = preferFavicon
+      ? [faviconUrl, screenshotUrl] // Favicon first for high-quality brand icons
+      : [screenshotUrl, faviconUrl]; // Screenshot first for most sites
+  }
 
   const currentSource = imageSources[currentSourceIndex];
 
@@ -26,7 +40,7 @@ export default function SiteImage({ url, name, customImageUrl }: SiteImageProps)
     if (currentSourceIndex < imageSources.length - 1) {
       setCurrentSourceIndex(currentSourceIndex + 1);
     } else {
-      // All sources failed, show fallback
+      // All sources failed, show globe
       setHasError(true);
     }
   };
@@ -37,7 +51,7 @@ export default function SiteImage({ url, name, customImageUrl }: SiteImageProps)
   };
 
   if (hasError || !currentSource) {
-    // Fallback UI when all image sources fail
+    // Final fallback: Globe icon
     return (
       <div className="relative w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/5 dark:to-white/10 flex items-center justify-center">
         <Globe className="w-12 h-12 text-gray-300 dark:text-gray-600" />
@@ -48,7 +62,7 @@ export default function SiteImage({ url, name, customImageUrl }: SiteImageProps)
   return (
     <div className="relative w-full aspect-video bg-gray-100 dark:bg-white/5 overflow-hidden">
       <img
-        src={currentSource.url}
+        src={currentSource}
         alt={`${name} preview`}
         className="w-full h-full object-contain p-4"
         onError={handleError}

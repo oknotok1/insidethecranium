@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import {
-  recommendedSites,
   getAllTags,
   getSitesByTag,
   getFeaturedSites,
+  getAllSitesInOrder,
   type SiteTag,
 } from "@/data/sites";
 import SiteCard from "./SiteCard";
@@ -15,22 +15,19 @@ export default function SitesContent() {
     SiteTag | "All" | "Featured"
   >("All");
   const tags = getAllTags();
+  const allSites = getAllSitesInOrder();
   const featuredSites = getFeaturedSites();
 
   // Get filtered sites based on selected tag
   const filteredSites =
     selectedTag === "All"
-      ? recommendedSites
+      ? allSites
       : selectedTag === "Featured"
         ? featuredSites
         : getSitesByTag(selectedTag);
 
-  // Sort to always show featured sites first
-  const displayedSites = [...filteredSites].sort((a, b) => {
-    if (a.featured && !b.featured) return -1;
-    if (!a.featured && b.featured) return 1;
-    return 0;
-  });
+  // Sites are already sorted by the helper functions according to recommendedSitesOrder
+  const displayedSites = filteredSites;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
@@ -61,7 +58,7 @@ export default function SitesContent() {
             }
           >
             All
-            <span className="ml-1.5 opacity-75">({recommendedSites.length})</span>
+            <span className="ml-1.5 opacity-75">({allSites.length})</span>
           </button>
           <button
             onClick={() => setSelectedTag("Featured")}

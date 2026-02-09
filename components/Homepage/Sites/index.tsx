@@ -1,22 +1,26 @@
 import Link from "next/link";
 import SiteCard from "@/components/Sites/SiteCard";
 import { ArrowRight } from "lucide-react";
-import { getFeaturedSites } from "@/data/sites";
+import { getFeaturedSites, getNonFeaturedSites } from "@/data/sites";
 
 export default function Sites() {
   const featuredSites = getFeaturedSites();
+  const nonFeaturedSites = getNonFeaturedSites();
 
   // Mobile: 4 sites (2 rows × 2 columns)
   // Desktop: 8 sites (2 rows × 4 columns)
   const mobileLimit = 4;
   const desktopLimit = 8;
 
+  // Combine featured and non-featured sites to ensure we have enough
+  const allSitesInOrder = [...featuredSites, ...nonFeaturedSites];
+
   // Safety check for sites data
-  if (!featuredSites || featuredSites.length === 0) {
+  if (!allSitesInOrder || allSitesInOrder.length === 0) {
     return null;
   }
 
-  const displayedSites = featuredSites.slice(0, desktopLimit);
+  const displayedSites = allSitesInOrder.slice(0, desktopLimit);
 
   return (
     <section className="py-12 sm:py-16 lg:py-20">

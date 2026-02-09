@@ -46,7 +46,7 @@ export default function SitesContent() {
         <div className="flex flex-wrap gap-2 sm:gap-3">
           <button
             onClick={() => setSelectedTag("All")}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 cursor-pointer ${
               selectedTag === "All"
                 ? "text-white shadow-lg scale-105"
                 : "bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10"
@@ -62,7 +62,7 @@ export default function SitesContent() {
           </button>
           <button
             onClick={() => setSelectedTag("Featured")}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 cursor-pointer ${
               selectedTag === "Featured"
                 ? "text-white shadow-lg scale-105"
                 : "bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10"
@@ -82,7 +82,7 @@ export default function SitesContent() {
               <button
                 key={tag}
                 onClick={() => setSelectedTag(tag)}
-                className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+                className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 cursor-pointer ${
                   selectedTag === tag
                     ? "text-white shadow-lg scale-105"
                     : "bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10"

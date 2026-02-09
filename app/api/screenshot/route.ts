@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const revalidate = 604800; // Cache for 7 days (1 week)
+export const maxDuration = 10; // Vercel function timeout
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -10,6 +11,10 @@ export async function GET(request: NextRequest) {
   if (!url) {
     return NextResponse.json({ error: "URL parameter is required" }, { status: 400 });
   }
+
+  // Create AbortController with 8-second timeout (leave 2s buffer for Vercel's 10s limit)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
 
   try {
     // First, get the screenshot URL from Microlink API
@@ -21,6 +26,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; InsideTheCranium/1.0)',
       },
+      signal: controller.signal,
       next: {
         revalidate: 604800, // Cache for 7 days
       },
@@ -67,6 +73,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; InsideTheCranium/1.0)',
       },
+      signal: controller.signal,
       next: {
         revalidate: 604800, // Cache for 7 days
       },
@@ -102,6 +109,9 @@ export async function GET(request: NextRequest) {
       );
     }
     
+    // Clear timeout once successful
+    clearTimeout(timeoutId);
+    
     // Return the image with proper headers
     return new NextResponse(imageBuffer, {
       status: 200,
@@ -111,6 +121,17 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    clearTimeout(timeoutId);
+    
+    // Handle timeout specifically
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error(`[Screenshot API] Timeout for ${url}`);
+      return NextResponse.json(
+        { error: "Screenshot service timed out" },
+        { status: 504 }
+      );
+    }
+    
     console.error(`[Screenshot API] Error for ${url}:`, error);
     return NextResponse.json(
       { error: "Failed to capture screenshot" },

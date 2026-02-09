@@ -5,6 +5,7 @@ import { ExternalLink, Star } from "lucide-react";
 import SiteImage from "./SiteImage";
 import SiteModal from "./SiteModal";
 import type { RecommendedSite } from "@/data/sites";
+import { InteractiveCard } from "@/components/common/Card";
 
 interface SiteCardProps {
   site: RecommendedSite;
@@ -15,9 +16,9 @@ export default function SiteCard({ site }: SiteCardProps) {
 
   return (
     <>
-      <div
-        className="group relative flex flex-col h-full overflow-hidden bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-lg hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
+      <InteractiveCard
         onClick={() => setIsModalOpen(true)}
+        className="h-full"
       >
         {/* Featured Badge */}
         {site.featured && (
@@ -77,7 +78,7 @@ export default function SiteCard({ site }: SiteCardProps) {
             <ExternalLink className="w-4 h-4 text-gray-400 dark:text-gray-600 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] group-hover/link:translate-x-1 transition-all shrink-0 ml-2" />
           </a>
         </div>
-      </div>
+      </InteractiveCard>
 
       {/* Modal */}
       <SiteModal

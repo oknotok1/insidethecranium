@@ -1,5 +1,6 @@
 import { Play } from "lucide-react";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
+import { Card } from "@/components/common/Card";
 
 interface MusicCardProps {
   title: string;
@@ -42,31 +43,23 @@ export default function MusicCard({
     </>
   );
 
-  const cardClasses =
-    "group block rounded-lg overflow-hidden bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-lg";
-
   if (spotifyUrl) {
     return (
-      <a
-        href={spotifyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cardClasses}
-      >
+      <Card as="anchor" href={spotifyUrl} target="_blank" rel="noopener noreferrer">
         {content}
-      </a>
+      </Card>
     );
   }
 
   if (onClick) {
     return (
-      <button onClick={onClick} className={`${cardClasses} w-full text-left`}>
+      <Card as="button" onClick={onClick}>
         {content}
-      </button>
+      </Card>
     );
   }
 
-  return <div className={cardClasses}>{content}</div>;
+  return <Card>{content}</Card>;
 }
 
 const AlbumArtwork = ({
@@ -81,7 +74,7 @@ const AlbumArtwork = ({
       <ImageWithFallback
         src={artwork}
         alt={`${title} artwork`}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
       />
     ) : (
       <div className="w-full h-full flex items-center justify-center">

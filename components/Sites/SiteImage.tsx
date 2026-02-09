@@ -64,7 +64,7 @@ export default function SiteImage({ url, name, customImageUrl, preferFavicon }: 
       <img
         src={currentSource}
         alt={`${name} preview`}
-        className="w-full h-full object-contain p-4"
+        className="w-full h-full object-contain p-4 group-hover:scale-102 transition-transform duration-300"
         onError={handleError}
         onLoad={handleLoad}
         loading="lazy"

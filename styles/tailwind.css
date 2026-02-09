@@ -123,6 +123,11 @@
 }
 
 @layer components {
+  /* Custom ultra-subtle card shadow for light mode */
+  .shadow-card {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  }
+
   /* Global Section Background Pattern - Alternating 2-Tier System */
 
   /* Light mode: alternating pattern */

@@ -14,7 +14,7 @@ export default function Loading() {
             {Array.from({ length: 20 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5"
+                className="rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-50 dark:border-white/[0.025] shadow-card"
               >
                 {/* Image Skeleton */}
                 <div className="aspect-square bg-gray-200 dark:bg-white/10 animate-pulse" />

@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { Item as SpotifyPlaylist } from "@/types/spotify";
 import { Music } from "lucide-react";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
+import { Card } from "@/components/common/Card";
 
 interface PlaylistCardProps {
   playlist: SpotifyPlaylist;
@@ -15,10 +15,7 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
   const playlistUrl = `/playlists/${playlist.id}`;
 
   return (
-    <Link
-      href={playlistUrl}
-      className="group flex flex-col self-start rounded-lg overflow-hidden bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-lg h-full"
-    >
+    <Card as="link" href={playlistUrl} className="h-full">
       <div
         className="aspect-square relative overflow-hidden"
         style={{
@@ -77,6 +74,6 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
           </span>
         </div>
       </div>
-    </Link>
+    </Card>
   );
 }

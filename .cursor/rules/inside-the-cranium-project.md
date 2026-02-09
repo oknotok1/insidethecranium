@@ -156,16 +156,18 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    - **Managed globally** via CSS in `styles/tailwind.css` - sections automatically get backgrounds based on position
    - **DO NOT** add background classes manually to sections (e.g., `bg-gray-50`) - let the global CSS handle it
    - **Homepage exception**: Add `data-page="homepage"` to main element - the hero (first section) will have no background
-   - **Light mode**: Automatic alternating 2-tier pattern using `color-mix`:
-     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, black 4%, transparent)` (light tier)
-     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, black 6%, transparent)` (darker tier)
+   - **Light mode**: Automatic alternating 2-tier pattern using `color-mix` (subtle/gradual):
+     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, black 1%, transparent)` (light tier)
+     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, black 2%, transparent)` (darker tier)
      - Homepage hero: transparent (no background)
    - **Dark mode**: Automatic alternating 2-tier pattern using `color-mix`:
      - Even sections (2nd, 4th, etc.): `color-mix(in oklab, white 2.5%, transparent)` (light tier)
      - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, white 5%, transparent)` (darker tier)
      - Homepage hero: transparent (no background)
-   - **Card backgrounds**: Always pure `bg-white dark:bg-white/5` - ensures contrast on all section backgrounds
-   - **Borders**: `border-gray-100 dark:border-white/5` (subtle), becomes `border-gray-200 dark:border-white/10` on hover
+   - **Card backgrounds**: `bg-gray-100 dark:bg-white/5` at rest, becomes `bg-gray-200 dark:bg-white/10` on hover for subtle feedback (matches legacy design)
+   - **Card shadows**: Custom `shadow-card` (ultra-subtle: `0 1px 2px 0 rgba(0, 0, 0, 0.03)`) - stays consistent
+   - **Card hover effects**: Background color change + border becomes more visible (no scale animation)
+   - **Borders**: `border-gray-50 dark:border-white/[0.025]` (very subtle), becomes `border-gray-100 dark:border-white/5` on hover
    - **Override when needed**: If a section needs a special background (e.g., purple gradient for Coming Soon), simply add the background class and it will override the global pattern
 
 ### Typography
@@ -176,21 +178,34 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
 
 ### Interactive Elements
 
-1. **Unified Card Design (2026 Style)**:
+1. **Unified Card Design (2026 Style)** - Use Common Card Component:
    ```tsx
-   // Standard card pattern (playlists, sites, music cards, etc.)
-   className="group flex flex-col rounded-lg overflow-hidden 
-              bg-white dark:bg-white/5 
-              border border-gray-100 dark:border-white/5 
-              hover:border-gray-200 dark:hover:border-white/10 
-              transition-all duration-300 hover:scale-105 hover:shadow-lg"
+   // Import the Card component
+   import { Card, InteractiveCard } from "@/components/common/Card";
+   
+   // As a link (Next.js Link)
+   <Card as="link" href="/path">{content}</Card>
+   
+   // As external link
+   <Card as="anchor" href="https://..." target="_blank" rel="noopener noreferrer">{content}</Card>
+   
+   // As button
+   <Card as="button" onClick={handleClick}>{content}</Card>
+   
+   // As interactive div
+   <InteractiveCard onClick={handleClick}>{content}</InteractiveCard>
+   
+   // As plain div (default)
+   <Card>{content}</Card>
    ```
-   - **Border Radius**: Always `rounded-lg` (consistent across all screen sizes)
-   - **Background**: `bg-white dark:bg-white/5` with subtle borders
-   - **Borders**: Very subtle - `border-gray-100 dark:border-white/5` (default), `border-gray-200 dark:border-white/10` (hover)
-   - **Hover Effects**: Scale + shadow (`hover:scale-105 hover:shadow-lg`)
+   - **DO NOT** manually apply card styling - use the Card component
+   - **Border Radius**: `rounded-lg` (handled by Card component)
+   - **Background**: `bg-gray-100 dark:bg-white/5` at rest → `hover:bg-gray-200 dark:hover:bg-white/10`
+   - **Borders**: Very subtle - `border-gray-50 dark:border-white/[0.025]` (default), `border-gray-100 dark:border-white/5` (hover)
+   - **Shadow**: Ultra-subtle `shadow-card` (3% opacity) - stays consistent on hover
+   - **Hover Effects**: Background color change + border becomes more visible (no scale to avoid shadow breaks)
    - **Transitions**: `transition-all duration-300` for smooth animations
-   - **Border Hover**: Subtle border color shift on hover (barely visible → more visible)
+   - **Image Hover**: All card images should use `group-hover:scale-102 transition-transform duration-300`
    - **Grid Layout**: Use `items-start` or wrapper `flex` to ensure cards in same row match height
    - **Legacy**: Old design saved in `components/common/LegacyPlaylistCard.tsx`
 

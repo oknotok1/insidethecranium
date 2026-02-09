@@ -129,7 +129,11 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     })
       .then((res) => {
         if (!res.ok) {
-          // Handle rate limiting gracefully - don't throw, just return null
+          // Handle auth errors and rate limiting gracefully - don't throw, just return null
+          if (res.status === 401) {
+            console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
+            return null;
+          }
           if (res.status === 429) {
             console.warn(`[AppContext] Rate limited on ${url}`);
             return null;
@@ -172,7 +176,14 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
         : {},
     })
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          // Silently handle auth errors
+          if (res.status === 401) {
+            console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
+            return null;
+          }
+          throw new Error(`HTTP ${res.status}`);
+        }
         return res.json();
       })
       .catch(() => null); // Fail silently
@@ -196,6 +207,11 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     })
       .then((res) => {
         if (!res.ok) {
+          // Silently handle auth errors
+          if (res.status === 401) {
+            console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
+            return null;
+          }
           console.warn(`[AppContext] Genre API returned ${res.status}`);
           return null;
         }

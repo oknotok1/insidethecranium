@@ -24,8 +24,8 @@ export const navigationLinks: NavigationLink[] = [
     anchorId: "featured-songs",
   },
   { href: "/playlists", label: "Playlists", icon: ListMusic },
-  { href: "/concerts", label: "Concerts", icon: Camera, disabled: true },
-  { href: "/sites", label: "Sites", icon: Globe, disabled: true },
+  { href: "/concerts", label: "Concerts", icon: Camera },
+  { href: "/sites", label: "Sites", icon: Globe },
 ];
 
 // Helper to get links for specific contexts

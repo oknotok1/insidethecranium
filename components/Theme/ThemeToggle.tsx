@@ -46,7 +46,7 @@ export default function ThemeToggle({ isMobile = false }: ThemeToggleProps) {
   const { setTheme } = useTheme();
 
   const triggerButton = isMobile ? (
-    <button className="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 w-full">
+    <button className="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 w-full">
       <ThemeIcon />
       <span>Theme</span>
     </button>

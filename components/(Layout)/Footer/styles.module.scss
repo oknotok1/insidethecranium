@@ -83,6 +83,10 @@
 }
 
 // Connect Section
+.connectLinks {
+  @apply flex flex-col space-y-2;
+}
+
 .connectLink {
   @apply inline-flex items-center space-x-2 text-sm text-gray-700 transition-colors w-fit;
 
@@ -95,8 +99,11 @@
   }
 }
 
-.spotifyIcon {
+.connectLinkIcon {
   @apply w-5 h-5;
+  flex-shrink: 0;
+  background-color: currentColor;
+  transition: background-color 0.2s ease;
 }
 
 // Copyright Section

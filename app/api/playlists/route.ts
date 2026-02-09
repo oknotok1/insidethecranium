@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSpotifyAccessToken, SPOTIFY_API } from "@/utils/spotify";
+import { getSpotifyAccessToken, getFreshSpotifyAccessToken, SPOTIFY_API } from "@/utils/spotify";
 import { logger } from "@/utils/logger";
 
 // Cache playlists indefinitely (24 hours for rebuild)
@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
   );
 
   try {
-    const accessToken = await getSpotifyAccessToken();
+    let accessToken = await getSpotifyAccessToken();
 
     // Get playlists with pagination using native fetch
     const fetchStart = Date.now();
-    const response = await fetch(
+    let response = await fetch(
       `${SPOTIFY_API.BASE_URL}/users/${user_id}/playlists?offset=${offset}&limit=${limit}`,
       {
         headers: {
@@ -35,6 +35,25 @@ export async function GET(request: NextRequest) {
         },
       },
     );
+
+    // If 401, retry with fresh token
+    if (response.status === 401) {
+      logger.warn("Playlists API", "Token expired, fetching fresh token and retrying");
+      accessToken = await getFreshSpotifyAccessToken();
+      response = await fetch(
+        `${SPOTIFY_API.BASE_URL}/users/${user_id}/playlists?offset=${offset}&limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          next: {
+            revalidate: 86400,
+            tags: ["playlists", `user-playlists:${user_id}`],
+          },
+        },
+      );
+    }
+
     const fetchTime = Date.now() - fetchStart;
 
     if (!response.ok) {

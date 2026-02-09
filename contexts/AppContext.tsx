@@ -157,7 +157,7 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [refreshInterval, setRefreshInterval] = useState(5000);
 
   const { data: currentlyPlayingTrack } = useSWR(
-    accessToken ? "/api/spotify/currently-playing" : null,
+    "/api/spotify/currently-playing",
     trackFetcher,
     {
       refreshInterval, // Dynamic refresh interval
@@ -201,7 +201,7 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   // Fetch recently played track (cached indefinitely, invalidated on-demand)
   const { data: recentlyPlayed, mutate: mutateRecentlyPlayed } = useSWR(
-    accessToken ? "/api/spotify/recently-played" : null,
+    "/api/spotify/recently-played",
     recentlyPlayedFetcher,
     {
       revalidateOnMount: true, // Fetch on mount

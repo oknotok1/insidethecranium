@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getSpotifyAccessToken } from "@/utils/spotify";
 import { logger } from "@/utils/logger";
 
-// Cache tokens for 50 minutes (tokens last 1 hour)
-export const revalidate = 3000;
+// Cache tokens for 40 minutes (tokens last 1 hour, using safe margin)
+export const revalidate = 2400;
 
 async function refreshAccessToken() {
   logger.log("Token API", "Refreshing access token");

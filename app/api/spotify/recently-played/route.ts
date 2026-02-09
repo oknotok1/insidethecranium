@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SPOTIFY_API } from "@/utils/spotify";
+import { SPOTIFY_API, getSpotifyAccessToken, getFreshSpotifyAccessToken } from "@/utils/spotify";
 import { logger } from "@/utils/logger";
 
 // Cache indefinitely - invalidated on-demand when track changes
@@ -7,20 +7,31 @@ export const revalidate = false;
 
 export async function GET(request: NextRequest) {
   const url = `${SPOTIFY_API.BASE_URL}/me/player/recently-played?limit=1`;
-  const accessToken = request.headers.get("access_token");
+  
+  // Try to get token from headers first (for backward compatibility),
+  // otherwise fetch server-side
+  let accessToken = request.headers.get("access_token");
+  let isServerToken = false;
 
   logger.log("Recently Played API", "Fetching recently played track");
 
   if (!accessToken) {
-    return NextResponse.json(
-      { error: "Access token required" },
-      { status: 401 },
-    );
+    try {
+      accessToken = await getSpotifyAccessToken();
+      isServerToken = true;
+      logger.log("Recently Played API", "Using server-side access token");
+    } catch (err: any) {
+      logger.error("Recently Played API", `Failed to get token: ${err.message}`);
+      return NextResponse.json(
+        { error: "Failed to get access token" },
+        { status: 500 },
+      );
+    }
   }
 
   try {
     // Fetch with cache tag for on-demand invalidation
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -29,6 +40,29 @@ export async function GET(request: NextRequest) {
         tags: ["recently-played"], // Tag for invalidation
       },
     });
+
+    // If 401 and we used a server token, retry with fresh token
+    if (response.status === 401 && isServerToken) {
+      logger.warn("Recently Played API", "Token expired, fetching fresh token and retrying");
+      try {
+        accessToken = await getFreshSpotifyAccessToken();
+        response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          next: {
+            revalidate: false,
+            tags: ["recently-played"],
+          },
+        });
+      } catch (retryErr: any) {
+        logger.error("Recently Played API", `Retry failed: ${retryErr.message}`);
+        return NextResponse.json(
+          { error: "Failed to refresh token" },
+          { status: 500 },
+        );
+      }
+    }
 
     if (!response.ok) {
       const error = await response.json();

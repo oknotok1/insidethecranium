@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { useAppContext } from "@/contexts/AppContext";
 import { ImageWithFallback } from "@/figma/ImageWithFallback";
 import { HeroBackground } from "./Background";
+import { HeroSkeleton } from "./HeroSkeleton";
 import { useTrackGenres } from "./hooks/useTrackGenres";
 import { useHeroTimestamp } from "./hooks/useHeroTimestamp";
 import { useDisplayTrack } from "./hooks/useDisplayTrack";
@@ -59,6 +60,10 @@ export default function HeroSection() {
 
   // Extract song data for display
   const songData = extractSongData(displayTrack, isListening, nowPlayingTrack);
+
+  // Show skeleton while loading data
+  // Since skeleton has no dynamic content, it's safe for SSR
+  if (!displayTrack) return <HeroSkeleton />;
 
   return (
     <section id="now-playing" className={styles.heroSection}>

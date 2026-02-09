@@ -38,9 +38,9 @@ export const extractSongData = (
       : undefined;
 
   return {
-    title: displayTrack?.name || "No Recent Activity",
+    title: displayTrack?.name || "Unknown Track",
     artist: displayTrack?.artists?.[0]?.name || "Unknown Artist",
-    album: displayTrack?.album?.name || "",
+    album: displayTrack?.album?.name || "Unknown Album",
     albumArtwork: displayTrack?.album?.images?.[0]?.url,
     spotifyUrl: displayTrack?.id
       ? `https://open.spotify.com/track/${displayTrack.id}`

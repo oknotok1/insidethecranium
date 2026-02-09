@@ -132,23 +132,123 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    - All logs include GMT+8 timestamps
    - Use clear context identifiers
 
-## Styling
+## Design System & UI/UX
 
-### Tailwind + SCSS Modules
+### Brand Colors & Visual Identity
+- **Primary**: `#3d38f5` (vivid purple) - Used for CTAs, brand elements, accents
+- **Secondary**: `#8b87ff` (light purple) - Used for gradients, hover states, subtle accents
+- **Gradients**: `linear-gradient(135deg, #3d38f5 0%, #8b87ff 100%)` for primary elements
+- **Text Gradients**: `linear-gradient(to right, #8b87ff, #3d38f5, #8b87ff)` for animated headers
+
+### Layout & Spacing
+1. **Section Spacing**: Use consistent spacing for homepage sections
+   ```tsx
+   <section className="py-12 sm:py-16 lg:py-20">
+   ```
+
+2. **Container Pattern**: Max-width container with responsive padding
+   ```tsx
+   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   ```
+
+3. **Background Patterns**:
+   - Alternating sections: `bg-gray-50 dark:bg-white/2` and `bg-white dark:bg-black`
+   - Card backgrounds: `bg-gray-100 dark:bg-white/5`
+   - Borders: `border-gray-200 dark:border-white/10`
+
+### Typography
+- **Headings**: Bold, large scale (4xl → 5xl → 6xl on mobile → tablet → desktop)
+- **Body**: Gray scale for hierarchy (`text-gray-700 dark:text-gray-300`)
+- **Subtle text**: `text-gray-500 dark:text-gray-500`
+- **Font stack**: System fonts for performance (defined in `globals.scss`)
+
+### Interactive Elements
+1. **Buttons & Links**:
+   - Primary CTA: Purple gradient background with subtle shadow
+   - Secondary: Gray background with border (`bg-gray-100 dark:bg-white/5`)
+   - Hover: `hover:scale-105` with smooth transitions (`transition-all duration-300`)
+   - Rounded corners: `rounded-full` for buttons, `rounded-2xl` or `rounded-3xl` for cards
+
+2. **Icon Patterns**:
+   - Icon size consistency: `w-4 h-4 sm:w-5 sm:h-5` for small, `w-10 h-10 sm:w-12 sm:h-12` for medium
+   - Icons in gradients: White text on purple gradient backgrounds
+   - Animated icons: Subtle animations like `animate-pulse` for sparkles
+
+3. **Cards & Containers**:
+   - Rounded corners: `rounded-2xl` to `rounded-3xl`
+   - Subtle borders: `border border-gray-200 dark:border-white/10`
+   - Decorative blur effects for visual interest
+   - Relative positioning with absolute decorative elements
+
+### Component Patterns
+
+1. **Coming Soon Components**:
+   - **Page**: Full-page layout with large icon, animated title, description card, CTAs
+   - **Preview**: Section layout for homepage teasers with smaller scale
+   - Both use: Brand gradients, sparkle icons, clock icon, consistent spacing
+
+2. **Gradient Backgrounds**:
+   ```tsx
+   style={{
+     background: 'linear-gradient(135deg, rgba(61, 56, 245, 0.08) 0%, rgba(139, 135, 255, 0.04) 50%, rgba(61, 56, 245, 0.08) 100%)'
+   }}
+   ```
+   - Use rgba for opacity control
+   - Layer multiple blur effects for depth
+
+3. **Decorative Effects**:
+   ```tsx
+   <div className="absolute top-0 left-1/4 w-64 h-64 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-30" 
+        style={{ backgroundColor: 'rgba(61, 56, 245, 0.3)' }} />
+   ```
+
+### Responsive Design
+- **Mobile-first**: Start with mobile styles, then enhance
+- **Breakpoints**: `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280px)
+- **Text scaling**: Always provide mobile → tablet → desktop text sizes
+- **Spacing scaling**: Adjust padding/margins across breakpoints
+- **Button layouts**: Stack on mobile (`flex-col`), inline on desktop (`sm:flex-row`)
+
+### Dark Mode
+- **Always** provide dark mode variants using `dark:` prefix
+- Background contrast: White/light gray → Black/dark gray
+- Opacity layers: Use `/5`, `/10`, `/20` for subtle overlays
+- Test both themes - never design for one theme only
+
+### Animation & Transitions
+- **Hover effects**: `hover:scale-105` for buttons and interactive cards
+- **Smooth transitions**: `transition-all duration-300` or `transition-transform`
+- **Group hover**: Use `group` and `group-hover:` for icon animations within buttons
+- **Pulse animations**: Subtle `animate-pulse` for attention elements
+
+### Accessibility
+- Maintain color contrast ratios (WCAG AA minimum)
+- Provide hover states for all interactive elements
+- Use semantic HTML (`<section>`, `<nav>`, `<main>`)
+- Test keyboard navigation
+
+### Styling
+
+#### Tailwind + SCSS Modules
 - Use **Tailwind CSS** for utility-first styling
 - Use **SCSS modules** for component-specific complex styles
 - Never mix global CSS classes with scoped modules
 
-### Design System
-- Primary brand color: `#3d38f5` (purple)
-- Secondary: `#8b87ff` (light purple)
-- Follow mobile-first responsive design
-- Light/dark mode support via Theme context
-
-### shadcn/ui Components
+#### shadcn/ui Components
 - Only use `/components/ui/` for shadcn/ui components
 - Never create custom components in this folder
 - Import shadcn components as needed via CLI
+
+### Design Consistency Checklist
+When creating or modifying UI components, **always**:
+- [ ] Use brand colors (`#3d38f5`, `#8b87ff`) for accents and CTAs
+- [ ] Include dark mode variants for all colors and backgrounds
+- [ ] Apply consistent section spacing (`py-12 sm:py-16 lg:py-20`)
+- [ ] Use the standard container pattern (`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`)
+- [ ] Implement mobile-first responsive scaling for text and spacing
+- [ ] Add smooth transitions and hover effects
+- [ ] Use rounded corners (`rounded-2xl` or `rounded-3xl` for cards, `rounded-full` for buttons)
+- [ ] Test in both light and dark modes
 
 ## Performance & Optimization
 

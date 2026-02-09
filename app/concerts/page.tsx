@@ -1,4 +1,4 @@
-import ComingSoon from "@/components/common/ComingSoon";
+import { ComingSoonPage } from "@/components/common/ComingSoon";
 
 export const metadata = {
   title: "Concert Memories - Inside The Cranium",
@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function ConcertsPage() {
   return (
-    <ComingSoon
+    <ComingSoonPage
       title="Concert Memories"
       description="I'm currently building a collection of my live music experiences and concert memories. This space will showcase photos, setlists, and stories from the shows I've attended. Check back soon to explore my journey through live music."
     />

@@ -1,12 +1,12 @@
 import { Clock, Sparkles, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-interface ComingSoonProps {
+interface ComingSoonPageProps {
   title: string;
   description?: string;
 }
 
-export default function ComingSoon({ title, description }: ComingSoonProps) {
+export default function ComingSoonPage({ title, description }: ComingSoonPageProps) {
   return (
     <main className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-linear-to-b from-gray-50 via-white to-gray-50 dark:from-black dark:via-black dark:to-black">
       {/* Subtle gradient background */}

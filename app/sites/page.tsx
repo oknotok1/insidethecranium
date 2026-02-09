@@ -1,4 +1,4 @@
-import ComingSoon from "@/components/common/ComingSoon";
+import { ComingSoonPage } from "@/components/common/ComingSoon";
 
 export const metadata = {
   title: "Recommended Sites - Inside The Cranium",
@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function SitesPage() {
   return (
-    <ComingSoon
+    <ComingSoonPage
       title="Recommended Sites"
       description="I'm compiling a curated list of my favorite music discovery platforms, music blogs, artist websites, and other resources that have shaped my musical journey. This collection will feature tools and sites I use regularly to discover new music and stay connected with the music community."
     />

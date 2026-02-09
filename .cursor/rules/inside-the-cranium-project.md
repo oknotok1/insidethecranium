@@ -8,6 +8,11 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
 - **Key Integrations**: Spotify Web API, Spotify Web Playback SDK, Contentful CMS
 - **State Management**: React Context API + SWR for data fetching
 
+## SEO & Metadata
+- **Root metadata**: Comprehensive SEO setup in `app/layout.tsx` with OG/Twitter cards
+- **Admin routes**: Protected from indexing via `app/admin/layout.tsx` with `robots: { index: false, follow: false }`
+- **Page-specific metadata**: Each route can override/extend root metadata as needed
+
 ## Code Organization Principles
 
 ### Component Structure

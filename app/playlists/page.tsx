@@ -57,34 +57,32 @@ export default async function PlaylistsPage() {
   const initialData = await getInitialPlaylists();
 
   return (
-    <main className="flex flex-col">
-      <section className="py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 sm:mb-12">
-            <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl">
-              All Playlists
-            </h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-              I have curated{" "}
-              <strong>{initialData.total}</strong>{" "}
-              playlists thus far. They're mostly grouped by genres, and or
-              moods. I know it's excessive, but I can't help it. I'll be
-              creating a directory soon to help you navigate through them.
-            </p>
-          </div>
-
-          {initialData.items.length > 0 ? (
-            <PlaylistsGrid
-              initialPlaylists={initialData.items}
-              totalCount={initialData.total}
-            />
-          ) : (
-            <p className="text-gray-600 dark:text-gray-400 text-center py-12">
-              No playlists available at the moment.
-            </p>
-          )}
+    <main className="min-h-[calc(100vh-4rem)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl">
+            All Playlists
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            I have curated{" "}
+            <strong>{initialData.total}</strong>{" "}
+            playlists thus far. They're mostly grouped by genres, and or
+            moods. I know it's excessive, but I can't help it. I'll be
+            creating a directory soon to help you navigate through them.
+          </p>
         </div>
-      </section>
+
+        {initialData.items.length > 0 ? (
+          <PlaylistsGrid
+            initialPlaylists={initialData.items}
+            totalCount={initialData.total}
+          />
+        ) : (
+          <p className="text-gray-600 dark:text-gray-400 text-center py-12">
+            No playlists available at the moment.
+          </p>
+        )}
+      </div>
     </main>
   );
 }

@@ -123,9 +123,13 @@ export default async function Home() {
     <main className="flex flex-col" data-page="homepage">
       <HeroSection />
       {/* <HomepageSectionSkeleton /> */}
-      <CuratedSongs tracks={curatedTracks} />
+      <div className="bg-gray-50 dark:bg-white/2">
+        <CuratedSongs tracks={curatedTracks} />
+      </div>
       <Playlists playlists={playlists} />
-      <Sites />
+      <div className="bg-gray-50 dark:bg-white/2">
+        <Sites />
+      </div>
       <ComingSoonPreview 
         title="Concert Memories" 
         subtitle="Relive my live music experiences and concert memories"

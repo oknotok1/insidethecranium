@@ -8,15 +8,27 @@ export default function Loading() {
           <div className="h-4 w-96 max-w-full bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
         </div>
 
-        {/* Grid Skeleton */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-          {Array.from({ length: 20 }).map((_, i) => (
+        {/* Tag Filter Skeleton */}
+        <div className="mb-8 sm:mb-12">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-10 w-24 bg-gray-200 dark:bg-white/10 rounded-full animate-pulse"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Sites Grid Skeleton */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {Array.from({ length: 12 }).map((_, i) => (
             <div
               key={i}
               className="rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-50 dark:border-white/[0.025] shadow-card"
             >
               {/* Image Skeleton */}
-              <div className="aspect-square bg-gray-200 dark:bg-white/10 animate-pulse" />
+              <div className="aspect-video bg-gray-200 dark:bg-white/10 animate-pulse" />
 
               {/* Content Skeleton */}
               <div className="p-4 space-y-3">
@@ -26,11 +38,14 @@ export default function Loading() {
                 {/* Description */}
                 <div className="space-y-1">
                   <div className="h-3 w-full bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
-                  <div className="h-3 w-2/3 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                  <div className="h-3 w-5/6 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
                 </div>
 
-                {/* Song Count */}
-                <div className="h-4 w-20 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                {/* Tags */}
+                <div className="flex gap-1">
+                  <div className="h-5 w-16 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                  <div className="h-5 w-20 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                </div>
               </div>
             </div>
           ))}

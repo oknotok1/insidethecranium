@@ -79,7 +79,7 @@ export default function ComingSoonPreview({
               <div className="pt-4">
                 <Link
                   href={href}
-                  className="inline-flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20 text-gray-900 dark:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 hover:scale-105 group"
+                  className="inline-flex items-center space-x-2 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 text-gray-900 dark:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg group"
                 >
                   <span className="text-sm sm:text-base">Learn More</span>
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />

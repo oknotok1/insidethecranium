@@ -120,7 +120,7 @@ export default async function Home() {
   const { playlists, curatedTracks } = await getData();
 
   return (
-    <main className="flex flex-col">
+    <main className="flex flex-col" data-page="homepage">
       <HeroSection />
       {/* <HomepageSectionSkeleton /> */}
       <CuratedSongs tracks={curatedTracks} />

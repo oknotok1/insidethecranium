@@ -47,11 +47,11 @@ export default function Sites() {
         </div>
 
         {/* Single responsive grid - mobile shows 4 (2x2), desktop shows 8 (2x4) */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {displayedSites.map((site, index) => (
             <div
               key={site.id}
-              className={`h-full ${index >= mobileLimit ? "hidden lg:block" : ""}`}
+              className={`flex ${index >= mobileLimit ? "hidden lg:block" : ""}`}
             >
               <SiteCard site={site} />
             </div>

@@ -123,6 +123,36 @@
 }
 
 @layer components {
+  /* Global Section Background Pattern - Alternating 2-Tier System */
+
+  /* Light mode: alternating pattern */
+  main > section:nth-child(even) {
+    background-color: color-mix(in oklab, black 1%, transparent);
+  }
+
+  main > section:nth-child(odd) {
+    background-color: color-mix(in oklab, black 2%, transparent);
+  }
+
+  /* Homepage exception: first section (hero) has no background */
+  main[data-page="homepage"] > section:first-child {
+    background-color: transparent;
+  }
+
+  /* Dark mode: alternating pattern */
+  .dark main > section:nth-child(even) {
+    background-color: color-mix(in oklab, white 4%, transparent);
+  }
+
+  .dark main > section:nth-child(odd) {
+    background-color: color-mix(in oklab, white 6%, transparent);
+  }
+
+  /* Homepage exception: first section (hero) has no background */
+  .dark main[data-page="homepage"] > section:first-child {
+    background-color: transparent;
+  }
+
   /* Ensure dropdown menu has proper styling */
   [data-slot="dropdown-menu-content"] {
     @apply bg-popover text-popover-foreground;

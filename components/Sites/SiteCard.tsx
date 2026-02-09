@@ -16,7 +16,7 @@ export default function SiteCard({ site }: SiteCardProps) {
   return (
     <>
       <div
-        className="group relative flex flex-col overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
+        className="group relative flex flex-col h-full overflow-hidden bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-lg hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
         {/* Featured Badge */}

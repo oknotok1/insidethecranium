@@ -43,7 +43,7 @@ export default function MusicCard({
   );
 
   const cardClasses =
-    "group block rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-all duration-300 overflow-hidden";
+    "group block rounded-lg overflow-hidden bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-lg";
 
   if (spotifyUrl) {
     return (
@@ -106,7 +106,7 @@ const Genres = ({ genres }: { genres: string[] }) => {
         {displayGenres.map((genre, index) => (
           <span
             key={index}
-            className="px-3 py-1.5 text-xs rounded-full bg-gray-300 dark:bg-white/10 text-gray-700 dark:text-gray-300"
+            className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400"
           >
             {genre}
           </span>

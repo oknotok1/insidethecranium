@@ -23,7 +23,7 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
     : artists.slice(0, initialArtistCount);
 
   return (
-    <section className="py-6 sm:py-8 bg-gray-50 dark:bg-white/2">
+    <section className="py-6 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="mb-4 text-xl sm:text-2xl text-gray-900 dark:text-white">
           Artists

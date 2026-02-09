@@ -152,10 +152,21 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
    ```
 
-3. **Background Patterns**:
-   - Alternating sections: `bg-gray-50 dark:bg-white/2` and `bg-white dark:bg-black`
-   - Card backgrounds: `bg-gray-100 dark:bg-white/5`
-   - Borders: `border-gray-200 dark:border-white/10`
+3. **Background Patterns - Automatic Global System**:
+   - **Managed globally** via CSS in `styles/tailwind.css` - sections automatically get backgrounds based on position
+   - **DO NOT** add background classes manually to sections (e.g., `bg-gray-50`) - let the global CSS handle it
+   - **Homepage exception**: Add `data-page="homepage"` to main element - the hero (first section) will have no background
+   - **Light mode**: Automatic alternating 2-tier pattern using `color-mix`:
+     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, black 4%, transparent)` (light tier)
+     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, black 6%, transparent)` (darker tier)
+     - Homepage hero: transparent (no background)
+   - **Dark mode**: Automatic alternating 2-tier pattern using `color-mix`:
+     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, white 2.5%, transparent)` (light tier)
+     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, white 5%, transparent)` (darker tier)
+     - Homepage hero: transparent (no background)
+   - **Card backgrounds**: Always pure `bg-white dark:bg-white/5` - ensures contrast on all section backgrounds
+   - **Borders**: `border-gray-100 dark:border-white/5` (subtle), becomes `border-gray-200 dark:border-white/10` on hover
+   - **Override when needed**: If a section needs a special background (e.g., purple gradient for Coming Soon), simply add the background class and it will override the global pattern
 
 ### Typography
 - **Headings**: Bold, large scale (4xl → 5xl → 6xl on mobile → tablet → desktop)
@@ -164,22 +175,86 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
 - **Font stack**: System fonts for performance (defined in `globals.scss`)
 
 ### Interactive Elements
-1. **Buttons & Links**:
-   - Primary CTA: Purple gradient background with subtle shadow
-   - Secondary: Gray background with border (`bg-gray-100 dark:bg-white/5`)
-   - Hover: `hover:scale-105` with smooth transitions (`transition-all duration-300`)
-   - Rounded corners: `rounded-full` for buttons, `rounded-2xl` or `rounded-3xl` for cards
 
-2. **Icon Patterns**:
+1. **Unified Card Design (2026 Style)**:
+   ```tsx
+   // Standard card pattern (playlists, sites, music cards, etc.)
+   className="group flex flex-col rounded-lg overflow-hidden 
+              bg-white dark:bg-white/5 
+              border border-gray-100 dark:border-white/5 
+              hover:border-gray-200 dark:hover:border-white/10 
+              transition-all duration-300 hover:scale-105 hover:shadow-lg"
+   ```
+   - **Border Radius**: Always `rounded-lg` (consistent across all screen sizes)
+   - **Background**: `bg-white dark:bg-white/5` with subtle borders
+   - **Borders**: Very subtle - `border-gray-100 dark:border-white/5` (default), `border-gray-200 dark:border-white/10` (hover)
+   - **Hover Effects**: Scale + shadow (`hover:scale-105 hover:shadow-lg`)
+   - **Transitions**: `transition-all duration-300` for smooth animations
+   - **Border Hover**: Subtle border color shift on hover (barely visible → more visible)
+   - **Grid Layout**: Use `items-start` or wrapper `flex` to ensure cards in same row match height
+   - **Legacy**: Old design saved in `components/common/LegacyPlaylistCard.tsx`
+
+2. **Buttons & Links**:
+   - **Primary CTA**: Purple solid (`#3d38f5`) with white text
+   - **Secondary/Tertiary**: Match card style with `rounded-2xl`:
+     ```tsx
+     className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 
+                hover:border-gray-200 dark:hover:border-white/10 
+                rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg"
+     ```
+   - **Filter Buttons**: `rounded-full` for pill-shaped filters with `cursor-pointer`
+   - **Text Links**: Simple underline or arrow icon, no background
+
+3. **Icon Patterns**:
    - Icon size consistency: `w-4 h-4 sm:w-5 sm:h-5` for small, `w-10 h-10 sm:w-12 sm:h-12` for medium
    - Icons in gradients: White text on purple gradient backgrounds
    - Animated icons: Subtle animations like `animate-pulse` for sparkles
+   - Icon hover effects: `group-hover:translate-x-1` for arrows
 
-3. **Cards & Containers**:
-   - Rounded corners: `rounded-2xl` to `rounded-3xl`
-   - Subtle borders: `border border-gray-200 dark:border-white/10`
-   - Decorative blur effects for visual interest
-   - Relative positioning with absolute decorative elements
+4. **Tag/Badge Chips**:
+   - **Use Common Component**: `<Chip>` from `@/components/common/Chip`
+   - **Variants**: `default` (gray) or `primary` (purple)
+   - **Sizes**: `Chip` (standard) or `ChipLarge` (more padding, rounded-full)
+   ```tsx
+   import { Chip } from "@/components/common/Chip";
+   
+   // Default gray chip
+   <Chip>Discovery</Chip>
+   
+   // Primary purple chip
+   <Chip variant="primary">Featured</Chip>
+   
+   // Large chip (for desktop-specific layouts)
+   <ChipLarge>Analytics</ChipLarge>
+   ```
+
+### Common Components (Reusable UI Primitives)
+
+1. **Card Component** (`@/components/common/Card`):
+   - Unified card wrapper with consistent styling
+   - Supports: `div`, `link`, `button`, `anchor` variants
+   - Use `InteractiveCard` for clickable cards without navigation
+   ```tsx
+   import { Card, InteractiveCard } from "@/components/common/Card";
+   
+   // As Link
+   <Card as="link" href="/path">Content</Card>
+   
+   // As clickable div
+   <InteractiveCard onClick={handler}>Content</InteractiveCard>
+   
+   // As external anchor
+   <Card as="anchor" href="https://..." target="_blank" rel="noopener noreferrer">
+     Content
+   </Card>
+   ```
+
+2. **Chip Component** (`@/components/common/Chip`):
+   - Consistent badge/tag styling across all components
+   - See Tag/Badge Chips section above for usage
+
+**Important**: The `/components/ui/` folder is reserved exclusively for shadcn/ui components. 
+All custom reusable components should be placed in `/components/common/`.
 
 ### Component Patterns
 

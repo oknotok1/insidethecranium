@@ -3,11 +3,24 @@ import { Item as SpotifyPlaylist } from "@/types/spotify";
 import { Music } from "lucide-react";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 
-interface PlaylistCardProps {
+/**
+ * Legacy Playlist Card Design (Pre-2026 Style)
+ * 
+ * This is the original playlist card design before the 2026 design system update.
+ * Kept as a reference/backup in case we want to revert or reuse this style.
+ * 
+ * Key differences from new design:
+ * - Uses rounded-lg instead of rounded-2xl
+ * - No border (just background color changes)
+ * - No scale/shadow hover effects
+ * - Simpler transition-colors vs transition-all
+ */
+
+interface LegacyPlaylistCardProps {
   playlist: SpotifyPlaylist;
 }
 
-export default function PlaylistCard({ playlist }: PlaylistCardProps) {
+export default function LegacyPlaylistCard({ playlist }: LegacyPlaylistCardProps) {
   const genres = playlist.topGenres || [];
   const songCount = playlist.tracks.total;
   const imageUrl = playlist.images[0]?.url || "";
@@ -17,7 +30,7 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
   return (
     <Link
       href={playlistUrl}
-      className="group flex flex-col self-start rounded-lg overflow-hidden bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-lg h-full"
+      className="group flex flex-col self-start rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors h-full"
     >
       <div
         className="aspect-square relative overflow-hidden"
@@ -60,7 +73,7 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
               {genres.slice(0, 2).map((genre) => (
                 <span
                   key={genre}
-                  className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400"
+                  className="px-3 py-1.5 text-xs rounded-full bg-gray-300 dark:bg-white/5 text-gray-700 dark:text-gray-400"
                 >
                   {genre}
                 </span>

@@ -1,16 +1,15 @@
-import { ComingSoonPage } from "@/components/common/ComingSoon";
+import SitesContent from "@/components/Sites/SitesContent";
 
 export const metadata = {
   title: "Recommended Sites - Inside The Cranium",
   description:
-    "Discover Jeff's curated collection of music-related sites and resources - Coming Soon",
+    "My favorite platforms for discovering and exploring music. From streaming services to analytics tools, these sites have shaped my musical journey.",
 };
 
 export default function SitesPage() {
   return (
-    <ComingSoonPage
-      title="Recommended Sites"
-      description="I'm compiling a curated list of my favorite music discovery platforms, music blogs, artist websites, and other resources that have shaped my musical journey. This collection will feature tools and sites I use regularly to discover new music and stay connected with the music community."
-    />
+    <main className="min-h-[calc(100vh-4rem)]">
+      <SitesContent />
+    </main>
   );
 }

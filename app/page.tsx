@@ -3,6 +3,7 @@ import * as contentful from "contentful";
 import HeroSection from "@/components/Homepage/Hero";
 import CuratedSongs from "@/components/Homepage/CuratedSongs";
 import Playlists from "@/components/Homepage/Playlists";
+import Sites from "@/components/Homepage/Sites";
 import { ComingSoonPreview } from "@/components/common/ComingSoon";
 import HomepageSectionSkeleton from "@/components/Homepage/Skeleton";
 import { logger } from "@/utils/logger";
@@ -124,6 +125,7 @@ export default async function Home() {
       {/* <HomepageSectionSkeleton /> */}
       <CuratedSongs tracks={curatedTracks} />
       <Playlists playlists={playlists} />
+      <Sites />
       <ComingSoonPreview 
         title="Concert Memories" 
         subtitle="Relive my live music experiences and concert memories"

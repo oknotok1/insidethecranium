@@ -39,6 +39,7 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    - `/utils/` - App-specific utilities (Spotify API, logger, rate limiting, genre categorization)
    - `/contexts/` - React contexts with their exclusive hooks in `contexts/hooks/`
    - `/types/` - TypeScript type definitions
+   - `/data/` - Static data files with TypeScript types (designed for easy database migration)
    - `/app/actions/` - Next.js server actions
 
 2. **API Routes Structure**: Follow REST conventions and group by external service
@@ -267,6 +268,51 @@ When creating or modifying UI components, **always**:
 - Always show loading skeletons, never flash of unstyled content
 - Use `isLoadingInitialData` pattern to prevent UI flashing
 - Skeleton components should match actual content dimensions
+
+## Data Management
+
+### Static Data Files (`/data/`)
+1. **Purpose**: Store static/seed data that will eventually move to a database
+2. **Structure**:
+   ```typescript
+   // Define TypeScript types for the data
+   export type Category = "Type1" | "Type2";
+   
+   export interface DataItem {
+     id: string;        // Always include unique ID for database migration
+     name: string;
+     // ... other fields
+   }
+   
+   // Main data array
+   export const items: DataItem[] = [ /* ... */ ];
+   
+   // Helper functions (will become database queries)
+   export function getItemById(id: string): DataItem | undefined { /* ... */ }
+   export function getItemsByCategory(category: Category): DataItem[] { /* ... */ }
+   ```
+3. **Database Migration Comments**: Include comments documenting the intended database schema
+4. **Helper Functions**: Create data access functions that mirror future database queries
+
+### Example: Sites Data
+- File: `/data/sites.ts`
+- Includes database schema documentation for future migration
+- Helper functions (`getSitesByTag`, `getFeaturedSites`) designed to match future SQL queries
+- Easy to replace with actual database calls later
+- **Smart Image Loading System**: Multi-source fallback for site images
+  - **Auto-fetch Priority** (tries each on error):
+    1. Microlink OG/Twitter image (rich social media previews)
+    2. Google high-res favicon (256px - clean, recognizable branding)
+    3. Microlink screenshot API (full page preview - useful for low-res favicons)
+    4. DuckDuckGo favicon (alternative favicon source)
+    5. Globe icon fallback (always works if all external sources fail)
+  - **Custom Override**: Optionally provide `imageUrl` to use specific branding
+  - **Automatic Cascading**: On image load error, automatically tries next source
+  - **Component**: `SiteImage.tsx` handles state and fallback logic
+  - **Utility**: `utils/site-image.ts` generates prioritized source URLs
+  - **No API keys required** - uses free public services
+  - **Benefits**: OG images when available for rich visuals, favicons for consistency, 
+    screenshots as last resort to ensure every site has decent imagery
 
 ## Best Practices
 

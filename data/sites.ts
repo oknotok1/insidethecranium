@@ -18,7 +18,8 @@
  * Image Fetching Strategy (Priority Order):
  * 1. Custom imageUrl (if provided) - Manual override for specific branding
  * 2. Default: Screenshot → Favicon → Globe
- *    - Screenshots: Full page preview (1200x675px, 16:9) via /api/screenshot proxy
+ *    - Screenshots: Full page preview (800x450px, 16:9, WebP @ 80% quality) via /api/screenshot proxy
+ *    - Cached for 7 days (client) / 30 days (CDN) for optimal performance
  *    - Favicons: Google high-res (256px) as fallback
  * 3. Sites with `preferFavicon: true`: Favicon → Screenshot → Globe
  *    - Use for sites with excellent brand icons (Spotify, Reddit, Last.fm, etc.)

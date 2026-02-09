@@ -27,7 +27,7 @@ export default function NowPlaying({ className }: NowPlayingProps) {
             setIsOpen(!isOpen);
           }}
           className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white text-xs transition-all hover:shadow-lg hover:scale-[1.02] active:scale-100 w-full min-w-0"
-          aria-label="Now playing"
+          aria-label={`Now playing: ${nowPlayingTrack?.item?.name} by ${nowPlayingTrack?.item?.artists[0]?.name} from ${nowPlayingTrack?.item?.album?.name}`}
           style={{ cursor: "pointer" }}
         >
           <Play className="w-3 h-3 fill-current shrink-0" />

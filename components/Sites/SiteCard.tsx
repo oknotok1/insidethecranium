@@ -72,7 +72,7 @@ export default function SiteCard({ site }: SiteCardProps) {
             className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-200 dark:border-white/10 group/link"
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-xs text-gray-500 dark:text-gray-500 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] transition-colors truncate flex-1">
+            <span className="text-xs text-gray-500 dark:text-gray-400 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] transition-colors truncate flex-1">
               {new URL(site.url).hostname.replace("www.", "")}
             </span>
             <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-600 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] group-hover/link:translate-x-1 transition-all shrink-0 ml-2" />

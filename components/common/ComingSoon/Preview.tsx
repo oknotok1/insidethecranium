@@ -81,7 +81,7 @@ export default function ComingSoonPreview({
                   href={href}
                   className="inline-flex items-center space-x-2 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-50 dark:border-white/[0.025] hover:border-gray-100 dark:hover:border-white/5 text-gray-900 dark:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg shadow-card transition-all duration-300 group"
                 >
-                  <span className="text-sm sm:text-base">Learn More</span>
+                  <span className="text-sm sm:text-base">Explore Concert Memories</span>
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>

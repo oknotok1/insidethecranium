@@ -48,12 +48,12 @@ export default function SiteCard({ site }: SiteCardProps) {
           </h3>
 
           {/* Description */}
-          <p className="text-xs sm:text-sm leading-relaxed text-gray-600 dark:text-gray-400 line-clamp-2 sm:line-clamp-3 mb-3 flex-1">
+          <p className="text-xs sm:text-sm leading-snug text-gray-600 dark:text-gray-400 line-clamp-3 mb-3 overflow-hidden">
             {site.description}
           </p>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
+          <div className="flex flex-wrap items-start gap-1.5 sm:gap-2 mb-3 flex-1">
             {site.tags.map((tag) => (
               <span
                 key={tag}

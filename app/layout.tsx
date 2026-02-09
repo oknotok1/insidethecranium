@@ -9,14 +9,23 @@ import Footer from "@/components/Layout/Footer";
 import WebPlayerControls from "@/components/Music/WebPlayerControls";
 import ScrollToTop from "@/components/common/ScrollToTop";
 
+// Site Metadata Constants (DRY)
+const SITE_NAME = "Inside The Cranium";
+const SITE_URL = "https://insidethecranium.io";
+const SITE_TITLE = "Inside The Cranium - Discover Curated Spotify Playlists";
+const SITE_DESCRIPTION =
+  "A directory to Jeff's Spotify. Explore curated playlists, discover new music, and dive into my personal music showcase featuring Spotify integration.";
+const SITE_DESCRIPTION_SHORT =
+  "A directory to Jeff's Spotify. Explore curated playlists, discover new music, and dive into my personal music showcase.";
+const OG_IMAGE = "/Images/og.png";
+
 export const metadata = {
-  metadataBase: new URL("https://insidethecranium.io"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Inside The Cranium",
-    template: "%s | Inside The Cranium",
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "A directory to Jeff's Spotify. Explore curated playlists, discover new music, and dive into my personal music showcase featuring Spotify integration.",
+  description: SITE_DESCRIPTION,
   keywords: [
     "spotify playlists",
     "music discovery",
@@ -29,7 +38,7 @@ export const metadata = {
   ],
   authors: [{ name: "Jeff" }],
   creator: "Jeff",
-  publisher: "Inside The Cranium",
+  publisher: SITE_NAME,
   robots: {
     index: true,
     follow: true,
@@ -46,17 +55,16 @@ export const metadata = {
     apple: "/favicon.ico",
   },
   openGraph: {
-    title: "Inside The Cranium",
-    description:
-      "A directory to Jeff's Spotify. Explore curated playlists, discover new music, and dive into my personal music showcase featuring Spotify integration.",
-    url: "https://insidethecranium.io",
-    siteName: "Inside The Cranium",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     images: [
       {
-        url: "/Images/og.png",
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Inside The Cranium - Music Showcase & Discovery",
+        alt: SITE_TITLE,
       },
     ],
     locale: "en_SG",
@@ -64,13 +72,12 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Inside The Cranium",
-    description:
-      "A directory to Jeff's Spotify. Explore curated playlists, discover new music, and dive into my personal music showcase.",
-    images: ["/Images/og.png"],
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION_SHORT,
+    images: [OG_IMAGE],
   },
   alternates: {
-    canonical: "https://insidethecranium.io",
+    canonical: SITE_URL,
   },
   category: "music",
 };

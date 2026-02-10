@@ -1,9 +1,12 @@
+import { Ear } from "lucide-react";
+
 import styles from "./styles.module.scss";
 
 interface ConnectLink {
   href: string;
   icon: string;
   label: string;
+  useComponent?: boolean;
 }
 
 const CONNECT_LINKS: Record<string, ConnectLink> = {
@@ -26,6 +29,7 @@ const CONNECT_LINKS: Record<string, ConnectLink> = {
     href: "https://forms.gle/jpx8t65iQPAU6ucg6",
     icon: "/Images/logos/ear-icon.svg",
     label: "Let's hear it from you!",
+    useComponent: true,
   },
 };
 
@@ -54,13 +58,17 @@ export function ConnectLinks() {
           rel="noopener noreferrer"
           className={`${styles.connectLink} text-sm text-gray-700 transition-colors hover:text-[#8b87ff] dark:text-gray-300 dark:hover:text-[#8b87ff]`}
         >
-          <div
-            className={`${styles.connectLinkIcon} transition-colors`}
-            style={{
-              ...getIconMaskStyle(link.icon),
-              backgroundColor: "currentColor",
-            }}
-          />
+          {link.useComponent && key === "googleforms" ? (
+            <Ear className={`${styles.connectLinkIcon} transition-colors`} />
+          ) : (
+            <div
+              className={`${styles.connectLinkIcon} transition-colors`}
+              style={{
+                ...getIconMaskStyle(link.icon),
+                backgroundColor: "currentColor",
+              }}
+            />
+          )}
           <span>{link.label}</span>
         </a>
       ))}

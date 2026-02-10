@@ -8,10 +8,12 @@ Personal project demonstrating modern web development practices with server-side
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 (App Router, React Server Components)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS + SCSS Modules
-- **APIs**: Spotify Web API, Contentful CMS
+- **Framework**: Next.js 16.1.6 (App Router, React Server Components, Turbopack)
+- **Runtime**: Node.js 24.x
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS 4 + SCSS Modules
+- **State Management**: React Context + SWR
+- **APIs**: Spotify Web API, Spotify Web Playback SDK, Contentful CMS
 - **Deployment**: Vercel (Edge Functions + Serverless)
 
 ## Key Features
@@ -80,16 +82,25 @@ Implemented a multi-layered approach:
 3. **Sequential Processing**: Batch requests with 500ms delays
 4. **Fail Fast**: Skip retries for deep rate limits to prevent timeouts
 
-### Monorepo Structure
+### Project Structure
 
-Organized by feature with clear separation between server/client components, utilities, and API routes for better maintainability and scalability.
+Organized by feature with clear separation:
+
+- **Server Components**: Default for data fetching (pages, layouts)
+- **Client Components**: Interactive UI (`"use client"` directive)
+- **Utilities**: Shared logic (`/utils/`) with DRY principles
+- **API Routes**: Grouped by service (`/app/api/spotify/`, `/app/api/contentful/`)
+- **Component Co-location**: Page-specific components live with their pages
+- **Shared Components**: Reusable UI in `/components/common/`
 
 ## Performance Metrics
 
-- **Build Time**: ~5-6 seconds (optimized with Turbopack)
+- **Build Time**: ~7-10 seconds (with Turbopack)
+- **TypeScript Check**: ~2 seconds
 - **API Calls**: Reduced from ~150/page to <10/page through caching
 - **Cache Hit Rate**: 90%+ on repeat visits
 - **Rate Limit Handling**: 10-second max retry delay (vs. Spotify's 60+ minute suggestions)
+- **Image Optimization**: Next.js Image with AVIF/WebP, 30-day cache TTL
 
 ## Development
 
@@ -101,6 +112,14 @@ yarn build  # Production build
 
 Requires environment variables for Spotify API credentials and Contentful CMS (see Vercel deployment settings).
 
+## Project Conventions
+
+- **TypeScript**: Strict mode, no `any` types, arrow functions preferred
+- **Imports**: Path aliases (`@/`) for all non-local imports
+- **Styling**: Tailwind for utilities, SCSS modules for complex components
+- **Types**: Organized by API source (`types/spotify.ts`, `types/contentful.ts`)
+- **Caching**: Route segment config requires literal values (Next.js 16 requirement)
+
 ---
 
-**Live Demo**: [insidethecranium.vercel.app](https://insidethecranium.vercel.app) (if deployed)
+**Live Demo**: [insidethecranium.io](https://insidethecranium.io)

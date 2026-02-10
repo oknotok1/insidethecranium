@@ -7,6 +7,8 @@ interface PlaylistCardProps {
   playlist: SpotifyPlaylist;
 }
 
+export { default as PlaylistCardSkeleton } from "./Skeleton";
+
 export default function PlaylistCard({ playlist }: PlaylistCardProps) {
   const genres = playlist.topGenres || [];
   const songCount = playlist.tracks.total;

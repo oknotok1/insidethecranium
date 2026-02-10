@@ -9,7 +9,10 @@ interface MusicCardProps {
   artwork?: string;
   onClick?: () => void;
   spotifyUrl?: string;
+  className?: string;
 }
+
+export { default as MusicCardSkeleton } from "./Skeleton";
 
 export default function MusicCard({
   title,
@@ -18,6 +21,7 @@ export default function MusicCard({
   artwork,
   onClick,
   spotifyUrl,
+  className = "",
 }: MusicCardProps) {
   const content = (
     <>
@@ -45,7 +49,7 @@ export default function MusicCard({
 
   if (spotifyUrl) {
     return (
-      <Card as="anchor" href={spotifyUrl} target="_blank" rel="noopener noreferrer">
+      <Card as="anchor" href={spotifyUrl} target="_blank" rel="noopener noreferrer" className={className}>
         {content}
       </Card>
     );
@@ -53,13 +57,13 @@ export default function MusicCard({
 
   if (onClick) {
     return (
-      <Card as="button" onClick={onClick}>
+      <Card as="button" onClick={onClick} className={className}>
         {content}
       </Card>
     );
   }
 
-  return <Card>{content}</Card>;
+  return <Card className={className}>{content}</Card>;
 }
 
 const AlbumArtwork = ({

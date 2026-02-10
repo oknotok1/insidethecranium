@@ -157,23 +157,51 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
    ```
 
-3. **Background Patterns - Automatic Global System**:
-   - **Managed globally** via CSS in `styles/tailwind.css` - sections automatically get backgrounds based on position
-   - **DO NOT** add background classes manually to sections (e.g., `bg-gray-50`) - let the global CSS handle it
-   - **Homepage exception**: Add `data-page="homepage"` to main element - the hero (first section) will have no background
-   - **Light mode**: Automatic alternating 2-tier pattern using `color-mix` (subtle/gradual):
-     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, black 1%, transparent)` (light tier)
-     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, black 2%, transparent)` (darker tier)
-     - Homepage hero: transparent (no background)
-   - **Dark mode**: Automatic alternating 2-tier pattern using `color-mix`:
-     - Even sections (2nd, 4th, etc.): `color-mix(in oklab, white 4%, transparent)` (light tier)
-     - Odd sections (1st, 3rd, 5th, etc.): `color-mix(in oklab, white 6%, transparent)` (darker tier)
-     - Homepage hero: transparent (no background)
-   - **Card backgrounds**: `bg-gray-100 dark:bg-white/5` at rest, becomes `bg-gray-200 dark:bg-white/10` on hover for subtle feedback (matches legacy design)
+3. **Background Patterns**:
+   - **Alternating backgrounds**: Currently commented out in `styles/tailwind.css` - clean, uniform background throughout
+   - **Card backgrounds**: `bg-gray-100 dark:bg-white/5` at rest, becomes `bg-gray-200 dark:bg-white/10` on hover for subtle feedback
    - **Card shadows**: Custom `shadow-card` (ultra-subtle: `0 1px 2px 0 rgba(0, 0, 0, 0.03)`) - stays consistent
    - **Card hover effects**: Background color change + border becomes more visible (no scale animation)
    - **Borders**: `border-gray-50 dark:border-white/[0.025]` (very subtle), becomes `border-gray-100 dark:border-white/5` on hover
-   - **Override when needed**: If a section needs a special background (e.g., purple gradient for Coming Soon), simply add the background class and it will override the global pattern
+
+4. **Mobile Carousels**: Homepage sections use horizontal scrolling carousels on mobile (< lg breakpoint)
+   ```tsx
+   {/* Mobile carousel */}
+   <div className="block lg:hidden overflow-hidden -mx-4 sm:-mx-6">
+     <div className="flex overflow-x-scroll scrollbar-hide gap-4 items-stretch">
+       {items.map((item, index) => (
+         <div
+           key={item.id}
+           className={`shrink-0 w-[45%] min-w-[160px] max-w-[200px] md:w-[30%] md:max-w-[240px] ${
+             index === 0 ? 'ml-4 sm:ml-6' : ''
+           }`}
+         >
+           <div className="h-full">
+             <ItemCard {...item} />
+           </div>
+         </div>
+       ))}
+       {/* CTA Card - gets right margin */}
+       <Link href="/view-all" className="shrink-0 w-[45%] min-w-[160px] max-w-[200px] md:w-[30%] md:max-w-[240px] mr-4 sm:mr-6">
+         {/* CTA content */}
+       </Link>
+     </div>
+   </div>
+   
+   {/* Desktop grid */}
+   <div className="hidden lg:grid grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+     {/* Grid items */}
+   </div>
+   ```
+   - **Key patterns**:
+     - Negative margins on wrapper (`-mx-4 sm:-mx-6`) for edge-to-edge scrolling
+     - First item gets left margin (`ml-4 sm:ml-6`)
+     - Last item gets right margin (`mr-4 sm:mr-6`)
+     - `items-stretch` ensures uniform height matching the tallest card
+     - Wrap cards in `<div className="h-full">` to propagate height
+     - No snap scrolling - smooth, natural scrolling
+     - `scrollbar-hide` utility to hide scrollbars
+     - Responsive widths: `w-[45%]` mobile, `md:w-[30%]` tablet with min/max constraints
 
 ### Typography
 - **Headings**: Bold, large scale (4xl → 5xl → 6xl on mobile → tablet → desktop)

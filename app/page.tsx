@@ -5,7 +5,6 @@ import CuratedSongs from "@/components/Homepage/CuratedSongs";
 import Playlists from "@/components/Homepage/Playlists";
 import Sites from "@/components/Homepage/Sites";
 import { ComingSoonPreview } from "@/components/common/ComingSoon";
-import HomepageSectionSkeleton from "@/components/Homepage/Skeleton";
 import { logger } from "@/utils/logger";
 
 // Cache page for 24 hours (static content that rarely changes)
@@ -122,14 +121,9 @@ export default async function Home() {
   return (
     <main className="flex flex-col" data-page="homepage">
       <HeroSection />
-      {/* <HomepageSectionSkeleton /> */}
-      <div className="bg-gray-50 dark:bg-white/2">
-        <CuratedSongs tracks={curatedTracks} />
-      </div>
+      <CuratedSongs tracks={curatedTracks} />
       <Playlists playlists={playlists} />
-      <div className="bg-gray-50 dark:bg-white/2">
-        <Sites />
-      </div>
+      <Sites />
       <ComingSoonPreview 
         title="Concert Memories" 
         subtitle="Relive my live music experiences and concert memories"

@@ -2,6 +2,8 @@
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
+  background-color: #ffffff;
 }
 
 html,
@@ -21,6 +23,10 @@ body {
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
+}
+
+html.dark {
+  background-color: #000000;
 }
 
 .dark {

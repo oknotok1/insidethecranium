@@ -92,7 +92,7 @@
 
   .metadata {
     @apply flex flex-wrap items-center justify-center;
-    @apply gap-4 sm:gap-6 lg:gap-8;
+    @apply gap-2;
     @apply text-xs sm:text-sm;
     @apply text-gray-600;
     @apply mb-5 sm:mb-6;
@@ -102,7 +102,7 @@
     }
 
     .metadataSeparator {
-      @apply inline;
+      @apply inline-block mx-2;
     }
   }
 

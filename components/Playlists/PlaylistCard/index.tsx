@@ -61,7 +61,7 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
               {genres.slice(0, 2).map((genre) => (
                 <span
                   key={genre}
-                  className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400"
+                  className="px-2 py-1 text-xs rounded-md bg-gray-200 group-hover:bg-gray-300 dark:bg-white/5 dark:group-hover:bg-white/10 text-gray-600 dark:text-gray-400 transition-colors"
                 >
                   {genre}
                 </span>

@@ -57,7 +57,7 @@ export default function SiteCard({ site }: SiteCardProps) {
             {site.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs leading-none px-2 py-1 rounded-md bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400"
+                className="text-xs leading-none px-2 py-1 rounded-md bg-gray-200 group-hover:bg-gray-300 dark:bg-white/5 dark:group-hover:bg-white/10 text-gray-600 dark:text-gray-400 transition-colors"
               >
                 {tag}
               </span>
@@ -69,7 +69,7 @@ export default function SiteCard({ site }: SiteCardProps) {
             href={site.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-200 dark:border-white/10 group/link"
+            className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-200 group-hover:border-gray-300 dark:border-white/10 dark:group-hover:border-white/15 transition-colors group/link"
             onClick={(e) => e.stopPropagation()}
           >
             <span className="text-xs text-gray-500 dark:text-gray-400 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] transition-colors truncate flex-1">

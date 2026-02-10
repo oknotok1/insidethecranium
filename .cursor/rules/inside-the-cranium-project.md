@@ -162,7 +162,9 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    - **Card backgrounds**: `bg-gray-100 dark:bg-white/5` at rest, becomes `bg-gray-200 dark:bg-white/10` on hover for subtle feedback
    - **Card shadows**: Custom `shadow-card` (ultra-subtle: `0 1px 2px 0 rgba(0, 0, 0, 0.03)`) - stays consistent
    - **Card hover effects**: Background color change + border becomes more visible (no scale animation)
-   - **Borders**: `border-gray-50 dark:border-white/[0.025]` (very subtle), becomes `border-gray-100 dark:border-white/5` on hover
+   - **Card borders**: `border-gray-50 dark:border-white/[0.025]` (very subtle), becomes `border-gray-100 dark:border-white/5` on hover
+   - **Internal borders/dividers**: Use `border-gray-200 group-hover:border-gray-300` to maintain visibility on card hover
+   - **Chips/badges inside cards**: Use `bg-gray-200 group-hover:bg-gray-300` to maintain contrast on card hover
 
 4. **Mobile Carousels**: Homepage sections use horizontal scrolling carousels on mobile (< lg breakpoint)
    ```tsx
@@ -263,18 +265,28 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    - **Use Common Component**: `<Chip>` from `@/components/common/Chip`
    - **Variants**: `default` (gray) or `primary` (purple)
    - **Sizes**: `Chip` (standard) or `ChipLarge` (more padding, rounded-full)
+   - **Colors & Hover States**:
+     - Default (at rest): `bg-gray-200 dark:bg-white/5` - proper contrast against card backgrounds
+     - Default (on card hover): `group-hover:bg-gray-300 dark:group-hover:bg-white/10` - stays visible when card darkens
+     - Primary hover: `group-hover:bg-[#3d38f5]/20 dark:group-hover:bg-[#3d38f5]/30` - more vivid on hover
    ```tsx
    import { Chip } from "@/components/common/Chip";
    
-   // Default gray chip
+   // Default gray chip - automatically handles contrast and hover
    <Chip>Discovery</Chip>
    
-   // Primary purple chip
+   // Primary purple chip - with hover enhancement
    <Chip variant="primary">Featured</Chip>
    
    // Large chip (for desktop-specific layouts)
    <ChipLarge>Analytics</ChipLarge>
    ```
+   - **Manual chips**: If not using Chip component:
+     ```tsx
+     <span className="bg-gray-200 group-hover:bg-gray-300 dark:bg-white/5 dark:group-hover:bg-white/10 text-gray-600 dark:text-gray-400 transition-colors">
+       {tag}
+     </span>
+     ```
 
 ### Common Components (Reusable UI Primitives)
 

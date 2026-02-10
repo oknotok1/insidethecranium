@@ -160,11 +160,10 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
 3. **Background Patterns**:
    - **Alternating backgrounds**: Currently commented out in `styles/tailwind.css` - clean, uniform background throughout
    - **Card backgrounds**: `bg-gray-100 dark:bg-white/5` at rest, becomes `bg-gray-200 dark:bg-white/10` on hover for subtle feedback
-   - **Card shadows**: Custom `shadow-card` (ultra-subtle: `0 1px 2px 0 rgba(0, 0, 0, 0.03)`) - stays consistent
-   - **Card hover effects**: Background color change + border becomes more visible (no scale animation)
-   - **Card borders**: `border-gray-50 dark:border-white/[0.025]` (very subtle), becomes `border-gray-100 dark:border-white/5` on hover
-   - **Internal borders/dividers**: Use `border-gray-200 group-hover:border-gray-300` to maintain visibility on card hover
-   - **Chips/badges inside cards**: Use `bg-gray-200 group-hover:bg-gray-300` to maintain contrast on card hover
+   - **Card borders & shadows**: Removed for cleaner, modern look - background contrast provides sufficient visual separation
+   - **Card hover effects**: Background color change only (no scale animation)
+   - **Internal borders/dividers**: Use `border-gray-200 group-hover:border-gray-300 dark:border-white/10 dark:group-hover:border-white/15` to maintain visibility on card hover
+   - **Chips/badges inside cards**: Use `bg-gray-200 group-hover:bg-gray-300 dark:bg-white/5 dark:group-hover:bg-white/10` to maintain contrast on card hover
 
 4. **Mobile Carousels**: Homepage sections use horizontal scrolling carousels on mobile (< lg breakpoint)
    ```tsx
@@ -236,12 +235,11 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
    - **DO NOT** manually apply card styling - use the Card component
    - **Border Radius**: `rounded-lg` (handled by Card component)
    - **Background**: `bg-gray-100 dark:bg-white/5` at rest → `hover:bg-gray-200 dark:hover:bg-white/10`
-   - **Borders**: Very subtle - `border-gray-50 dark:border-white/[0.025]` (default), `border-gray-100 dark:border-white/5` (hover)
-   - **Shadow**: Ultra-subtle `shadow-card` (3% opacity) - stays consistent on hover
-   - **Hover Effects**: Background color change + border becomes more visible (no scale to avoid shadow breaks)
+   - **Borders & Shadows**: Removed for clean, modern aesthetic - background contrast provides visual separation
+   - **Hover Effects**: Background color change only (no scale, no shadow change)
    - **Transitions**: `transition-all duration-300` for smooth animations
    - **Image Hover**: All card images should use `group-hover:scale-102 transition-transform duration-300`
-   - **Grid Layout**: Use `items-start` or wrapper `flex` to ensure cards in same row match height
+   - **Grid Layout**: Use `items-stretch` in carousels or wrapper `flex` to ensure cards in same row match height
    - **Legacy**: Old design saved in `components/common/LegacyPlaylistCard.tsx`
 
 2. **Buttons & Links**:

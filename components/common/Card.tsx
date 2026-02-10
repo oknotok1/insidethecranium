@@ -44,7 +44,7 @@ interface AnchorCardProps extends BaseCardProps {
 type CardProps = DivCardProps | LinkCardProps | ButtonCardProps | AnchorCardProps;
 
 const baseClasses =
-  "group relative flex flex-col overflow-hidden bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-50 dark:border-white/[0.025] hover:border-gray-100 dark:hover:border-white/5 rounded-lg shadow-card transition-all duration-300";
+  "group relative flex flex-col overflow-hidden bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-lg transition-all duration-300";
 
 export function Card({ children, className = "", ...props }: CardProps) {
   const combinedClasses = `${baseClasses} ${className}`.trim();

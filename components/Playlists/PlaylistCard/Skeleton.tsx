@@ -1,6 +1,6 @@
 export default function PlaylistCardSkeleton() {
   return (
-    <div className="relative flex flex-col overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-50 dark:border-white/[0.025] rounded-lg shadow-card h-full">
+    <div className="relative flex flex-col overflow-hidden bg-gray-100 dark:bg-white/5 rounded-lg h-full">
       {/* Image Skeleton */}
       <div className="aspect-square bg-gray-200 dark:bg-white/10 animate-pulse" />
 

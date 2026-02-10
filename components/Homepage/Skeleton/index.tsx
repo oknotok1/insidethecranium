@@ -11,7 +11,7 @@ export default function HomepageSectionSkeleton() {
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-50 dark:border-white/[0.025] shadow-card"
+              className="rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5"
             >
               {/* Image skeleton */}
               <div className="aspect-square bg-gray-200 dark:bg-white/10 animate-pulse"></div>

@@ -22,6 +22,11 @@ const links: {
     icon: "/Images/logos/last-fm-svgrepo-com.svg",
     label: "Scrobbles on Last.fm",
   },
+  googleforms: {
+    href: "https://forms.gle/jpx8t65iQPAU6ucg6",
+    icon: "/Images/logos/ear-icon.svg",
+    label: "Let's hear it from you!",
+  },
 };
 
 export function ConnectLinks() {
@@ -40,12 +45,12 @@ export function ConnectLinks() {
             style={{
               maskImage: `url(${link.icon})`,
               WebkitMaskImage: `url(${link.icon})`,
-              maskSize: 'contain',
-              WebkitMaskSize: 'contain',
-              maskRepeat: 'no-repeat',
-              WebkitMaskRepeat: 'no-repeat',
-              maskPosition: 'center',
-              WebkitMaskPosition: 'center',
+              maskSize: "contain",
+              WebkitMaskSize: "contain",
+              maskRepeat: "no-repeat",
+              WebkitMaskRepeat: "no-repeat",
+              maskPosition: "center",
+              WebkitMaskPosition: "center",
             }}
           />
           <span>{link.label}</span>

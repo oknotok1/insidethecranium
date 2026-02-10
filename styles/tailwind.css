@@ -166,7 +166,7 @@
   /* Ensure dropdown menu has proper styling */
   [data-slot="dropdown-menu-content"] {
     @apply bg-popover text-popover-foreground;
-    @apply border border-border;
+    @apply border-border border;
     @apply rounded-md shadow-md;
     @apply min-w-32 p-1;
   }
@@ -174,7 +174,7 @@
   [data-slot="dropdown-menu-item"] {
     @apply relative flex items-center;
     @apply rounded-sm px-2 py-1.5;
-    @apply text-sm cursor-default;
+    @apply cursor-default text-sm;
     @apply outline-none select-none;
     @apply transition-colors;
   }

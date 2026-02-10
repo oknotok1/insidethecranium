@@ -1,24 +1,30 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import PlaylistCard from "@/components/Playlists/PlaylistCard";
-import { Item as SpotifyPlaylist } from "@/types/spotify";
 import { Loader2 } from "lucide-react";
 
+import { useEffect, useRef, useState } from "react";
+
+import PlaylistCard from "@/components/Playlists/PlaylistCard";
+
+import type { Playlist } from "@/types/spotify";
+
+const BATCH_SIZE = 10;
+const BATCH_DELAY_MS = 100;
+
 interface PlaylistsGridProps {
-  initialPlaylists: SpotifyPlaylist[];
+  initialPlaylists: Playlist[];
   totalCount: number;
 }
 
-const BATCH_SIZE = 10;
+// Helper to build API URL for fetching playlists
+const buildPlaylistsUrl = (offset: number): string =>
+  `/api/spotify/playlists?limit=${BATCH_SIZE}&offset=${offset}&includeGenres=false`;
 
 export default function PlaylistsGrid({
   initialPlaylists,
   totalCount,
 }: PlaylistsGridProps) {
-  const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>(
-    initialPlaylists,
-  );
+  const [playlists, setPlaylists] = useState<Playlist[]>(initialPlaylists);
   const [isLoading, setIsLoading] = useState(false);
   const [isDone, setIsDone] = useState(initialPlaylists.length >= totalCount);
   const [loadError, setLoadError] = useState(false);
@@ -27,7 +33,7 @@ export default function PlaylistsGrid({
   useEffect(() => {
     const loadAllBatches = async () => {
       if (loadingRef.current || initialPlaylists.length >= totalCount) return;
-      
+
       loadingRef.current = true;
       setIsLoading(true);
 
@@ -37,10 +43,7 @@ export default function PlaylistsGrid({
 
       while (currentOffset < totalCount) {
         try {
-          // Skip genre fetching for client-side batches to avoid rate limiting
-          const response = await fetch(
-            `/api/spotify/playlists?limit=${BATCH_SIZE}&offset=${currentOffset}&includeGenres=false`,
-          );
+          const response = await fetch(buildPlaylistsUrl(currentOffset));
 
           if (!response.ok) {
             hasError = true;
@@ -54,14 +57,12 @@ export default function PlaylistsGrid({
           currentOffset += data.items.length;
           setPlaylists(allPlaylists);
 
-          // Check if we're done
           if (currentOffset >= totalCount) {
             setIsDone(true);
             break;
           }
 
-          // Small delay between batches
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
         } catch (error) {
           console.error("Error loading playlists batch:", error);
           hasError = true;
@@ -70,7 +71,6 @@ export default function PlaylistsGrid({
       }
 
       setIsLoading(false);
-      // Only mark as done if we successfully loaded everything
       if (currentOffset >= totalCount) {
         setIsDone(true);
       } else if (hasError) {
@@ -80,35 +80,45 @@ export default function PlaylistsGrid({
     };
 
     loadAllBatches();
-  }, []);
+  }, [initialPlaylists, totalCount]);
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
         {playlists.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
       </div>
 
-      {/* Loading indicator at bottom */}
-      {isLoading && !isDone && (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-          <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-            Loading more playlists...
-          </span>
-        </div>
-      )}
-
-      {/* Error state - show if loading failed before completion */}
+      {isLoading && !isDone && <LoadingIndicator />}
       {!isLoading && !isDone && loadError && (
-        <div className="flex items-center justify-center py-8 text-sm text-gray-600 dark:text-gray-400">
-          <span>
-            Loaded {playlists.length} of {totalCount} playlists. Some failed to
-            load.
-          </span>
-        </div>
+        <ErrorMessage loadedCount={playlists.length} totalCount={totalCount} />
       )}
     </>
   );
 }
+
+// Loading indicator component
+const LoadingIndicator = () => (
+  <div className="flex items-center justify-center py-8">
+    <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+      Loading more playlists...
+    </span>
+  </div>
+);
+
+// Error message component
+const ErrorMessage = ({
+  loadedCount,
+  totalCount,
+}: {
+  loadedCount: number;
+  totalCount: number;
+}) => (
+  <div className="flex items-center justify-center py-8 text-sm text-gray-600 dark:text-gray-400">
+    <span>
+      Loaded {loadedCount} of {totalCount} playlists. Some failed to load.
+    </span>
+  </div>
+);

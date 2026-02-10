@@ -5,6 +5,12 @@
  * This utility helps categorize them into broader main genres for better analysis.
  */
 
+// Constants
+const DOMINANT_GENRE_THRESHOLD = 60; // percentage
+const CLOSE_GENRE_DIFFERENCE_THRESHOLD = 15; // percentage
+const COMBINED_GENRE_THRESHOLD = 50; // percentage
+const MAX_DETECTED_GENRES = 3;
+
 export interface GenreCategory {
   mainGenre: string;
   keywords: string[];
@@ -237,6 +243,13 @@ export const GENRE_CATEGORIES: GenreCategory[] = [
   },
 ];
 
+// Helper functions
+const capitalizeGenre = (genre: string): string =>
+  genre.charAt(0).toUpperCase() + genre.slice(1);
+
+const calculateTotalTracks = (genres: { count: number }[]): number =>
+  genres.reduce((sum, g) => sum + g.count, 0);
+
 /**
  * Categorizes a specific genre into a broader main genre
  * @param genre - The specific genre from Spotify (e.g., "indie rock")
@@ -253,8 +266,7 @@ export function categorizeGenre(genre: string): string {
     }
   }
 
-  // If no match found, return the original genre (capitalized)
-  return genre.charAt(0).toUpperCase() + genre.slice(1);
+  return capitalizeGenre(genre);
 }
 
 /**
@@ -285,11 +297,12 @@ export function analyzeGenreHierarchy(
   });
 
   // Convert to sorted arrays
+  const totalCount = calculateTotalTracks(genres);
   const mainGenres = Array.from(mainGenreMap.entries())
     .map(([genre, count]) => ({
       genre,
       count,
-      percentage: (count / genres.reduce((sum, g) => sum + g.count, 0)) * 100,
+      percentage: (count / totalCount) * 100,
     }))
     .sort((a, b) => b.count - a.count);
 
@@ -310,7 +323,7 @@ export function calculateGenreDiversity(
 ): number {
   if (genres.length === 0) return 0;
 
-  const totalTracks = genres.reduce((sum, g) => sum + g.count, 0);
+  const totalTracks = calculateTotalTracks(genres);
 
   // Calculate entropy (Shannon entropy)
   let entropy = 0;
@@ -341,16 +354,17 @@ export function suggestPlaylistGenre(
   const topGenre = genres[0];
   const secondGenre = genres[1];
 
-  // If top genre dominates (>60%), use it alone
-  if (topGenre.percentage > 60) {
+  // If top genre dominates, use it alone
+  if (topGenre.percentage > DOMINANT_GENRE_THRESHOLD) {
     return categorizeGenre(topGenre.genre);
   }
 
-  // If top 2 genres are close and combine to >50%, use both
+  // If top 2 genres are close and combine sufficiently, use both
   if (
     secondGenre &&
-    topGenre.percentage - secondGenre.percentage < 15 &&
-    topGenre.percentage + secondGenre.percentage > 50
+    topGenre.percentage - secondGenre.percentage <
+      CLOSE_GENRE_DIFFERENCE_THRESHOLD &&
+    topGenre.percentage + secondGenre.percentage > COMBINED_GENRE_THRESHOLD
   ) {
     const main1 = categorizeGenre(topGenre.genre);
     const main2 = categorizeGenre(secondGenre.genre);
@@ -390,6 +404,5 @@ export function extractGenresFromPlaylist(
     }
   }
 
-  // Return top 3 genres
-  return Array.from(detectedGenres).slice(0, 3);
+  return Array.from(detectedGenres).slice(0, MAX_DETECTED_GENRES);
 }

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
+
 import { logger } from "@/utils/logger";
+import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
+import { SPOTIFY_API } from "@/utils/spotify";
 
 // Cache artist genres indefinitely (static data that rarely changes)
 export const revalidate = false;
@@ -32,12 +34,14 @@ export async function GET(request: NextRequest) {
   try {
     const idsArray = artistIds.split(",");
 
-    // Spotify allows max 50 artists per request
-    const BATCH_SIZE = 50;
     const batches: string[][] = [];
 
-    for (let i = 0; i < idsArray.length; i += BATCH_SIZE) {
-      batches.push(idsArray.slice(i, i + BATCH_SIZE));
+    for (
+      let i = 0;
+      i < idsArray.length;
+      i += SPOTIFY_API.MAX_ARTISTS_PER_REQUEST
+    ) {
+      batches.push(idsArray.slice(i, i + SPOTIFY_API.MAX_ARTISTS_PER_REQUEST));
     }
 
     logger.log("Artists API", `Processing ${batches.length} batches`);

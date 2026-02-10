@@ -1,79 +1,44 @@
 "use client";
 
-// contexts/MyContext.tsx
+import useSWR from "swr";
 
 import React, {
   createContext,
-  useContext,
-  useState,
-  ReactNode,
   Dispatch,
+  ReactNode,
   SetStateAction,
+  useContext,
   useEffect,
+  useState,
 } from "react";
-import useSWR from "swr";
+
+import type { NowPlayingTrack, RecentlyPlayedResponse } from "@/types/spotify";
+
 import { useSpotifyPlayer } from "./hooks/useSpotifyPlayer";
 
-// Define interfaces for context state
-export interface NowPlayingTrack {
-  item?: {
-    id: string;
-    name: string;
-    artists: Array<{ id: string; name: string }>;
-    album: {
-      name: string;
-      images: Array<{ url: string }>;
-    };
-    duration_ms: number;
-    external_urls?: {
-      spotify: string;
-    };
-  };
-  progress_ms?: number;
-  is_playing: boolean;
-  device?: {
-    id: string;
-    name: string;
-    type: string;
-  };
-}
+export type { NowPlayingTrack };
 
-interface RecentlyPlayedTrack {
-  items?: Array<{
-    track: {
-      id: string;
-      name: string;
-      artists: Array<{ id: string; name: string }>;
-      album: {
-        name: string;
-        images: Array<{ url: string }>;
-      };
-      duration_ms: number;
-    };
-    played_at: string;
-  }>;
+interface WebPlayerControls {
+  isReady: boolean;
+  deviceId: string | null;
+  error: string | null;
+  play: (uri?: string) => Promise<void>;
+  pause: () => void;
+  resume: () => void;
+  togglePlay: () => void;
+  skipToNext: () => void;
+  skipToPrevious: () => void;
 }
 
 interface AppContextType {
   isListening: boolean;
   setIsListening: Dispatch<SetStateAction<boolean>>;
   nowPlayingTrack: NowPlayingTrack | null;
-  recentlyPlayedTrack: RecentlyPlayedTrack | null;
+  recentlyPlayedTrack: RecentlyPlayedResponse | null;
   accessToken: string | undefined;
   nowPlayingGenres: string[];
   isLoadingInitialData: boolean;
-  // Web Player SDK
-  webPlayer: {
-    isReady: boolean;
-    deviceId: string | null;
-    error: string | null;
-    play: (uri?: string) => Promise<void>;
-    pause: () => void;
-    resume: () => void;
-    togglePlay: () => void;
-    skipToNext: () => void;
-    skipToPrevious: () => void;
-  } | null;
+  webPlayer: WebPlayerControls | null;
   enableWebPlayer: boolean;
   setEnableWebPlayer: Dispatch<SetStateAction<boolean>>;
 }
@@ -92,44 +57,25 @@ const MyContext = createContext<AppContextType>({
   setEnableWebPlayer: () => {},
 });
 
-// Create a provider component
-export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isListening, setIsListening] = useState<boolean>(false);
-  const [nowPlayingTrack, setNowPlayingTrack] =
-    useState<NowPlayingTrack | null>(null);
-  const [enableWebPlayer, setEnableWebPlayer] = useState<boolean>(false);
+const TOKEN_REFRESH_INTERVAL = 3600000; // 1 hour
+const TRACK_POLLING_INTERVAL = 5000; // 5 seconds
+const GENRE_CACHE_DURATION = 86400000; // 24 hours (genres rarely change)
+const REVALIDATION_DELAY = 2000; // 2 seconds
 
-  // Fetch access token using native fetch
-  const tokenFetcher = (url: string) =>
-    fetch(url, { method: "GET" })
-      .then((res) => res.json())
-      .then((data) => data.access_token);
+// Token fetcher helper
+const tokenFetcher = (url: string) =>
+  fetch(url, { method: "GET" })
+    .then((res) => res.json())
+    .then((data) => data.access_token);
 
-  const { data: accessToken } = useSWR<string>(
-    "/api/spotify/auth/token",
-    tokenFetcher,
-    {
-      refreshInterval: 3600000, // 1 hour in milliseconds
-    },
-  );
-
-  // Initialize Spotify Web Player SDK only when enabled
-  const spotifyPlayer = useSpotifyPlayer(
-    enableWebPlayer ? accessToken : undefined,
-  );
-
-  // Fetch currently playing track using native fetch
-  const trackFetcher = (url: string) =>
+// Track fetcher helper
+const createTrackFetcher = (accessToken: string | undefined) => {
+  return (url: string) =>
     fetch(url, {
-      headers: accessToken
-        ? {
-            access_token: accessToken,
-          }
-        : {},
+      headers: accessToken ? { access_token: accessToken } : {},
     })
       .then((res) => {
         if (!res.ok) {
-          // Handle auth errors and rate limiting gracefully - don't throw, just return null
           if (res.status === 401) {
             console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
             return null;
@@ -146,25 +92,46 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
         console.error(err);
         return null;
       });
+};
 
-  const { data: currentlyPlayingTrack, isLoading: isLoadingCurrentlyPlaying } = useSWR(
-    accessToken ? "/api/spotify/player/currently-playing" : null,
-    trackFetcher,
-    {
-      refreshInterval: 5000, // 5s polling for responsive UI
-      refreshWhenHidden: false,
-      refreshWhenOffline: false,
-      onSuccess: (data) => {
-        if (data) {
-          setNowPlayingTrack(data);
-          setIsListening(data.is_playing);
-        } else {
-          // Don't clear nowPlayingTrack - keep it to show last played song
-          setIsListening(false);
-        }
-      },
-    },
+// Create a provider component
+export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isListening, setIsListening] = useState(false);
+  const [nowPlayingTrack, setNowPlayingTrack] =
+    useState<NowPlayingTrack | null>(null);
+  const [enableWebPlayer, setEnableWebPlayer] = useState(false);
+
+  const { data: accessToken } = useSWR<string>(
+    "/api/spotify/auth/token",
+    tokenFetcher,
+    { refreshInterval: TOKEN_REFRESH_INTERVAL },
   );
+
+  const spotifyPlayer = useSpotifyPlayer(
+    enableWebPlayer ? accessToken : undefined,
+  );
+
+  const trackFetcher = createTrackFetcher(accessToken);
+
+  const { data: currentlyPlayingTrack, isLoading: isLoadingCurrentlyPlaying } =
+    useSWR(
+      accessToken ? "/api/spotify/player/currently-playing" : null,
+      trackFetcher,
+      {
+        refreshInterval: TRACK_POLLING_INTERVAL,
+        refreshWhenHidden: false,
+        refreshWhenOffline: false,
+        onSuccess: (data) => {
+          if (data) {
+            setNowPlayingTrack(data);
+            setIsListening(data.is_playing);
+          } else {
+            // Don't clear nowPlayingTrack - keep it to show last played song
+            setIsListening(false);
+          }
+        },
+      },
+    );
 
   // Separate fetcher for recently played (fails silently)
   const recentlyPlayedFetcher = (url: string) =>
@@ -189,9 +156,13 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       .catch(() => null); // Fail silently
 
   // Fetch recently played track (cached indefinitely, invalidated on-demand)
-  const { data: recentlyPlayed, mutate: mutateRecentlyPlayed, isLoading: isLoadingRecentlyPlayed } = useSWR(
+  const {
+    data: recentlyPlayed,
+    mutate: mutateRecentlyPlayed,
+    isLoading: isLoadingRecentlyPlayed,
+  } = useSWR<RecentlyPlayedResponse>(
     accessToken ? "/api/spotify/player/recently-played" : null,
-    recentlyPlayedFetcher,
+    trackFetcher,
     {
       revalidateOnMount: true,
       revalidateOnFocus: false,
@@ -200,29 +171,17 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     },
   );
 
-  // Genre fetcher
   const genreFetcher = (url: string) =>
     fetch(url, {
       headers: accessToken ? { access_token: accessToken } : {},
     })
-      .then((res) => {
-        if (!res.ok) {
-          // Silently handle auth errors
-          if (res.status === 401) {
-            console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
-            return null;
-          }
-          console.warn(`[AppContext] Genre API returned ${res.status}`);
-          return null;
-        }
-        return res.json();
-      })
+      .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!data?.artists || data.artists.length === 0) return [];
         const allGenres = data.artists.flatMap(
-          (artist: any) => artist.genres || [],
+          (artist: { genres?: string[] }) => artist.genres || [],
         );
-        return [...new Set<string>(allGenres as string[])].slice(0, 3);
+        return [...new Set<string>(allGenres)].slice(0, 3);
       })
       .catch(() => []);
 
@@ -236,14 +195,13 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 60000, // Cache genres for 1 minute
+      dedupingInterval: GENRE_CACHE_DURATION,
     },
   );
 
-  // Derive loading state
-  const isLoadingInitialData = isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed;
+  const isLoadingInitialData =
+    isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed;
 
-  // Invalidate recently played when track changes or listening stops
   useEffect(() => {
     if (!isListening && accessToken) {
       const timer = setTimeout(() => {
@@ -251,10 +209,15 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
           ({ invalidateRecentlyPlayed }) => invalidateRecentlyPlayed(),
         );
         mutateRecentlyPlayed();
-      }, 2000);
+      }, REVALIDATION_DELAY);
       return () => clearTimeout(timer);
     }
-  }, [nowPlayingTrack?.item?.id, isListening, accessToken, mutateRecentlyPlayed]);
+  }, [
+    nowPlayingTrack?.item?.id,
+    isListening,
+    accessToken,
+    mutateRecentlyPlayed,
+  ]);
 
   // Derive if web player is the active device
   const isWebPlayerActive =

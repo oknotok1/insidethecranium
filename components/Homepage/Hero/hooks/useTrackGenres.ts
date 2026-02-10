@@ -1,12 +1,17 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-interface Track {
-  id: string;
-  artists: Array<{ id: string; name: string }>;
+import type { Track } from "@/types/spotify";
+
+interface ArtistWithGenres {
+  genres: string[];
+}
+
+interface GenresApiResponse {
+  artists: ArtistWithGenres[];
 }
 
 export const useTrackGenres = (
-  track: Track | undefined,
+  track: Pick<Track, "id" | "artists"> | undefined,
   accessToken: string | undefined,
 ) => {
   const [genres, setGenres] = useState<string[]>([]);
@@ -23,16 +28,11 @@ export const useTrackGenres = (
         const response = await fetch(
           `/api/spotify/artists/genres?artistIds=${artistIds}`,
           {
-            headers: accessToken
-              ? {
-                  access_token: accessToken,
-                }
-              : {},
+            headers: { access_token: accessToken },
           },
         );
 
         if (!response.ok) {
-          // Log but don't throw - handle gracefully
           console.warn(
             `[useTrackGenres] API returned ${response.status}, falling back to no genres`,
           );
@@ -40,27 +40,20 @@ export const useTrackGenres = (
           return;
         }
 
-        const data = await response.json();
+        const data = (await response.json()) as GenresApiResponse;
 
-        // Handle case where API returns error with empty artists array
-        if (!data.artists || data.artists.length === 0) {
+        if (!data.artists?.length) {
           console.warn("[useTrackGenres] No artists data returned");
           setGenres([]);
           return;
         }
 
-        // Collect all unique genres from all artists, limit to 3
-        const allGenres = data.artists.flatMap(
-          (artist: any) => artist.genres || [],
-        );
-        const uniqueGenres = [...new Set<string>(allGenres as string[])].slice(
-          0,
-          3,
-        );
+        const allGenres = data.artists.flatMap((artist) => artist.genres || []);
+        const uniqueGenres = [...new Set(allGenres)].slice(0, 3);
         setGenres(uniqueGenres);
       } catch (error) {
         console.error("[useTrackGenres] Failed to fetch genres:", error);
-        setGenres([]); // Gracefully degrade to no genres
+        setGenres([]);
       }
     };
 

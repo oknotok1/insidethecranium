@@ -1,4 +1,8 @@
-// Helper function to format duration from milliseconds to mm:ss
+import type { NowPlayingTrack, Track } from "@/types/spotify";
+
+/**
+ * Format duration from milliseconds to mm:ss
+ */
 export const formatDuration = (ms: number): string => {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -6,23 +10,9 @@ export const formatDuration = (ms: number): string => {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
-interface Track {
-  id: string;
-  name: string;
-  artists: Array<{ id: string; name: string }>;
-  album: {
-    name: string;
-    images: Array<{ url: string }>;
-  };
-  duration_ms: number;
-}
-
-interface NowPlayingTrack {
-  item?: Track;
-  progress_ms?: number;
-  is_playing: boolean;
-}
-
+/**
+ * Extract and format song data for display
+ */
 export const extractSongData = (
   displayTrack: Track | undefined,
   isListening: boolean,

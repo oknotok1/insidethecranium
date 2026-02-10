@@ -2,6 +2,23 @@
  * Rate Limit Handling Utilities for Spotify API
  */
 
+// Constants
+const RATE_LIMIT_THRESHOLD = 60; // seconds
+const MAX_RETRY_DELAY = 10; // seconds
+const SECONDS_TO_MS = 1000;
+
+// Helper functions
+const formatRetryMinutes = (seconds: number): string =>
+  (seconds / 60).toFixed(1);
+
+const calculateRetryTime = (seconds: number): string => {
+  const retryDate = new Date(Date.now() + seconds * SECONDS_TO_MS);
+  return retryDate.toLocaleString("en-US", {
+    timeZone: "Asia/Singapore",
+    hour12: false,
+  });
+};
+
 export interface RateLimitResult {
   shouldRetry: boolean;
   retryAfter: number; // in seconds
@@ -20,17 +37,11 @@ export function shouldRetryRateLimit(
   retryCount: number,
   maxRetries: number,
 ): RateLimitResult {
-  const retryMinutes = (retryAfterSeconds / 60).toFixed(1);
+  const retryMinutes = formatRetryMinutes(retryAfterSeconds);
+  const retryAvailableTime = calculateRetryTime(retryAfterSeconds);
 
-  // Calculate when the rate limit will expire
-  const retryAvailableAt = new Date(Date.now() + retryAfterSeconds * 1000);
-  const retryAvailableTime = retryAvailableAt.toLocaleString("en-US", {
-    timeZone: "Asia/Singapore",
-    hour12: false,
-  });
-
-  // If rate limit > 60s, we're deeply rate limited - skip retries
-  if (retryAfterSeconds > 60) {
+  // If rate limit exceeds threshold, skip retries
+  if (retryAfterSeconds > RATE_LIMIT_THRESHOLD) {
     return {
       shouldRetry: false,
       retryAfter: 0,
@@ -47,8 +58,7 @@ export function shouldRetryRateLimit(
     };
   }
 
-  // Cap retry delay at 10 seconds for shorter rate limits
-  const cappedRetryAfter = Math.min(retryAfterSeconds, 10);
+  const cappedRetryAfter = Math.min(retryAfterSeconds, MAX_RETRY_DELAY);
 
   return {
     shouldRetry: true,
@@ -62,5 +72,5 @@ export function shouldRetryRateLimit(
  * @param seconds - Duration to wait in seconds
  */
 export async function waitForRetry(seconds: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+  await new Promise((resolve) => setTimeout(resolve, seconds * SECONDS_TO_MS));
 }

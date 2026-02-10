@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SPOTIFY_API, getSpotifyAccessToken, getFreshSpotifyAccessToken } from "@/utils/spotify";
+
 import { logger } from "@/utils/logger";
+import {
+  getFreshSpotifyAccessToken,
+  getSpotifyAccessToken,
+  SPOTIFY_API,
+} from "@/utils/spotify";
 
 // Cache indefinitely - invalidated on-demand when track changes
 export const revalidate = false;
 
 export async function GET(request: NextRequest) {
   const url = `${SPOTIFY_API.BASE_URL}/me/player/recently-played?limit=1`;
-  
+
   // Try to get token from headers first (for backward compatibility),
   // otherwise fetch server-side
   let accessToken = request.headers.get("access_token");
@@ -21,7 +26,10 @@ export async function GET(request: NextRequest) {
       isServerToken = true;
       logger.log("Recently Played API", "Using server-side access token");
     } catch (err: any) {
-      logger.error("Recently Played API", `Failed to get token: ${err.message}`);
+      logger.error(
+        "Recently Played API",
+        `Failed to get token: ${err.message}`,
+      );
       return NextResponse.json(
         { error: "Failed to get access token" },
         { status: 500 },
@@ -43,7 +51,10 @@ export async function GET(request: NextRequest) {
 
     // If 401 and we used a server token, retry with fresh token
     if (response.status === 401 && isServerToken) {
-      logger.warn("Recently Played API", "Token expired, fetching fresh token and retrying");
+      logger.warn(
+        "Recently Played API",
+        "Token expired, fetching fresh token and retrying",
+      );
       try {
         accessToken = await getFreshSpotifyAccessToken();
         response = await fetch(url, {
@@ -56,7 +67,10 @@ export async function GET(request: NextRequest) {
           },
         });
       } catch (retryErr: any) {
-        logger.error("Recently Played API", `Retry failed: ${retryErr.message}`);
+        logger.error(
+          "Recently Played API",
+          `Retry failed: ${retryErr.message}`,
+        );
         return NextResponse.json(
           { error: "Failed to refresh token" },
           { status: 500 },

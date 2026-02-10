@@ -11,10 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface ThemeToggleProps {
-  isMobile?: boolean;
-}
+const THEME_OPTIONS = ["light", "dark", "system"] as const;
 
+// Theme icon that switches between sun and moon
 const ThemeIcon = ({ size = "h-5 w-5" }: { size?: string }) => (
   <>
     <Sun
@@ -26,45 +25,51 @@ const ThemeIcon = ({ size = "h-5 w-5" }: { size?: string }) => (
   </>
 );
 
+// Theme menu items
 const ThemeMenuItems = ({
   onSelect,
 }: {
   onSelect: (theme: string) => void;
 }) => (
   <>
-    <DropdownMenuItem onClick={() => onSelect("light")}>
-      Light
-    </DropdownMenuItem>
-    <DropdownMenuItem onClick={() => onSelect("dark")}>Dark</DropdownMenuItem>
-    <DropdownMenuItem onClick={() => onSelect("system")}>
-      System
-    </DropdownMenuItem>
+    {THEME_OPTIONS.map((theme) => (
+      <DropdownMenuItem key={theme} onClick={() => onSelect(theme)}>
+        {theme.charAt(0).toUpperCase() + theme.slice(1)}
+      </DropdownMenuItem>
+    ))}
   </>
 );
 
-export default function ThemeToggle({ isMobile = false }: ThemeToggleProps) {
+export default function ThemeToggle({
+  isMobile = false,
+}: {
+  isMobile?: boolean;
+}) {
   const { setTheme } = useTheme();
-
-  const triggerButton = isMobile ? (
-    <button className="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 w-full">
-      <ThemeIcon />
-      <span>Theme</span>
-    </button>
-  ) : (
-    <Button variant="ghost" size="icon">
-      <ThemeIcon size="h-[1.2rem] w-[1.2rem]" />
-      <span className="sr-only">Toggle theme</span>
-    </Button>
-  );
-
-  const contentProps = isMobile
-    ? { align: "start" as const, side: "bottom" as const, sideOffset: 4, alignOffset: 0 }
-    : { align: "end" as const };
 
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>{triggerButton}</DropdownMenuTrigger>
-      <DropdownMenuContent {...contentProps}>
+      <DropdownMenuTrigger asChild>
+        {isMobile ? (
+          <button className="flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">
+            <ThemeIcon />
+            <span>Theme</span>
+          </button>
+        ) : (
+          <Button variant="ghost" size="icon">
+            <ThemeIcon size="h-[1.2rem] w-[1.2rem]" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+        )}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align={isMobile ? "start" : "end"}
+        {...(isMobile && {
+          side: "bottom" as const,
+          sideOffset: 4,
+          alignOffset: 0,
+        })}
+      >
         <ThemeMenuItems onSelect={setTheme} />
       </DropdownMenuContent>
     </DropdownMenu>

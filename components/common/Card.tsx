@@ -1,12 +1,13 @@
 import React from "react";
+
 import Link from "next/link";
 
 /**
  * Unified Card Component (2026 Design System)
- * 
+ *
  * A flexible card wrapper that follows the site's unified design language.
  * Supports multiple element types (div, Link, button, anchor) with consistent styling.
- * 
+ *
  * Features:
  * - Subtle borders that become more visible on hover
  * - Scale and shadow hover effects
@@ -41,7 +42,11 @@ interface AnchorCardProps extends BaseCardProps {
   rel?: string;
 }
 
-type CardProps = DivCardProps | LinkCardProps | ButtonCardProps | AnchorCardProps;
+type CardProps =
+  | DivCardProps
+  | LinkCardProps
+  | ButtonCardProps
+  | AnchorCardProps;
 
 const baseClasses =
   "group relative flex flex-col overflow-hidden bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-lg transition-all duration-300";
@@ -65,7 +70,10 @@ export function Card({ children, className = "", ...props }: CardProps) {
   if (props.as === "button") {
     const { onClick } = props as ButtonCardProps;
     return (
-      <button onClick={onClick} className={`${combinedClasses} w-full text-left`}>
+      <button
+        onClick={onClick}
+        className={`${combinedClasses} w-full text-left`}
+      >
         {children}
       </button>
     );
@@ -84,9 +92,13 @@ export function Card({ children, className = "", ...props }: CardProps) {
 }
 
 // Specific card variants for convenience
-export function InteractiveCard({ children, className = "", onClick }: BaseCardProps & { onClick?: () => void }) {
+export function InteractiveCard({
+  children,
+  className = "",
+  onClick,
+}: BaseCardProps & { onClick?: () => void }) {
   return (
-    <div 
+    <div
       onClick={onClick}
       className={`${baseClasses} cursor-pointer ${className}`.trim()}
     >

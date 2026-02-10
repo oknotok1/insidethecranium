@@ -1,4 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+import type { SpotifyPlayerState } from "@/types/spotify";
+
+// Constants
+const SPOTIFY_SDK_URL = "https://sdk.scdn.co/spotify-player.js";
+const SPOTIFY_PLAYER_NAME = "Inside The Cranium Web Player";
+const DEFAULT_VOLUME = 0.5;
+const SPOTIFY_API_BASE = "https://api.spotify.com/v1";
 
 declare global {
   interface Window {
@@ -31,41 +39,17 @@ declare namespace Spotify {
   }
 }
 
-interface SpotifyPlayerState {
-  context: {
-    uri: string;
-    metadata: any;
-  };
-  disallows: {
-    pausing: boolean;
-    skipping_prev: boolean;
-  };
-  paused: boolean;
-  position: number;
-  duration: number;
-  track_window: {
-    current_track: {
-      id: string;
-      uri: string;
-      type: string;
-      name: string;
-      duration_ms: number;
-      artists: Array<{
-        name: string;
-        uri: string;
-      }>;
-      album: {
-        name: string;
-        uri: string;
-        images: Array<{
-          url: string;
-        }>;
-      };
-    };
-    previous_tracks: any[];
-    next_tracks: any[];
-  };
-}
+// Helper to build Spotify player API URL
+const buildPlayerUrl = (deviceId: string): string =>
+  `${SPOTIFY_API_BASE}/me/player/play?device_id=${deviceId}`;
+
+// Helper to load Spotify SDK script
+const loadSpotifySDK = (): void => {
+  const script = document.createElement("script");
+  script.src = SPOTIFY_SDK_URL;
+  script.async = true;
+  document.body.appendChild(script);
+};
 
 export const useSpotifyPlayer = (accessToken: string | undefined) => {
   const [player, setPlayer] = useState<Spotify.Player | null>(null);
@@ -79,19 +63,13 @@ export const useSpotifyPlayer = (accessToken: string | undefined) => {
   useEffect(() => {
     if (!accessToken) return;
 
-    // Load Spotify SDK script
-    const script = document.createElement("script");
-    script.src = "https://sdk.scdn.co/spotify-player.js";
-    script.async = true;
-    document.body.appendChild(script);
+    loadSpotifySDK();
 
     window.onSpotifyWebPlaybackSDKReady = () => {
       const spotifyPlayer = new window.Spotify.Player({
-        name: "Inside The Cranium Web Player",
-        getOAuthToken: (cb) => {
-          cb(accessToken);
-        },
-        volume: 0.5,
+        name: SPOTIFY_PLAYER_NAME,
+        getOAuthToken: (cb) => cb(accessToken),
+        volume: DEFAULT_VOLUME,
       });
 
       // Error handling
@@ -149,19 +127,14 @@ export const useSpotifyPlayer = (accessToken: string | undefined) => {
     async (spotify_uri?: string) => {
       if (!deviceId || !accessToken) return;
 
-      const body = spotify_uri ? { uris: [spotify_uri] } : undefined;
-
-      await fetch(
-        `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-        {
-          method: "PUT",
-          body: JSON.stringify(body),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
+      await fetch(buildPlayerUrl(deviceId), {
+        method: "PUT",
+        body: JSON.stringify(spotify_uri ? { uris: [spotify_uri] } : undefined),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
-      );
+      });
     },
     [deviceId, accessToken],
   );

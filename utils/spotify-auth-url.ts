@@ -8,6 +8,8 @@
  * - user-top-read: Get user's top artists (for genres)
  */
 
+// Constants
+const SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com/authorize";
 const REQUIRED_SCOPES = [
   "user-read-currently-playing",
   "user-read-recently-played",
@@ -15,16 +17,23 @@ const REQUIRED_SCOPES = [
   "user-top-read",
 ];
 
-export function getSpotifyAuthUrl(clientId: string, redirectUri: string) {
-  const scopes = REQUIRED_SCOPES.join(" ");
-  const params = new URLSearchParams({
+// Helper functions
+const buildAuthParams = (
+  clientId: string,
+  redirectUri: string,
+  scopes: string,
+): URLSearchParams =>
+  new URLSearchParams({
     client_id: clientId,
     response_type: "code",
     redirect_uri: redirectUri,
     scope: scopes,
   });
 
-  return `https://accounts.spotify.com/authorize?${params.toString()}`;
+export function getSpotifyAuthUrl(clientId: string, redirectUri: string) {
+  const scopes = REQUIRED_SCOPES.join(" ");
+  const params = buildAuthParams(clientId, redirectUri, scopes);
+  return `${SPOTIFY_AUTH_BASE_URL}?${params.toString()}`;
 }
 
 // For quick reference in console

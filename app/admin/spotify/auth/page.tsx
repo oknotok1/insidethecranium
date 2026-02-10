@@ -23,27 +23,27 @@ export default function SpotifyAuthPage() {
   return (
     <main className="flex flex-col">
       <section className="py-12 sm:py-16 lg:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900 dark:text-white">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <h1 className="mb-8 text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
             Spotify Authorization Helper
           </h1>
 
-          <div className="bg-gray-100 dark:bg-white/5 rounded-lg p-6 mb-6 border border-gray-200 dark:border-white/10">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-gray-100 p-6 dark:border-white/10 dark:bg-white/5">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
               Required Setup
             </h2>
             <p className="mb-4 text-gray-700 dark:text-gray-300">
               Before clicking the button below, make sure you've added this
               redirect URI to your Spotify app settings:
             </p>
-            <ol className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
+            <ol className="list-inside list-decimal space-y-2 text-gray-700 dark:text-gray-300">
               <li>
                 Go to{" "}
                 <a
                   href="https://developer.spotify.com/dashboard"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#3d38f5] dark:text-[#8b87ff] hover:underline"
+                  className="text-[#3d38f5] hover:underline dark:text-[#8b87ff]"
                 >
                   Spotify Developer Dashboard
                 </a>
@@ -52,7 +52,7 @@ export default function SpotifyAuthPage() {
               <li>Click "Edit Settings"</li>
               <li>
                 Under "Redirect URIs", add:{" "}
-                <code className="px-2 py-1 rounded bg-gray-200 dark:bg-white/10 text-sm font-mono text-gray-900 dark:text-white">
+                <code className="rounded bg-gray-200 px-2 py-1 font-mono text-sm text-gray-900 dark:bg-white/10 dark:text-white">
                   {redirectUri}
                 </code>
               </li>
@@ -60,14 +60,14 @@ export default function SpotifyAuthPage() {
             </ol>
           </div>
 
-          <div className="bg-gray-100 dark:bg-white/5 rounded-lg p-6 mb-6 border border-gray-200 dark:border-white/10">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-gray-100 p-6 dark:border-white/10 dark:bg-white/5">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
               Required Scopes
             </h2>
-            <ul className="list-disc list-inside space-y-2">
+            <ul className="list-inside list-disc space-y-2">
               {scopes.map((scope) => (
                 <li key={scope} className="text-gray-700 dark:text-gray-300">
-                  <code className="text-[#3d38f5] dark:text-[#8b87ff] font-mono text-sm">
+                  <code className="font-mono text-sm text-[#3d38f5] dark:text-[#8b87ff]">
                     {scope}
                   </code>
                 </li>
@@ -77,16 +77,16 @@ export default function SpotifyAuthPage() {
 
           <a
             href={authUrl}
-            className="inline-block bg-[#3d38f5] hover:bg-[#2e29cc] dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef] text-white px-8 py-4 rounded-full text-base sm:text-lg font-semibold transition-colors mb-6"
+            className="mb-6 inline-block rounded-full bg-[#3d38f5] px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-[#2e29cc] sm:text-lg dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
           >
             Authorize with Spotify
           </a>
 
-          <div className="bg-gray-100 dark:bg-white/5 rounded-lg p-6 border border-gray-200 dark:border-white/10">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="rounded-lg border border-gray-200 bg-gray-100 p-6 dark:border-white/10 dark:bg-white/5">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
               What happens next?
             </h2>
-            <ol className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
+            <ol className="list-inside list-decimal space-y-2 text-gray-700 dark:text-gray-300">
               <li>You'll be redirected to Spotify to authorize the app</li>
               <li>
                 After authorization, you'll be redirected back to a page with
@@ -95,7 +95,7 @@ export default function SpotifyAuthPage() {
               <li>Copy and run the provided curl command in your terminal</li>
               <li>
                 Update your{" "}
-                <code className="px-2 py-1 rounded bg-gray-200 dark:bg-white/10 text-sm font-mono text-gray-900 dark:text-white">
+                <code className="rounded bg-gray-200 px-2 py-1 font-mono text-sm text-gray-900 dark:bg-white/10 dark:text-white">
                   .env.local
                 </code>{" "}
                 with the new refresh token

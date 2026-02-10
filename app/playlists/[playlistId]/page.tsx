@@ -1,12 +1,29 @@
 import { cache } from "react";
-import Link from "next/link";
+
 import { notFound } from "next/navigation";
-import { ArrowLeft, Music, Clock, User, ExternalLink } from "lucide-react";
-import { ImageWithFallback } from "@/components/common/ImageWithFallback";
-import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
+
 import PlaylistArtists from "@/components/Playlists/PlaylistArtists";
+import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
+
 import { logger } from "@/utils/logger";
-import { SPOTIFY_API } from "@/utils/spotify";
+import {
+  decodeHtmlEntities,
+  getSpotifyAccessToken,
+  SPOTIFY_API,
+} from "@/utils/spotify";
+
+import type {
+  ArtistDetails,
+  PlaylistDetails,
+  PlaylistTrack,
+} from "@/types/spotify";
+
+import ErrorState from "./components/ErrorState";
+import PlaylistHeader from "./components/PlaylistHeader";
+import TrackList from "./components/TrackList";
+
+// Constants
+const MAX_ARTIST_IMAGE_INDEX = -1; // Use smallest image (last in array)
 
 // Cache playlist pages for 24 hours
 export const revalidate = 86400;
@@ -31,112 +48,109 @@ export async function generateStaticParams() {
   // ];
 }
 
-interface PlaylistTrack {
-  added_at: string;
-  track: {
-    id: string;
-    name: string;
-    duration_ms: number;
-    external_urls: {
-      spotify: string;
-    };
-    album: {
-      name: string;
-      images: Array<{
-        url: string;
-        height: number;
-        width: number;
-      }>;
-    };
-    artists: Array<{
-      id: string;
-      name: string;
-      external_urls: {
-        spotify: string;
+// Helper function
+const formatTotalDuration = (ms: number): string => {
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  return hours > 0 ? `${hours} hr ${minutes} min` : `${minutes} min`;
+};
+
+const calculateTotalDuration = (items: PlaylistTrack[]): number =>
+  items
+    .filter((item) => item.track)
+    .reduce((sum, item) => sum + item.track.duration_ms, 0);
+
+const getUniqueArtistIds = (items: PlaylistTrack[]): string[] =>
+  Array.from(
+    new Set(
+      items
+        .filter((item) => item.track)
+        .flatMap((item) => item.track.artists.map((artist) => artist.id)),
+    ),
+  );
+
+const calculateGenreStats = (
+  items: PlaylistTrack[],
+  artistMap: Record<string, ArtistDetails>,
+  totalTracks: number,
+) => {
+  const genreCounts = new Map<string, Set<string>>();
+
+  items
+    .filter((item) => item.track)
+    .forEach((item) => {
+      item.track.artists.forEach((artist) => {
+        const artistData = artistMap[artist.id];
+        const genres = artistData?.genres || [];
+        genres.forEach((genre) => {
+          if (!genreCounts.has(genre)) {
+            genreCounts.set(genre, new Set());
+          }
+          genreCounts.get(genre)!.add(item.track.id);
+        });
+      });
+    });
+
+  return Array.from(genreCounts.entries())
+    .map(([genre, trackIds]) => {
+      const tracks = items
+        .filter((item) => item.track && trackIds.has(item.track.id))
+        .map((item) => item.track);
+
+      return {
+        genre,
+        count: trackIds.size,
+        percentage: Math.round((trackIds.size / totalTracks) * 100),
+        tracks,
       };
-    }>;
-  };
-}
+    })
+    .sort((a, b) => b.count - a.count);
+};
 
-interface PlaylistDetails {
-  id: string;
-  name: string;
-  description: string;
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
-  owner: {
-    display_name: string;
-    external_urls: {
-      spotify: string;
-    };
-  };
-  followers: {
-    total: number;
-  };
-  tracks: {
-    total: number;
-    items: PlaylistTrack[];
-  };
-  external_urls: {
-    spotify: string;
-  };
-  public: boolean;
-}
+const calculateArtistStats = (
+  items: PlaylistTrack[],
+  artistMap: Record<string, ArtistDetails>,
+) => {
+  const artistCounts = new Map<
+    string,
+    { id: string; name: string; songCount: number; image?: string }
+  >();
 
-interface ArtistDataAPI {
-  id: string;
-  name: string;
-  genres: string[];
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
-}
+  items
+    .filter((item) => item.track)
+    .forEach((item) => {
+      item.track.artists.forEach((artist) => {
+        const existing = artistCounts.get(artist.id);
+        const artistData = artistMap[artist.id];
+        const image =
+          artistData?.images && artistData.images.length > 0
+            ? artistData.images.at(MAX_ARTIST_IMAGE_INDEX)?.url
+            : undefined;
 
-// Helper to get access token (inlined to avoid import issues with unstable_cache)
-async function getAccessToken(): Promise<string> {
-  const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } =
-    process.env;
-  const token = Buffer.from(
-    `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
-  ).toString("base64");
-  const params = new URLSearchParams();
-  params.append("grant_type", "refresh_token");
-  if (SPOTIFY_REFRESH_TOKEN) {
-    params.append("refresh_token", SPOTIFY_REFRESH_TOKEN);
-  }
+        if (existing) {
+          existing.songCount += 1;
+        } else {
+          artistCounts.set(artist.id, {
+            id: artist.id,
+            name: artist.name,
+            songCount: 1,
+            image,
+          });
+        }
+      });
+    });
 
-  const response = await fetch(SPOTIFY_API.TOKEN_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${token}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: params,
-    next: {
-      revalidate: 3000, // Cache for 50 minutes
-      tags: ["spotify-token"],
-    },
-  });
+  return Array.from(artistCounts.values()).sort(
+    (a, b) => b.songCount - a.songCount,
+  );
+};
 
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data.access_token;
-}
-
-// Fetch playlist details with Next.js unstable_cache to deduplicate across metadata + page render
+// Fetch playlist details with Next.js cache
 async function fetchPlaylistDetails(
   playlistId: string,
 ): Promise<PlaylistDetails> {
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = await getSpotifyAccessToken();
 
     // Validate and clean playlist ID
     const cleanPlaylistId = decodeURIComponent(playlistId).trim();
@@ -203,11 +217,11 @@ const getPlaylistDetails = cache(
 // Fetch artist details - returns plain object (not Map) for cache serialization
 async function fetchArtistDetails(
   artistIds: string[],
-): Promise<Record<string, ArtistDataAPI>> {
+): Promise<Record<string, ArtistDetails>> {
   if (artistIds.length === 0) return {};
 
   try {
-    const accessToken = await getAccessToken();
+    const accessToken = await getSpotifyAccessToken();
     logger.log("Playlist Detail", `Fetching ${artistIds.length} artists`);
 
     // Use our cached API endpoint with indefinite caching
@@ -233,9 +247,9 @@ async function fetchArtistDetails(
     }
 
     const data = await response.json();
-    const artistMap: Record<string, ArtistDataAPI> = {};
+    const artistMap: Record<string, ArtistDetails> = {};
 
-    data.artists.forEach((artist: ArtistDataAPI) => {
+    data.artists.forEach((artist: ArtistDetails) => {
       if (artist) {
         artistMap[artist.id] = {
           id: artist.id,
@@ -263,37 +277,10 @@ async function fetchArtistDetails(
 // Use React cache() to deduplicate calls within same request
 // The inner fetch already has Next.js data cache
 const getArtistDetails = cache(
-  async (artistIds: string[]): Promise<Record<string, ArtistDataAPI>> => {
+  async (artistIds: string[]): Promise<Record<string, ArtistDetails>> => {
     return fetchArtistDetails(artistIds);
   },
 );
-
-function formatDuration(ms: number): string {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
-
-function formatTotalDuration(ms: number): string {
-  const hours = Math.floor(ms / 3600000);
-  const minutes = Math.floor((ms % 3600000) / 60000);
-  if (hours > 0) {
-    return `${hours} hr ${minutes} min`;
-  }
-  return `${minutes} min`;
-}
-
-function decodeHtmlEntities(text: string): string {
-  return text
-    .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16))) // Hex entities like &#x27;
-    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec)) // Decimal entities like &#39;
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&apos;/g, "'")
-    .replace(/<[^>]*>/g, ""); // Strip HTML tags
-}
 
 export default async function PlaylistDetailPage({
   params,
@@ -302,329 +289,55 @@ export default async function PlaylistDetailPage({
 }) {
   const { playlistId } = await params;
 
+  // Fetch and prepare data
+  let playlist: PlaylistDetails;
+  let artistMap: Record<string, ArtistDetails>;
+  let totalDuration: number;
+  let genreStats: ReturnType<typeof calculateGenreStats>;
+  let artistStats: ReturnType<typeof calculateArtistStats>;
+  let decodedDescription: string;
+
   try {
-    const playlist = await getPlaylistDetails(playlistId);
+    playlist = await getPlaylistDetails(playlistId);
 
-    // Get unique artist IDs from tracks
-    const artistIds = Array.from(
-      new Set(
-        playlist.tracks.items
-          .filter((item) => item.track)
-          .flatMap((item) => item.track.artists.map((artist) => artist.id)),
-      ),
+    // Get unique artist IDs and fetch their details
+    const artistIds = getUniqueArtistIds(playlist.tracks.items);
+    artistMap = await getArtistDetails(artistIds);
+
+    // Calculate statistics
+    totalDuration = calculateTotalDuration(playlist.tracks.items);
+    genreStats = calculateGenreStats(
+      playlist.tracks.items,
+      artistMap,
+      playlist.tracks.total,
     );
-
-    // Fetch artist details including genres and images
-    const artistMap = await getArtistDetails(artistIds);
-
-    // Calculate total duration
-    const totalDuration = playlist.tracks.items
-      .filter((item) => item.track)
-      .reduce((sum, item) => sum + item.track.duration_ms, 0);
-
-    // Calculate genre statistics
-    const genreCounts = new Map<string, Set<string>>();
-    playlist.tracks.items
-      .filter((item) => item.track)
-      .forEach((item) => {
-        item.track.artists.forEach((artist) => {
-          const artistData = artistMap[artist.id];
-          const genres = artistData?.genres || [];
-          genres.forEach((genre) => {
-            if (!genreCounts.has(genre)) {
-              genreCounts.set(genre, new Set());
-            }
-            genreCounts.get(genre)!.add(item.track.id);
-          });
-        });
-      });
-
-    // Create genre stats with tracks
-    const genreStats = Array.from(genreCounts.entries())
-      .map(([genre, trackIds]) => {
-        const tracks = playlist.tracks.items
-          .filter((item) => item.track && trackIds.has(item.track.id))
-          .map((item) => item.track);
-
-        return {
-          genre,
-          count: trackIds.size,
-          percentage: Math.round((trackIds.size / playlist.tracks.total) * 100),
-          tracks,
-        };
-      })
-      .sort((a, b) => b.count - a.count);
-
-    // Calculate artist statistics with images
-    const artistCounts = new Map<
-      string,
-      { id: string; name: string; songCount: number; image?: string }
-    >();
-    playlist.tracks.items
-      .filter((item) => item.track)
-      .forEach((item) => {
-        item.track.artists.forEach((artist) => {
-          const existing = artistCounts.get(artist.id);
-          const artistData = artistMap[artist.id];
-          const image =
-            artistData?.images && artistData.images.length > 0
-              ? artistData.images[artistData.images.length - 1].url
-              : undefined;
-
-          if (existing) {
-            existing.songCount += 1;
-          } else {
-            artistCounts.set(artist.id, {
-              id: artist.id,
-              name: artist.name,
-              songCount: 1,
-              image,
-            });
-          }
-        });
-      });
-
-    const artistStats = Array.from(artistCounts.values()).sort(
-      (a, b) => b.songCount - a.songCount,
-    );
+    artistStats = calculateArtistStats(playlist.tracks.items, artistMap);
 
     // Decode HTML entities in description
-    const decodedDescription = playlist.description
+    decodedDescription = playlist.description
       ? decodeHtmlEntities(playlist.description)
       : "";
-
-    return (
-      <main className="flex flex-col">
-        {/* Header */}
-        <section className="py-6 sm:py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Link
-              href="/playlists"
-              className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-6 sm:mb-8 transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Playlists</span>
-            </Link>
-
-            <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
-              {/* Playlist Image */}
-              <div className="relative shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5">
-                {playlist.images && playlist.images.length > 0 ? (
-                  <ImageWithFallback
-                    src={playlist.images[0].url}
-                    alt={playlist.name}
-                    fill
-                    priority
-                    sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Music className="w-24 h-24 text-gray-400 dark:text-gray-600" />
-                  </div>
-                )}
-              </div>
-
-              {/* Playlist Info */}
-              <div className="flex-1 flex flex-col justify-end">
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  Playlist
-                </div>
-                <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight text-gray-900 dark:text-white">
-                  {playlist.name}
-                </h1>
-                {decodedDescription && (
-                  <p className="mb-8 text-sm sm:text-base text-gray-700 dark:text-gray-300 line-clamp-3">
-                    {decodedDescription}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center space-x-2">
-                    <User className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <a
-                      href={playlist.owner.external_urls.spotify}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      {playlist.owner.display_name}
-                    </a>
-                  </div>
-                  <span className="hidden sm:inline">•</span>
-                  <div className="flex items-center space-x-2">
-                    <Music className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{playlist.tracks.total} songs</span>
-                  </div>
-                  <span className="hidden sm:inline">•</span>
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{formatTotalDuration(totalDuration)}</span>
-                  </div>
-                  {playlist.followers && playlist.followers.total > 0 && (
-                    <>
-                      <span className="hidden sm:inline">•</span>
-                      <div className="flex items-center space-x-2">
-                        <span>
-                          {playlist.followers.total.toLocaleString()} followers
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Open in Spotify Button */}
-                <div className="mt-6">
-                  <a
-                    href={playlist.external_urls.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-[#3d38f5] hover:bg-[#2d28e5] text-white transition-colors text-sm font-medium"
-                  >
-                    <span>Open in Spotify</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Genres */}
-        {genreStats.length > 0 && <PlaylistGenres genreStats={genreStats} />}
-
-        {/* Artists */}
-        {artistStats.length > 0 && <PlaylistArtists artists={artistStats} />}
-
-        {/* Tracks */}
-        <section className="py-6 sm:py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-xl sm:text-2xl text-gray-900 dark:text-white">
-              Tracks
-            </h2>
-            <div className="space-y-2">
-              {playlist.tracks.items.map((item, originalIndex) => {
-                if (!item?.track) return null;
-
-                const track = item.track;
-                const trackGenres = track.artists
-                  .flatMap((artist) => {
-                    const artistData = artistMap[artist.id];
-                    return artistData?.genres || [];
-                  })
-                  .slice(0, 2);
-
-                return (
-                  <a
-                    key={track.id}
-                    href={track.external_urls.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center space-x-2 sm:space-x-4 p-2 sm:p-4 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors min-h-[72px] sm:min-h-[80px]"
-                  >
-                    {/* Track Number */}
-                    <div className="shrink-0 w-6 sm:w-8 text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500">
-                      {originalIndex + 1}
-                    </div>
-
-                    {/* Album Art */}
-                    <div className="relative shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
-                      {track.album.images && track.album.images.length > 0 ? (
-                        <ImageWithFallback
-                          src={
-                            track.album.images[track.album.images.length - 1]
-                              .url
-                          }
-                          alt={track.album.name}
-                          fill
-                          sizes="(max-width: 640px) 40px, 48px"
-                          className="object-cover group-hover:scale-102 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Music className="w-4 h-4 text-gray-400" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Track Info */}
-                    <div className="flex-1 min-w-0 flex items-center justify-between">
-                      {/* Left: Song & Artist */}
-                      <div className="min-w-0 shrink">
-                        <div className="mb-0.5 text-sm sm:text-base font-medium truncate text-gray-900 dark:text-white">
-                          {track.name}
-                        </div>
-                        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
-                          {track.artists
-                            .map((artist) => artist.name)
-                            .join(", ")}
-                        </div>
-                        {/* Mobile: genres dot-separated on third line */}
-                        {trackGenres.length > 0 && (
-                          <div className="sm:hidden text-xs text-gray-500 dark:text-gray-500 mt-1 truncate">
-                            {trackGenres.length > 0
-                              ? trackGenres.join(" • ")
-                              : "\u00A0"}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Right: Album & Genre chips (Desktop only) */}
-                      <div className="hidden sm:flex items-center gap-3 shrink-0 ml-4 max-w-[400px]">
-                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate min-w-0">
-                          {track.album.name}
-                        </span>
-                        {trackGenres.length > 0 && (
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            {trackGenres.map((genre, idx) => (
-                              <span
-                                key={idx}
-                                className="px-2 py-0.5 text-xs rounded-full bg-gray-300/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 whitespace-nowrap"
-                              >
-                                {genre}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Duration */}
-                    <div className="shrink-0 text-xs sm:text-sm text-gray-500 dark:text-gray-500 font-mono">
-                      {formatDuration(track.duration_ms)}
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </main>
-    );
   } catch (error: any) {
     logger.error("Playlist Detail", `Error loading playlist: ${error.message}`);
-    return (
-      <main className="flex flex-col">
-        <section className="py-8 sm:py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="mb-4 text-4xl text-gray-900 dark:text-white">
-              Error Loading Playlist
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              There was a problem loading this playlist. Please try again later.
-            </p>
-            <Link
-              href="/playlists"
-              className="inline-flex items-center space-x-2 text-[#3d38f5] hover:text-[#2d28e5] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Playlists</span>
-            </Link>
-          </div>
-        </section>
-      </main>
-    );
+    return <ErrorState />;
   }
+
+  // Render UI
+  return (
+    <main className="flex flex-col">
+      <PlaylistHeader
+        playlist={playlist}
+        decodedDescription={decodedDescription}
+        totalDuration={formatTotalDuration(totalDuration)}
+      />
+
+      {genreStats.length > 0 && <PlaylistGenres genreStats={genreStats} />}
+
+      {artistStats.length > 0 && <PlaylistArtists artists={artistStats} />}
+
+      <TrackList tracks={playlist.tracks.items} artistMap={artistMap} />
+    </main>
+  );
 }
 
 export async function generateMetadata({

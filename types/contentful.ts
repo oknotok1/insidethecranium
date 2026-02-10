@@ -3,3 +3,7 @@ export interface FeaturedSong {
   artist?: string;
   url: string;
 }
+
+export interface FeaturedMusicFields {
+  featuredSongs?: FeaturedSong[];
+}

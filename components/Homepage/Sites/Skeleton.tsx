@@ -3,25 +3,25 @@ import SiteCardSkeleton from "@/components/Sites/SiteCardSkeleton";
 export default function SitesSkeleton() {
   return (
     <section className="py-12 sm:py-16 lg:py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Skeleton */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-8 sm:mb-12 gap-4">
+        <div className="mb-8 flex flex-col gap-4 sm:mb-12 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="h-8 sm:h-10 w-56 bg-gray-200 dark:bg-white/10 rounded animate-pulse mb-4" />
-            <div className="h-4 w-full max-w-2xl bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+            <div className="mb-4 h-8 w-56 animate-pulse rounded bg-gray-200 sm:h-10 dark:bg-white/10" />
+            <div className="h-4 w-full max-w-2xl animate-pulse rounded bg-gray-200 dark:bg-white/10" />
           </div>
-          <div className="hidden lg:block h-6 w-24 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+          <div className="hidden h-6 w-24 animate-pulse rounded bg-gray-200 lg:block dark:bg-white/10" />
         </div>
 
         {/* Mobile: Horizontal scroll carousel */}
-        <div className="block lg:hidden overflow-hidden -mx-4 sm:-mx-6">
-          <div className="flex overflow-x-scroll scrollbar-hide gap-4 items-stretch">
+        <div className="-mx-4 block overflow-hidden sm:-mx-6 lg:hidden">
+          <div className="scrollbar-hide flex items-stretch gap-4 overflow-x-scroll">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className={`shrink-0 w-[45%] min-w-[160px] max-w-[200px] md:w-[30%] md:max-w-[240px] ${
-                  i === 0 ? 'ml-4 sm:ml-6' : ''
-                } ${i === 5 ? 'mr-4 sm:mr-6' : ''}`}
+                className={`w-[45%] max-w-[200px] min-w-[160px] shrink-0 md:w-[30%] md:max-w-[240px] ${
+                  i === 0 ? "ml-4 sm:ml-6" : ""
+                } ${i === 5 ? "mr-4 sm:mr-6" : ""}`}
               >
                 <SiteCardSkeleton />
               </div>
@@ -30,7 +30,7 @@ export default function SitesSkeleton() {
         </div>
 
         {/* Desktop: Grid layout */}
-        <div className="hidden lg:grid grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <div className="hidden grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:grid xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i}>
               <SiteCardSkeleton />

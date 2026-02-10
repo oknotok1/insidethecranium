@@ -1,4 +1,4 @@
-import SitesContent from "@/components/Sites/SitesContent";
+import SitesClient from "./client";
 
 export const metadata = {
   title: "Recommended Sites - Inside The Cranium",
@@ -9,7 +9,7 @@ export const metadata = {
 export default function SitesPage() {
   return (
     <main className="min-h-[calc(100vh-4rem)]">
-      <SitesContent />
+      <SitesClient />
     </main>
   );
 }

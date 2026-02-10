@@ -1,0 +1,82 @@
+@reference "../../../styles/tailwind.css";
+
+.section {
+  @apply py-12 sm:py-16 lg:py-20;
+
+  .container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+
+    // Header section
+    .header {
+      @apply mb-8 sm:mb-12;
+      @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+    }
+
+    .title {
+      @apply mb-4;
+      @apply text-2xl sm:text-3xl md:text-4xl;
+    }
+
+    .viewAllLink {
+      @apply hidden lg:flex;
+      @apply w-fit items-center space-x-2;
+      @apply text-sm text-nowrap;
+      @apply transition-colors;
+    }
+
+    // Mobile carousel
+    .mobileCarouselWrapper {
+      @apply -mx-4 sm:-mx-6;
+      @apply block overflow-hidden lg:hidden;
+
+      .mobileCarousel {
+        @apply flex items-stretch gap-4;
+        @apply overflow-x-scroll;
+
+        // Hide scrollbar
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        .siteCard {
+          @apply w-[45%] max-w-[200px] min-w-[160px] shrink-0 md:w-[30%] md:max-w-[240px];
+
+          .siteCardInner {
+            @apply h-full;
+          }
+        }
+
+        .siteCardFirst {
+          @apply ml-4 sm:ml-6;
+        }
+
+        // View More Card
+        .viewMoreCard {
+          @apply mr-4 sm:mr-6;
+          @apply w-[45%] max-w-[200px] min-w-[160px] shrink-0 md:w-[30%] md:max-w-[240px];
+
+          .viewMoreCardInner {
+            @apply flex h-full flex-col items-center justify-center;
+            @apply p-6;
+            @apply rounded-xl;
+            @apply border-2 border-dashed;
+            @apply transition-colors;
+          }
+        }
+      }
+    }
+
+    // Desktop grid
+    .desktopGrid {
+      @apply hidden lg:grid;
+      @apply grid-cols-3 gap-3 sm:gap-4 md:gap-6 xl:grid-cols-4;
+
+      .siteCardWrapper {
+        @apply flex;
+      }
+    }
+  }
+}

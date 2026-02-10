@@ -1,63 +1,60 @@
 "use client";
 
-import { useState } from "react";
 import { ExternalLink, Star } from "lucide-react";
-import SiteImage from "./SiteImage";
-import SiteModal from "./SiteModal";
 import type { RecommendedSite } from "@/data/sites";
+
+import { useState } from "react";
+
 import { InteractiveCard } from "@/components/common/Card";
 
-interface SiteCardProps {
-  site: RecommendedSite;
-}
+import SiteImage from "./SiteImage";
+import SiteModal from "./SiteModal";
 
-export default function SiteCard({ site }: SiteCardProps) {
+// Helper to extract hostname from URL
+const getHostname = (url: string): string =>
+  new URL(url).hostname.replace("www.", "");
+
+export default function SiteCard({ site }: { site: RecommendedSite }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
-      <InteractiveCard
-        onClick={() => setIsModalOpen(true)}
-        className="h-full"
-      >
+      <InteractiveCard onClick={() => setIsModalOpen(true)} className="h-full">
         {/* Featured Badge */}
         {site.featured && (
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
-            <div
-              className="p-1 rounded-full backdrop-blur-sm"
-              style={{ backgroundColor: "rgba(61, 56, 245, 0.9)" }}
-            >
-              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white fill-white" />
+          <div className="absolute top-2 right-2 z-10 sm:top-3 sm:right-3">
+            <div className="rounded-full bg-[#3d38f5]/90 p-1 backdrop-blur-sm">
+              <Star className="h-3 w-3 fill-white text-white sm:h-3.5 sm:w-3.5" />
             </div>
           </div>
         )}
 
         {/* Image Header - 16:9 aspect ratio with smart fallbacks */}
-        <SiteImage 
-          url={site.url} 
-          name={site.name} 
+        <SiteImage
+          url={site.url}
+          name={site.name}
           customImageUrl={site.imageUrl}
           preferFavicon={site.preferFavicon}
         />
 
         {/* Content */}
-        <div className="flex-1 flex flex-col p-3 sm:p-4">
+        <div className="flex flex-1 flex-col p-3 sm:p-4">
           {/* Title */}
-          <h3 className="font-medium text-sm sm:text-base leading-tight text-gray-900 dark:text-white group-hover:text-[#3d38f5] dark:group-hover:text-[#8b87ff] transition-colors line-clamp-1 mb-2">
+          <h3 className="mb-2 line-clamp-1 text-sm leading-tight font-medium text-gray-900 transition-colors group-hover:text-[#3d38f5] sm:text-base dark:text-white dark:group-hover:text-[#8b87ff]">
             {site.name}
           </h3>
 
           {/* Description */}
-          <p className="text-xs sm:text-sm leading-snug text-gray-600 dark:text-gray-400 line-clamp-3 mb-3 overflow-hidden">
+          <p className="mb-3 line-clamp-3 overflow-hidden text-xs leading-snug text-gray-600 sm:text-sm dark:text-gray-400">
             {site.description}
           </p>
 
           {/* Tags */}
-          <div className="flex flex-wrap items-start gap-1.5 sm:gap-2 mb-3 flex-1">
+          <div className="mb-3 flex flex-1 flex-wrap items-start gap-1.5 sm:gap-2">
             {site.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs leading-none px-2 py-1 rounded-md bg-gray-200 group-hover:bg-gray-300 dark:bg-white/5 dark:group-hover:bg-white/10 text-gray-600 dark:text-gray-400 transition-colors"
+                className="rounded-md bg-gray-200 px-2 py-1 text-xs leading-none text-gray-600 transition-colors group-hover:bg-gray-300 dark:bg-white/5 dark:text-gray-400 dark:group-hover:bg-white/10"
               >
                 {tag}
               </span>
@@ -69,13 +66,13 @@ export default function SiteCard({ site }: SiteCardProps) {
             href={site.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-200 group-hover:border-gray-300 dark:border-white/10 dark:group-hover:border-white/15 transition-colors group/link"
+            className="group/link flex items-center justify-between border-t border-gray-200 pt-2 transition-colors group-hover:border-gray-300 sm:pt-3 dark:border-white/10 dark:group-hover:border-white/15"
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-xs text-gray-500 dark:text-gray-400 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] transition-colors truncate flex-1">
-              {new URL(site.url).hostname.replace("www.", "")}
+            <span className="flex-1 truncate text-xs text-gray-500 transition-colors group-hover/link:text-[#3d38f5] dark:text-gray-400 dark:group-hover/link:text-[#8b87ff]">
+              {getHostname(site.url)}
             </span>
-            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-600 group-hover/link:text-[#3d38f5] dark:group-hover/link:text-[#8b87ff] group-hover/link:translate-x-1 transition-all shrink-0 ml-2" />
+            <ExternalLink className="ml-2 h-3.5 w-3.5 shrink-0 text-gray-400 transition-all group-hover/link:translate-x-1 group-hover/link:text-[#3d38f5] sm:h-4 sm:w-4 dark:text-gray-600 dark:group-hover/link:text-[#8b87ff]" />
           </a>
         </div>
       </InteractiveCard>

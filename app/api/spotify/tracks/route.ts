@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
+
 import { logger } from "@/utils/logger";
+import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
 
 // Cache tracks indefinitely (static content)
 export const revalidate = false;

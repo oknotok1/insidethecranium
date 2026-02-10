@@ -1,15 +1,11 @@
 @reference "../../../styles/tailwind.css";
 
 .footer {
-  @apply border-t border-gray-200 bg-gray-50 backdrop-blur-sm;
-
-  :global(.dark) & {
-    @apply border-white/10 bg-black/50;
-  }
+  // Theme-related classes moved inline to JSX
 }
 
 .container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+  @apply mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8;
 }
 
 .footerGrid {
@@ -19,7 +15,7 @@
 
 // Brand Section
 .brandSection {
-  @apply col-span-1 md:col-span-2 flex flex-col space-y-3;
+  @apply col-span-1 flex flex-col space-y-3 md:col-span-2;
 }
 
 .brandHeader {
@@ -27,24 +23,15 @@
 }
 
 .brandIcon {
-  @apply w-6 h-6;
-  color: #3d38f5;
+  @apply h-6 w-6;
 }
 
 .brandTitle {
-  @apply text-lg font-semibold text-gray-900;
-
-  :global(.dark) & {
-    @apply text-white;
-  }
+  // Theme-related classes moved inline to JSX
 }
 
 .brandDescription {
-  @apply text-sm text-gray-600;
-
-  :global(.dark) & {
-    @apply text-gray-400;
-  }
+  // Theme-related classes moved inline to JSX
 }
 
 // Generic Section (Quick Links, Connect)
@@ -53,11 +40,7 @@
 }
 
 .sectionTitle {
-  @apply font-semibold text-sm uppercase tracking-wider text-gray-600;
-
-  :global(.dark) & {
-    @apply text-gray-400;
-  }
+  // Theme-related classes moved inline to JSX
 }
 
 // Quick Links Nav
@@ -66,20 +49,7 @@
 }
 
 .navLink {
-  @apply text-sm text-gray-700 transition-colors;
-
-  :global(.dark) & {
-    @apply text-gray-300;
-  }
-
-  &:hover:not(.disabled) {
-    color: #8b87ff;
-  }
-
-  &.disabled {
-    @apply opacity-40 cursor-not-allowed;
-    pointer-events: auto; // Allow cursor to show
-  }
+  // Theme-related classes moved inline to JSX
 }
 
 // Connect Section
@@ -88,29 +58,14 @@
 }
 
 .connectLink {
-  @apply inline-flex items-center space-x-2 text-sm text-gray-700 transition-colors w-fit;
-
-  :global(.dark) & {
-    @apply text-gray-300;
-  }
-
-  &:hover {
-    color: #8b87ff;
-  }
+  @apply inline-flex w-fit items-center space-x-2;
 }
 
 .connectLinkIcon {
-  @apply w-5 h-5;
-  flex-shrink: 0;
-  background-color: currentColor;
-  transition: background-color 0.2s ease;
+  @apply h-5 w-5 shrink-0;
 }
 
 // Copyright Section
 .copyright {
-  @apply col-span-full mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-500;
-
-  :global(.dark) & {
-    @apply border-white/10 text-gray-400;
-  }
+  @apply col-span-full mt-8 pt-8;
 }

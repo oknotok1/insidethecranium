@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+.yarn
+.pnp.js
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Misc
+.DS_Store
+*.log
+coverage
+.turbo
+
+# Type definitions
+next-env.d.ts

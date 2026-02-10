@@ -1,4 +1,4 @@
-import { Music, ListMusic, Camera, Globe, LucideIcon } from "lucide-react";
+import { Camera, Globe, ListMusic, LucideIcon, Music } from "lucide-react";
 
 export interface NavigationLink {
   href: string;

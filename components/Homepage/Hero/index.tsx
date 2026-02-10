@@ -1,68 +1,49 @@
 "use client";
 
 import { ExternalLink, Music2 } from "lucide-react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useAppContext } from "@/contexts/AppContext";
+
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 import { HeroBackground } from "./Background";
 import { HeroSkeleton } from "./HeroSkeleton";
-import { useTrackGenres } from "./hooks/useTrackGenres";
-import { useHeroTimestamp } from "./hooks/useHeroTimestamp";
+
 import { useDisplayTrack } from "./hooks/useDisplayTrack";
+import { useHeroTimestamp } from "./hooks/useHeroTimestamp";
+import { useTrackGenres } from "./hooks/useTrackGenres";
+
 import { extractSongData } from "./utils/songDataExtractor";
+import { extractLastPlayedTimestamp } from "./utils/timestampExtractor";
+
 import styles from "./styles.module.scss";
 
-interface SongMetadata {
-  genres?: string[];
-  album?: string;
-  duration?: string;
-}
-
-interface TimestampProps {
-  date: string;
-  time: string;
-  isLive?: boolean;
-}
-
 export default function HeroSection() {
-  const { nowPlayingTrack, recentlyPlayedTrack, isListening, accessToken, isLoadingInitialData } =
-    useAppContext();
-
-  // Get the track to display (current or last played)
-  const displayTrack = useDisplayTrack(
+  const {
+    nowPlayingTrack,
+    recentlyPlayedTrack,
     isListening,
+    accessToken,
+    isLoadingInitialData,
+  } = useAppContext();
+
+  const displayTrack = useDisplayTrack(isListening, nowPlayingTrack, recentlyPlayedTrack);
+
+  const genres = useTrackGenres(displayTrack, accessToken);
+
+  const lastPlayedAt = extractLastPlayedTimestamp(
+    isListening,
+    displayTrack,
     nowPlayingTrack,
     recentlyPlayedTrack,
   );
 
-  // Fetch genres for the current track
-  const genres = useTrackGenres(displayTrack, accessToken);
+  const { formattedDate, formattedTime, lastPlayedTimeForLabel } = useHeroTimestamp(
+    isListening,
+    lastPlayedAt,
+  );
 
-  // Get formatted timestamps
-  // Determine which timestamp to use based on which track we're showing
-  let lastPlayedAt: string | undefined;
-
-  if (!isListening) {
-    if (displayTrack?.id === recentlyPlayedTrack?.items?.[0]?.track?.id) {
-      // Showing recently played track - use its timestamp
-      lastPlayedAt = recentlyPlayedTrack?.items?.[0]?.played_at;
-    } else if (
-      displayTrack?.id === nowPlayingTrack?.item?.id &&
-      (nowPlayingTrack as any)?.timestamp
-    ) {
-      // Showing now playing track (just stopped) - use its timestamp as approximation
-      lastPlayedAt = new Date((nowPlayingTrack as any).timestamp).toISOString();
-    }
-  }
-
-  const { formattedDate, formattedTime, lastPlayedTimeForLabel } =
-    useHeroTimestamp(isListening, lastPlayedAt);
-
-  // Extract song data for display
   const songData = extractSongData(displayTrack, isListening, nowPlayingTrack);
 
-  // Show skeleton while loading initial data or if no track is available yet
-  // Since skeleton has no dynamic content, it's safe for SSR
   if (isLoadingInitialData || !displayTrack) return <HeroSkeleton />;
 
   return (
@@ -87,9 +68,6 @@ export default function HeroSection() {
             duration: songData.duration,
           }}
           spotifyUrl={songData.spotifyUrl}
-          isListening={isListening}
-          progress={songData.progress}
-          lastPlayedTime={lastPlayedTimeForLabel}
         />
 
         <Timestamp date={formattedDate} time={formattedTime} isLive={true} />
@@ -98,33 +76,26 @@ export default function HeroSection() {
   );
 }
 
-const AlbumArtwork = ({
-  artwork,
-  album,
-}: {
-  artwork?: string;
-  album: string;
-}) => {
-  if (artwork) {
+const AlbumArtwork = ({ artwork, album }: { artwork?: string; album: string }) => {
+  if (!artwork)
     return (
-      <div className={styles.albumContainer}>
-        <div className={styles.albumArtwork}>
-          <ImageWithFallback
-            src={artwork}
-            alt={`${album} album artwork`}
-            fill
-            priority
-            sizes="(max-width: 640px) 192px, 256px"
-            className={styles.albumImage}
-          />
-        </div>
+      <div className={styles.placeholderIcon}>
+        <Music2 className="h-12 w-12" style={{ color: "var(--color-primary)" }} />
       </div>
     );
-  }
 
   return (
-    <div className={styles.placeholderIcon}>
-      <Music2 className="w-12 h-12" style={{ color: "var(--color-primary)" }} />
+    <div className={styles.albumContainer}>
+      <div className={styles.albumArtwork}>
+        <ImageWithFallback
+          src={artwork}
+          alt={`${album} album artwork`}
+          fill
+          priority
+          sizes="(max-width: 640px) 192px, 256px"
+          className={styles.albumImage}
+        />
+      </div>
     </div>
   );
 };
@@ -135,73 +106,60 @@ const SongInfo = ({
   album,
   metadata,
   spotifyUrl,
-  isListening,
-  progress,
-  lastPlayedTime,
 }: {
   title: string;
   artist: string;
   album: string;
-  metadata: SongMetadata;
+  metadata: {
+    duration?: string;
+    genres?: string[];
+  };
   spotifyUrl?: string;
-  isListening: boolean;
-  progress?: string;
-  lastPlayedTime?: string;
 }) => (
   <>
     <h1 className={styles.title}>{title}</h1>
-
     <p className={styles.artist}>{artist}</p>
-
     <p className={styles.album}>{album}</p>
-
-    <Metadata {...metadata} progress={progress} />
-
-    <div className={styles.spotifyLinkContainer} style={{ minHeight: spotifyUrl ? undefined : '2.5rem' }}>
+    <Metadata {...metadata} />
+    <div
+      className={styles.spotifyLinkContainer}
+      style={{ minHeight: spotifyUrl ? undefined : "2.5rem" }}
+    >
       {spotifyUrl && <SpotifyLink url={spotifyUrl} />}
     </div>
   </>
 );
 
-const Metadata = ({
-  genres,
-  duration,
-}: SongMetadata & { progress?: string }) => {
-  return (
-    <div className={styles.metadata} style={{ minHeight: genres?.length ? undefined : '1.5rem' }}>
-      {genres && genres.length > 0 && genres.map((genre, index) => (
-        <React.Fragment key={index}>
-          <span key={genre}>{genre}</span>
-          {index < genres.length - 1 && (
-            <span key={`sep-${index}`} className={styles.metadataSeparator}>
-              •
-            </span>
-          )}
-        </React.Fragment>
-      ))}
-      {/* {duration && (
-        <>
-          <span className={styles.metadataSeparator}>•</span>
-          <span>{duration}</span>
-        </>
-      )} */}
-    </div>
-  );
-};
+const Metadata = ({ genres }: { genres?: string[] }) => (
+  <div
+    className={styles.metadata}
+    style={{ minHeight: genres?.length ? undefined : "1.5rem" }}
+  >
+    {genres?.map((genre, index) => (
+      <span key={genre}>
+        {genre}
+        {index < genres.length - 1 && <span className={styles.metadataSeparator}>•</span>}
+      </span>
+    ))}
+  </div>
+);
 
 const SpotifyLink = ({ url }: { url: string }) => (
-  <a
-    href={url}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={styles.spotifyLink}
-  >
+  <a href={url} target="_blank" rel="noopener noreferrer" className={styles.spotifyLink}>
     <span>Listen on Spotify</span>
-    <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+    <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
   </a>
 );
 
-const Timestamp = ({ date, time, isLive = false }: TimestampProps) => {
+const Timestamp = ({
+  date,
+  time,
+  isLive = false,
+}: {
+  date: string;
+  time: string;
+  isLive?: boolean;
+}) => {
   useEffect(() => {
     if (!isLive) {
       // Ensure colon is visible when not live

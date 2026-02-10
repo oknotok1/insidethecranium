@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { RefreshCw, Trash2, Lock, Key } from "lucide-react";
+import { Key, Lock, RefreshCw, Trash2 } from "lucide-react";
+
+import { useEffect, useState } from "react";
+
 import Link from "next/link";
 
 export default function AdminPage() {
@@ -129,11 +131,11 @@ export default function AdminPage() {
   if (!isAuthenticated) {
     return (
       <main className="flex flex-col">
-        <section className="py-6 sm:py-16 lg:py-20 flex items-center justify-center">
-          <div className="max-w-md w-full px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <Lock className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
-              <h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+        <section className="flex items-center justify-center py-6 sm:py-16 lg:py-20">
+          <div className="w-full max-w-md px-4 sm:px-6 lg:px-8">
+            <div className="mb-8 text-center">
+              <Lock className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-600" />
+              <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
                 Admin Dashboard
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
@@ -143,24 +145,24 @@ export default function AdminPage() {
 
             <form
               onSubmit={handleLogin}
-              className="bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 p-6"
+              className="rounded-lg border border-gray-200 bg-gray-100 p-6 dark:border-white/10 dark:bg-white/5"
             >
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-white">
+                <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                   Password
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-white/20 bg-white dark:bg-black/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#3d38f5] dark:focus:ring-[#8b87ff] focus:border-transparent"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-[#3d38f5] dark:border-white/20 dark:bg-black/20 dark:text-white dark:focus:ring-[#8b87ff]"
                   placeholder="Enter admin password"
                   autoFocus
                 />
               </div>
 
               {authError && (
-                <div className="mb-4 p-3 rounded bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm border border-red-200 dark:border-red-800">
+                <div className="mb-4 rounded border border-red-200 bg-red-100 p-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
                   {authError}
                 </div>
               )}
@@ -168,7 +170,7 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={loading || !password}
-                className="w-full py-2 px-4 bg-[#3d38f5] hover:bg-[#2e29cc] dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef] text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full rounded-lg bg-[#3d38f5] px-4 py-2 font-medium text-white transition-colors hover:bg-[#2e29cc] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
               >
                 {loading ? "Authenticating..." : "Login"}
               </button>
@@ -182,10 +184,10 @@ export default function AdminPage() {
   return (
     <main className="flex flex-col">
       <section className="py-12 sm:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-gray-900 dark:text-white">
+            <h1 className="mb-2 text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
               Cache Management
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
@@ -194,26 +196,26 @@ export default function AdminPage() {
           </div>
 
           {/* Cache Controls */}
-          <div className="bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 p-6 mb-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-gray-100 p-6 dark:border-white/10 dark:bg-white/5">
+            <div className="mb-6 flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Cache Controls
               </h2>
               <button
                 onClick={handlePurgeAll}
                 disabled={refreshing === "all"}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:opacity-50 transition-colors"
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 {refreshing === "all" ? "Purging..." : "Purge All Cache"}
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {cacheTags.map(({ tag, label, description }) => (
                 <div
                   key={tag}
-                  className="bg-white dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-lg p-4"
+                  className="rounded-lg border border-gray-200 bg-white p-4 dark:border-white/10 dark:bg-black/20"
                 >
                   <div className="mb-3">
                     <h3 className="font-medium text-gray-900 dark:text-white">
@@ -226,10 +228,10 @@ export default function AdminPage() {
                   <button
                     onClick={() => handleRefreshTag(tag)}
                     disabled={refreshing === tag}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#3d38f5] hover:bg-[#2e29cc] dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef] text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#3d38f5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2e29cc] disabled:opacity-50 dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
                   >
                     <RefreshCw
-                      className={`w-4 h-4 ${refreshing === tag ? "animate-spin" : ""}`}
+                      className={`h-4 w-4 ${refreshing === tag ? "animate-spin" : ""}`}
                     />
                     {refreshing === tag ? "Refreshing..." : "Refresh"}
                   </button>
@@ -239,21 +241,21 @@ export default function AdminPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-gray-100 p-6 dark:border-white/10 dark:bg-white/5">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
               Quick Links
             </h2>
             <Link
               href="/admin/spotify/auth"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#3d38f5] hover:bg-[#2e29cc] dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef] text-white rounded-lg font-medium transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#3d38f5] px-4 py-2 font-medium text-white transition-colors hover:bg-[#2e29cc] dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
             >
-              <Key className="w-4 h-4" />
+              <Key className="h-4 w-4" />
               Spotify Authorization Helper
             </Link>
           </div>
 
           {/* Info Note */}
-          <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg p-4">
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/30 dark:bg-blue-900/10">
             <p className="text-sm text-blue-800 dark:text-blue-300">
               <strong>Note:</strong> For detailed API logs and monitoring, check
               your Vercel dashboard under the "Logs" tab.

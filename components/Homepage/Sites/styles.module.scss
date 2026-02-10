@@ -1,4 +1,5 @@
 @reference "../../../styles/tailwind.css";
+@import "../../../styles/mobile-carousel.module.scss";
 
 .section {
   @apply py-12 sm:py-16 lg:py-20;
@@ -18,54 +19,58 @@
     }
 
     .viewAllLink {
-      @apply hidden lg:flex;
+      @apply flex;
       @apply w-fit items-center space-x-2;
       @apply text-sm text-nowrap;
       @apply transition-colors;
     }
 
-    // Mobile carousel
+    // Mobile carousel using shared styles
     .mobileCarouselWrapper {
-      @apply -mx-4 sm:-mx-6;
-      @apply block overflow-hidden lg:hidden;
+      @extend .wrapper;
+    }
 
-      .mobileCarousel {
-        @apply flex items-stretch gap-4;
-        @apply overflow-x-scroll;
+    .mobileCarousel {
+      @extend .carousel;
+    }
 
-        // Hide scrollbar
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+    .siteCard {
+      @extend .card;
+    }
 
-        &::-webkit-scrollbar {
-          display: none;
-        }
+    .siteCardFirst {
+      @extend .cardFirst;
+    }
 
-        .siteCard {
-          @apply w-[45%] max-w-[200px] min-w-[160px] shrink-0 md:w-[30%] md:max-w-[240px];
+    .siteCardInner {
+      @extend .cardInner;
+    }
 
-          .siteCardInner {
-            @apply h-full;
-          }
-        }
+    .viewMoreCard {
+      @apply mr-4 sm:mr-6;
+      @apply shrink-0;
+      
+      // Match card width
+      width: calc((100vw - 4.75rem) / 2);
+      
+      @media (max-width: 320px) {
+        width: calc(100vw - 6rem);
+      }
+      
+      @media (min-width: 640px) {
+        width: calc((100vw - 7rem) / 2.5);
+      }
+      
+      @media (min-width: 768px) {
+        width: calc((100vw - 9rem) / 3.2);
+      }
 
-        .siteCardFirst {
-          @apply ml-4 sm:ml-6;
-        }
-
-        // View More Card
-        .viewMoreCard {
-          @apply mr-4 sm:mr-6;
-          @apply w-[45%] max-w-[200px] min-w-[160px] shrink-0 md:w-[30%] md:max-w-[240px];
-
-          .viewMoreCardInner {
-            @apply flex h-full flex-col items-center justify-center;
-            @apply p-6;
-            @apply rounded-xl;
-            @apply border-2 border-dashed;
-            @apply transition-colors;
-          }
-        }
+      .viewMoreCardInner {
+        @apply flex h-full flex-col items-center justify-center;
+        @apply p-6;
+        @apply rounded-xl;
+        @apply border-2 border-dashed;
+        @apply transition-colors;
       }
     }
 

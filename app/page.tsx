@@ -14,7 +14,7 @@ export const revalidate = 86400; // 24 hours
 const getData = cache(async () => {
   // Fetch playlists and curated tracks in parallel
   const [playlists, curatedTracks] = await Promise.all([
-    fetchPlaylists(50, 0, false),
+    fetchPlaylists(50, 0, true), // Include genres for homepage playlists
     fetchCuratedTracks(),
   ]);
 

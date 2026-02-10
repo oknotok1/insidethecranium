@@ -1,0 +1,100 @@
+/**
+ * Shared Mobile Carousel Styles
+ * 
+ * This module provides reusable mobile carousel styles with viewport-based
+ * card sizing that ensures 2 full cards + a peek of the 3rd card on mobile.
+ * 
+ * Usage:
+ * 1. Import this module in your component styles (after @reference tailwind.css)
+ * 2. Use the .wrapper, .carousel, .card, .cardFirst, .cardLast classes
+ * 3. Optionally use .actionCard for "View More" or "Show All" buttons
+ * 
+ * Note: The importing file must have @reference tailwind.css for @apply to work
+ */
+
+// Wrapper with negative margins to allow edge-to-edge scrolling
+.wrapper {
+  @apply -mx-4 sm:-mx-6;
+  @apply block overflow-hidden lg:hidden;
+}
+
+// Carousel container with horizontal scrolling
+.carousel {
+  @apply flex items-stretch gap-4;
+  @apply overflow-x-scroll;
+
+  // Hide scrollbar
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Base card style with viewport-based width calculations
+.card {
+  @apply shrink-0;
+  
+  // Mobile: 2 full cards + peek (~0.75rem) of 3rd card
+  // Calculation: (100vw - left padding - right padding - 2 gaps - peek) / 2
+  // = (100vw - 1rem - 1rem - 2rem - 0.75rem) / 2
+  // = (100vw - 4.75rem) / 2
+  width: calc((100vw - 4.75rem) / 2);
+  
+  // For very narrow screens (< 320px), show 1 card + larger peek
+  @media (max-width: 320px) {
+    width: calc(100vw - 6rem);
+  }
+  
+  // Tablet: 2.5 cards visible
+  @media (min-width: 640px) {
+    width: calc((100vw - 7rem) / 2.5);
+  }
+  
+  // Larger tablets: 3 cards + peek
+  @media (min-width: 768px) {
+    width: calc((100vw - 9rem) / 3.2);
+  }
+}
+
+// First card needs left margin/padding
+.cardFirst {
+  @apply ml-4 sm:ml-6;
+}
+
+// Last card needs right margin/padding
+.cardLast {
+  @apply mr-4 sm:mr-6;
+}
+
+// Action card (e.g., "View More", "Show All") with matching width
+.actionCard {
+  @apply mr-4 sm:mr-6;
+  @apply flex shrink-0 flex-col items-center justify-center;
+  @apply p-6;
+  @apply rounded-xl;
+  @apply border-2 border-dashed;
+  @apply cursor-pointer;
+  @apply transition-colors;
+  
+  // Match the card width for consistency
+  width: calc((100vw - 4.75rem) / 2);
+  
+  @media (max-width: 320px) {
+    width: calc(100vw - 6rem);
+  }
+  
+  @media (min-width: 640px) {
+    width: calc((100vw - 7rem) / 2.5);
+  }
+  
+  @media (min-width: 768px) {
+    width: calc((100vw - 9rem) / 3.2);
+  }
+}
+
+// Inner wrapper to ensure full height for card content
+.cardInner {
+  @apply h-full;
+}

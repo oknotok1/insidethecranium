@@ -1,4 +1,5 @@
 @reference "../../../styles/tailwind.css";
+@import "../../../styles/mobile-carousel.module.scss";
 
 .section {
   @apply py-12 sm:py-16 lg:py-20;
@@ -16,50 +17,33 @@
       @apply text-2xl sm:text-3xl md:text-4xl;
     }
 
-    // Mobile carousel
+    // Mobile carousel using shared styles
     .mobileCarouselWrapper {
-      @apply -mx-4 sm:-mx-6;
-      @apply block overflow-hidden lg:hidden;
+      @extend .wrapper;
+    }
 
-      .mobileCarousel {
-        @apply flex items-stretch gap-4;
-        @apply overflow-x-scroll;
+    .mobileCarousel {
+      @extend .carousel;
+    }
 
-        // Hide scrollbar
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+    .mobileTrackCard {
+      @extend .card;
+    }
 
-        &::-webkit-scrollbar {
-          display: none;
-        }
+    .mobileTrackCardFirst {
+      @extend .cardFirst;
+    }
 
-        .mobileTrackCard {
-          @apply w-[45%] max-w-[200px] min-w-[160px] shrink-0 md:w-[30%] md:max-w-[240px];
+    .mobileTrackCardLast {
+      @extend .cardLast;
+    }
 
-          .mobileTrackCardInner {
-            @apply h-full;
-          }
-        }
+    .mobileTrackCardInner {
+      @extend .cardInner;
+    }
 
-        .mobileTrackCardFirst {
-          @apply ml-4 sm:ml-6;
-        }
-
-        .mobileTrackCardLast {
-          @apply mr-4 sm:mr-6;
-        }
-
-        // Show all button (mobile)
-        .showAllButton {
-          @apply mr-4 p-6 sm:mr-6;
-          @apply flex shrink-0 flex-col items-center justify-center;
-          @apply w-[45%] max-w-[200px] min-w-[160px] md:w-[30%] md:max-w-[240px];
-          @apply rounded-xl;
-          @apply border-2 border-dashed;
-          @apply cursor-pointer;
-          @apply transition-colors;
-        }
-      }
+    .showAllButton {
+      @extend .actionCard;
     }
 
     // Desktop grid

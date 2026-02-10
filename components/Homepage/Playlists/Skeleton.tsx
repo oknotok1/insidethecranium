@@ -10,7 +10,7 @@ export default function PlaylistsSkeleton() {
             <div className="mb-4 h-8 w-48 animate-pulse rounded bg-gray-200 sm:h-10 dark:bg-white/10" />
             <div className="h-4 w-full max-w-2xl animate-pulse rounded bg-gray-200 dark:bg-white/10" />
           </div>
-          <div className="hidden h-6 w-24 animate-pulse rounded bg-gray-200 lg:block dark:bg-white/10" />
+          <div className="h-6 w-24 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
         </div>
 
         {/* Mobile: Horizontal scroll carousel */}
@@ -19,9 +19,10 @@ export default function PlaylistsSkeleton() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className={`w-[45%] max-w-[200px] min-w-[160px] shrink-0 md:w-[30%] md:max-w-[240px] ${
-                  i === 0 ? "ml-4 sm:ml-6" : ""
-                } ${i === 7 ? "mr-4 sm:mr-6" : ""}`}
+                className={`shrink-0 ${i === 0 ? "ml-4 sm:ml-6" : ""} ${i === 7 ? "mr-4 sm:mr-6" : ""}`}
+                style={{
+                  width: 'calc((100vw - 4.75rem) / 2)',
+                }}
               >
                 <PlaylistCardSkeleton />
               </div>

@@ -124,12 +124,14 @@ const TrackCard = ({ track }: { track: Track }) => {
 
   return (
     <div className="flex items-center space-x-2 rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:space-x-3 sm:p-3 dark:bg-white/5 dark:hover:bg-white/10">
-      <div className="h-10 w-10 shrink-0 overflow-hidden rounded bg-gray-200 sm:h-12 sm:w-12 dark:bg-white/5">
+      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded bg-gray-200 sm:h-12 sm:w-12 dark:bg-white/5">
         {imageUrl ? (
           <ImageWithFallback
             src={imageUrl}
             alt={track.album.name}
-            className="h-full w-full object-cover"
+            fill
+            sizes="48px"
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

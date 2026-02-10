@@ -1,22 +1,19 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+import { addToHistory } from "../history/route";
+
+import { auth } from "@/auth";
+import { logger } from "@/utils/logger";
+
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const authHeader = request.headers.get("authorization");
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    // Check authentication via Google SSO session
+    const session = await auth();
+    const adminEmail = process.env.ADMIN_EMAIL;
 
-    if (!adminPassword) {
-      return NextResponse.json(
-        { error: "Admin password not configured" },
-        { status: 500 },
-      );
-    }
-
-    const providedPassword = authHeader?.replace("Bearer ", "");
-
-    if (providedPassword !== adminPassword) {
+    if (!session?.user?.email || session.user.email !== adminEmail) {
+      logger.warn("Admin Cache", "❌ Unauthorized cache revalidation attempt");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -34,12 +31,28 @@ export async function POST(request: NextRequest) {
         "spotify-token",
       ];
 
+      logger.log(
+        "Admin Cache",
+        `🔄 Purging all cache tags: ${tags.join(", ")}`,
+      );
+
       tags.forEach((t) => revalidateTag(t, "max"));
+
+      logger.success(
+        "Admin Cache",
+        `✓ Successfully purged ${tags.length} cache tags`,
+      );
+
+      const timestamp = new Date().toISOString();
+
+      // Log to history
+      addToHistory("all", "purge-all");
 
       return NextResponse.json({
         success: true,
         message: "Revalidated all cache tags",
         tags,
+        timestamp,
       });
     }
 
@@ -51,12 +64,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Revalidate specific tag
+    logger.log("Admin Cache", `🔄 Revalidating cache tag: ${tag}`);
+
     revalidateTag(tag, "max");
+
+    logger.success("Admin Cache", `✓ Successfully revalidated tag: ${tag}`);
+
+    const timestamp = new Date().toISOString();
+
+    // Log to history
+    addToHistory(tag, "refresh");
 
     return NextResponse.json({
       success: true,
       message: `Revalidated cache tag: ${tag}`,
       tag,
+      timestamp,
     });
   } catch (error: any) {
     return NextResponse.json(

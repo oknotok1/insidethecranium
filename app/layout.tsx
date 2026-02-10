@@ -1,6 +1,8 @@
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+import { Providers } from "./providers";
+
 import { AppContext } from "@/contexts/AppContext";
 
 import ScrollToTop from "@/components/common/ScrollToTop";
@@ -93,22 +95,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AppContext>
-            <Navbar />
-            {children}
-            <Footer />
-            <ScrollToTop />
-            {/* <WebPlayerControls /> */}
-          </AppContext>
-          <Analytics />
-          <SpeedInsights />
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AppContext>
+              <Navbar />
+              {children}
+              <Footer />
+              <ScrollToTop />
+              {/* <WebPlayerControls /> */}
+            </AppContext>
+            <Analytics />
+            <SpeedInsights />
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

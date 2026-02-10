@@ -1,6 +1,6 @@
 # Inside The Cranium
 
-A full-stack personal music showcase integrating Spotify's Web API with Next.js 16, featuring real-time playback status, smart caching strategies, and an admin dashboard.
+A full-stack personal music showcase integrating Spotify's Web API with Next.js 16, featuring real-time playback status, smart caching strategies, and a secure admin dashboard.
 
 ## Overview
 
@@ -50,15 +50,21 @@ Personal project demonstrating modern web development practices with server-side
 Static Data (Tracks/Artists/Genres) → Cache: Indefinite
 Access Tokens                       → Cache: 50 minutes
 User Playlists                      → Cache: 24 hours
-Now Playing                         → Cache: None (real-time)
-Recently Played                     → Cache: Indefinite (on-demand revalidation)
+Now Playing                         → Cache: None (real-time SWR polling)
+Recently Played                     → Cache: Indefinite
+Curated Tracks                      → Cache: Indefinite
 ```
 
 #### Admin Dashboard
 
-- Password-protected cache management interface
-- Manual cache purging with tag-specific revalidation
-- OAuth token refresh helper for Spotify API
+A secure management interface for maintaining cache freshness:
+
+- **Cache Revalidation System**: Tag-specific and bulk cache invalidation with real-time feedback
+- **Refresh Tracking**: Individual timestamps per cache tag showing last refresh time
+- **Revalidation History**: Server-side activity log of cache management operations (last 100 events)
+- **Build Information**: Deployment timestamp visibility for cache lifecycle tracking
+- **Spotify OAuth Helper**: Utilities for managing Spotify API token refresh
+- **Responsive Design**: Mobile-optimized interface with hover states and smooth interactions
 
 ### 🎨 UI/UX Features
 
@@ -110,7 +116,7 @@ yarn dev    # Development server on localhost:3000
 yarn build  # Production build
 ```
 
-Requires environment variables for Spotify API credentials and Contentful CMS (see Vercel deployment settings).
+Requires environment variables for Spotify API and Contentful CMS. Configure these in your Vercel dashboard or local `.env.local` file.
 
 ## Project Conventions
 

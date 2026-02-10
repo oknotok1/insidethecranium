@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
+
 import { Play } from "lucide-react";
+
 import { useAppContext } from "@/contexts/AppContext";
+
 import styles from "./styles.module.scss";
 
 interface NowPlayingProps {
@@ -26,13 +29,13 @@ export default function NowPlaying({ className }: NowPlayingProps) {
             e.stopPropagation();
             setIsOpen(!isOpen);
           }}
-          className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white text-xs transition-all hover:shadow-lg hover:scale-[1.02] active:scale-100 w-full min-w-0"
+          className="flex w-full min-w-0 items-center space-x-2 rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] px-3 py-1.5 text-xs text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-100"
           aria-label={`Now playing: ${nowPlayingTrack?.item?.name} by ${nowPlayingTrack?.item?.artists[0]?.name} from ${nowPlayingTrack?.item?.album?.name}`}
           style={{ cursor: "pointer" }}
         >
-          <Play className="w-3 h-3 fill-current shrink-0" />
-          <div className="flex-1 min-w-0 overflow-hidden">
-            <div className="whitespace-nowrap inline-block animate-marquee">
+          <Play className="h-3 w-3 shrink-0 fill-current" />
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="animate-marquee inline-block whitespace-nowrap">
               <div className="inline-block">
                 <span className="font-semibold">
                   {nowPlayingTrack?.item?.name}
@@ -68,7 +71,7 @@ export default function NowPlaying({ className }: NowPlayingProps) {
         {/* Popover - child of wrapper for proper positioning */}
         {isOpen && (
           <div
-            className="fixed left-1/2 -translate-x-1/2 top-18 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-full lg:mt-2 w-64 rounded-xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-70 overflow-hidden"
+            className="fixed top-18 left-1/2 z-70 w-64 -translate-x-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl lg:absolute lg:top-full lg:left-1/2 lg:mt-2 lg:-translate-x-1/2 dark:border-white/10 dark:bg-gray-900"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Background gradient */}
@@ -85,14 +88,14 @@ export default function NowPlaying({ className }: NowPlayingProps) {
 
             {/* Content */}
             <div className="relative p-5">
-              <div className="text-xs text-gray-600 dark:text-gray-400 mb-3 text-center">
+              <div className="mb-3 text-center text-xs text-gray-600 dark:text-gray-400">
                 Now Playing
               </div>
 
               {/* Album Artwork */}
               {nowPlayingTrack?.item?.album?.images[0]?.url && (
-                <div className="flex justify-center mb-3">
-                  <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5 shadow-xl border border-gray-300/50 dark:border-white/10">
+                <div className="mb-3 flex justify-center">
+                  <div className="relative h-32 w-32 overflow-hidden rounded-lg border border-gray-300/50 bg-gray-200 shadow-xl dark:border-white/10 dark:bg-white/5">
                     <Image
                       src={nowPlayingTrack?.item?.album?.images[0]?.url}
                       alt={nowPlayingTrack?.item?.album?.name}
@@ -105,21 +108,21 @@ export default function NowPlaying({ className }: NowPlayingProps) {
               )}
 
               {/* Song Info */}
-              <div className="text-center mb-3">
-                <h3 className="text-base font-medium mb-1 text-gray-900 dark:text-white">
+              <div className="mb-3 text-center">
+                <h3 className="mb-1 text-base font-medium text-gray-900 dark:text-white">
                   {nowPlayingTrack?.item?.name}
                 </h3>
-                <p className="text-xs mb-1 text-gray-700 dark:text-gray-300">
+                <p className="mb-1 text-xs text-gray-700 dark:text-gray-300">
                   {nowPlayingTrack?.item?.artists[0]?.name}
                 </p>
-                <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-600 italic dark:text-gray-400">
                   {nowPlayingTrack?.item?.album?.name}
                 </p>
               </div>
 
               {/* Genre */}
               {nowPlayingGenres.length > 0 && (
-                <div className="text-center mb-4">
+                <div className="mb-4 text-center">
                   <p className="text-xs text-gray-600 dark:text-gray-400">
                     {nowPlayingGenres.join(" • ")}
                   </p>
@@ -132,7 +135,7 @@ export default function NowPlaying({ className }: NowPlayingProps) {
                   href={nowPlayingTrack?.item?.external_urls?.spotify}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center space-x-2 w-full px-4 py-2 rounded-full bg-gray-900/10 hover:bg-gray-900/20 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-300 dark:border-white/20 transition-colors text-xs"
+                  className="flex w-full items-center justify-center space-x-2 rounded-full border border-gray-300 bg-gray-900/10 px-4 py-2 text-xs transition-colors hover:bg-gray-900/20 dark:border-white/20 dark:bg-white/10 dark:hover:bg-white/20"
                 >
                   <span>Listen on Spotify</span>
                 </a>

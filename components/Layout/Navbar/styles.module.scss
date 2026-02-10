@@ -1,18 +1,18 @@
 @reference "../../../styles/tailwind.css";
 
 .navbar {
-  @apply fixed top-0 left-0 right-0 z-40;
+  @apply fixed top-0 right-0 left-0 z-40;
   @apply backdrop-blur-sm;
   @apply border-b;
 }
 
 .container {
-  @apply max-w-7xl mx-auto;
+  @apply mx-auto max-w-7xl;
   @apply px-4 sm:px-6 lg:px-8;
 }
 
 .content {
-  @apply flex items-center justify-between h-16 gap-2;
+  @apply flex h-16 items-center justify-between gap-2;
 }
 
 .logo {
@@ -21,24 +21,24 @@
 }
 
 .logoText {
-  @apply text-nowrap font-semibold text-sm sm:text-base;
+  @apply text-sm font-semibold text-nowrap sm:text-base;
 }
 
 .desktopNav {
-  @apply hidden lg:flex items-center space-x-8;
+  @apply hidden items-center space-x-8 lg:flex;
 }
 
 .navLink {
   @apply flex items-center space-x-2 transition-colors;
 
   &.disabled {
-    @apply opacity-40 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-40;
     pointer-events: auto; // Allow cursor to show
   }
 }
 
 .mobileMenuButton {
-  @apply lg:hidden p-2 -ml-2;
+  @apply -ml-2 p-2 lg:hidden;
   @apply transition-colors;
   @apply shrink-0;
 }
@@ -50,20 +50,20 @@
 }
 
 .mobileNav {
-  @apply lg:hidden border-t relative;
+  @apply relative border-t lg:hidden;
   @apply backdrop-blur-sm;
 }
 
 .mobileNavContent {
-  @apply px-4 py-4 space-y-2;
+  @apply space-y-2 px-4 py-4;
 }
 
 .mobileNavLink {
-  @apply flex items-center space-x-3 px-3 py-2 rounded-lg;
+  @apply flex items-center space-x-3 rounded-lg px-3 py-2;
   @apply transition-colors;
 
   &.disabled {
-    @apply opacity-40 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-40;
     pointer-events: auto; // Allow cursor to show
   }
 }

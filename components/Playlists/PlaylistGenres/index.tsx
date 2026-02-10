@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ImageWithFallback } from "@/components/common/ImageWithFallback";
+
 import { Music } from "lucide-react";
+
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
 
 interface Track {
   id: string;
@@ -41,8 +43,8 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
 
   return (
     <section className="py-6 sm:py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="mb-6 text-xl sm:text-2xl text-gray-900 dark:text-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 className="mb-6 text-xl text-gray-900 sm:text-2xl dark:text-white">
           Genres
         </h2>
         <div className="space-y-2 sm:space-y-3">
@@ -52,10 +54,10 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
             return (
               <div key={genreData.genre}>
                 <button
-                  className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-left transition-all text-sm sm:text-base ${
+                  className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition-all sm:px-4 sm:py-3 sm:text-base ${
                     isExpanded
                       ? "text-white"
-                      : "bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white"
+                      : "bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                   }`}
                   style={
                     isExpanded ? { backgroundColor: "#3d38f5" } : undefined
@@ -78,14 +80,14 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
                 </button>
 
                 {isExpanded && (
-                  <div className="mt-2 p-3 sm:p-4 rounded-lg bg-white dark:bg-black/20 border border-gray-200 dark:border-white/10">
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-2">
+                  <div className="mt-2 rounded-lg border border-gray-200 bg-white p-3 sm:p-4 dark:border-white/10 dark:bg-black/20">
+                    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-2 sm:gap-2 lg:grid-cols-3 xl:grid-cols-4">
                       {genreData.tracks.map((track) => (
                         <div
                           key={track.id}
-                          className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                          className="flex items-center space-x-2 rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:space-x-3 sm:p-3 dark:bg-white/5 dark:hover:bg-white/10"
                         >
-                          <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
+                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded bg-gray-200 sm:h-12 sm:w-12 dark:bg-white/5">
                             {track.album.images &&
                             track.album.images.length > 0 ? (
                               <ImageWithFallback
@@ -95,19 +97,19 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
                                   ].url
                                 }
                                 alt={track.album.name}
-                                className="w-full h-full object-cover"
+                                className="h-full w-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <Music className="w-4 h-4 text-gray-400" />
+                              <div className="flex h-full w-full items-center justify-center">
+                                <Music className="h-4 w-4 text-gray-400" />
                               </div>
                             )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs sm:text-sm mb-1 truncate text-gray-900 dark:text-white">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-1 truncate text-xs text-gray-900 sm:text-sm dark:text-white">
                               {track.name}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                            <div className="truncate text-xs text-gray-600 dark:text-gray-400">
                               {track.artists.map((a) => a.name).join(", ")}
                             </div>
                           </div>
@@ -122,7 +124,7 @@ export default function PlaylistGenres({ genreStats }: PlaylistGenresProps) {
         </div>
         {genreStats.length > 5 && (
           <button
-            className="mt-3 sm:mt-4 px-3 sm:px-4 py-2 rounded-lg bg-gray-200 dark:bg-white/5 text-xs sm:text-sm hover:bg-gray-300 dark:hover:bg-white/10 transition-colors text-gray-900 dark:text-white"
+            className="mt-3 rounded-lg bg-gray-200 px-3 py-2 text-xs text-gray-900 transition-colors hover:bg-gray-300 sm:mt-4 sm:px-4 sm:text-sm dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
             onClick={() => setShowAllGenres(!showAllGenres)}
           >
             {showAllGenres ? "Show Less" : "Show More"}

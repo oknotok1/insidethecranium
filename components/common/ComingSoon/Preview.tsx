@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, ArrowRight, Sparkles } from "lucide-react";
+
+import { ArrowRight, Clock, Sparkles } from "lucide-react";
 
 interface ComingSoonPreviewProps {
   title: string;
@@ -16,9 +17,9 @@ export default function ComingSoonPreview({
 }: ComingSoonPreviewProps) {
   return (
     <section className="py-12 sm:py-16 lg:py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
-          className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-200 dark:border-white/10"
+          className="relative overflow-hidden rounded-2xl border border-gray-200 sm:rounded-3xl dark:border-white/10"
           style={{
             background:
               "linear-gradient(135deg, rgba(61, 56, 245, 0.08) 0%, rgba(139, 135, 255, 0.04) 50%, rgba(61, 56, 245, 0.08) 100%)",
@@ -26,26 +27,26 @@ export default function ComingSoonPreview({
         >
           {/* Decorative blur effects */}
           <div
-            className="absolute top-0 left-1/4 w-64 h-64 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-30"
+            className="absolute top-0 left-1/4 h-64 w-64 rounded-full opacity-30 blur-3xl sm:h-96 sm:w-96"
             style={{ backgroundColor: "rgba(61, 56, 245, 0.3)" }}
           />
           <div
-            className="absolute bottom-0 right-1/4 w-64 h-64 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-20"
+            className="absolute right-1/4 bottom-0 h-64 w-64 rounded-full opacity-20 blur-3xl sm:h-96 sm:w-96"
             style={{ backgroundColor: "rgba(139, 135, 255, 0.3)" }}
           />
 
           <div className="relative px-6 py-12 sm:px-8 sm:py-16 md:py-20">
-            <div className="text-center space-y-6">
+            <div className="space-y-6 text-center">
               {/* Icon */}
               <div className="flex justify-center">
                 <div
-                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl"
+                  className="rounded-xl p-3 sm:rounded-2xl sm:p-4"
                   style={{
                     background:
                       "linear-gradient(135deg, #3d38f5 0%, #8b87ff 100%)",
                   }}
                 >
-                  <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+                  <Clock className="h-10 w-10 text-white sm:h-12 sm:w-12" />
                 </div>
               </div>
 
@@ -53,11 +54,11 @@ export default function ComingSoonPreview({
               <div className="space-y-3">
                 <div className="flex items-center justify-center space-x-2">
                   <Sparkles
-                    className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse"
+                    className="h-4 w-4 animate-pulse sm:h-5 sm:w-5"
                     style={{ color: "#8b87ff" }}
                   />
                   <h2
-                    className="text-2xl sm:text-3xl md:text-4xl font-bold bg-clip-text text-transparent"
+                    className="bg-clip-text text-2xl font-bold text-transparent sm:text-3xl md:text-4xl"
                     style={{
                       backgroundImage:
                         "linear-gradient(to right, #8b87ff, #3d38f5, #8b87ff)",
@@ -66,11 +67,11 @@ export default function ComingSoonPreview({
                     {title}
                   </h2>
                   <Sparkles
-                    className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse"
+                    className="h-4 w-4 animate-pulse sm:h-5 sm:w-5"
                     style={{ color: "#8b87ff" }}
                   />
                 </div>
-                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+                <p className="mx-auto max-w-2xl text-base text-gray-700 sm:text-lg dark:text-gray-300">
                   {subtitle}
                 </p>
               </div>
@@ -79,10 +80,12 @@ export default function ComingSoonPreview({
               <div className="pt-4">
                 <Link
                   href={href}
-                  className="inline-flex items-center space-x-2 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-300 group"
+                  className="group inline-flex items-center space-x-2 rounded-lg bg-gray-100 px-6 py-3 text-gray-900 transition-all duration-300 hover:bg-gray-200 sm:px-8 sm:py-4 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                 >
-                  <span className="text-sm sm:text-base">Explore Concert Memories</span>
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                  <span className="text-sm sm:text-base">
+                    Explore Concert Memories
+                  </span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 sm:h-5 sm:w-5" />
                 </Link>
               </div>
             </div>

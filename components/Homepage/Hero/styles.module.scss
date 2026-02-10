@@ -20,8 +20,8 @@
 
     .albumArtwork {
       @apply relative flex;
-      @apply w-48 h-48 sm:w-64 sm:h-64;
-      @apply rounded-lg overflow-hidden shadow-2xl;
+      @apply h-48 w-48 sm:h-64 sm:w-64;
+      @apply overflow-hidden rounded-lg shadow-2xl;
       @apply bg-gray-200;
       @apply border border-gray-300/50;
 
@@ -38,12 +38,12 @@
 
   .placeholderIcon {
     @apply flex items-center justify-center;
-    @apply w-24 h-24 mb-8 rounded-full;
+    @apply mb-8 h-24 w-24 rounded-full;
     @apply bg-gray-200 backdrop-blur-sm;
     @apply border border-gray-300;
 
     :global(.dark) & {
-      @apply bg-white/5 border-white/10;
+      @apply border-white/10 bg-white/5;
     }
   }
 
@@ -60,7 +60,7 @@
 
   .title {
     @apply mb-2;
-    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-balance;
+    @apply text-3xl text-balance sm:text-4xl md:text-5xl lg:text-6xl;
     @apply leading-tight;
     @apply text-gray-900;
 
@@ -91,7 +91,7 @@
   }
 
   .metadata {
-    @apply flex items-center justify-center flex-wrap;
+    @apply flex flex-wrap items-center justify-center;
     @apply gap-4 sm:gap-6 lg:gap-8;
     @apply text-xs sm:text-sm;
     @apply text-gray-600;
@@ -130,7 +130,7 @@
 
   .timestampContainer {
     @apply flex flex-col items-center;
-    @apply mt-8 sm:mt-12 pt-6 sm:pt-8;
+    @apply mt-8 pt-6 sm:mt-12 sm:pt-8;
     @apply border-t border-gray-300;
     @apply w-3/4 sm:w-full;
 
@@ -139,7 +139,7 @@
     }
 
     .timestamp {
-      @apply text-xs sm:text-sm text-gray-500;
+      @apply text-xs text-gray-500 sm:text-sm;
     }
   }
 }

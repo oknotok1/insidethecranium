@@ -1,12 +1,15 @@
 import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Music, Clock, User, ExternalLink } from "lucide-react";
-import { ImageWithFallback } from "@/components/common/ImageWithFallback";
-import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
-import PlaylistArtists from "@/components/Playlists/PlaylistArtists";
+
+import { ArrowLeft, Clock, ExternalLink, Music, User } from "lucide-react";
+
 import { logger } from "@/utils/logger";
 import { SPOTIFY_API } from "@/utils/spotify";
+
+import { ImageWithFallback } from "@/components/common/ImageWithFallback";
+import PlaylistArtists from "@/components/Playlists/PlaylistArtists";
+import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
 
 // Cache playlist pages for 24 hours
 export const revalidate = 86400;
@@ -285,7 +288,9 @@ function formatTotalDuration(ms: number): string {
 
 function decodeHtmlEntities(text: string): string {
   return text
-    .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16))) // Hex entities like &#x27;
+    .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) =>
+      String.fromCharCode(parseInt(hex, 16)),
+    ) // Hex entities like &#x27;
     .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec)) // Decimal entities like &#39;
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, "&")
@@ -302,329 +307,302 @@ export default async function PlaylistDetailPage({
 }) {
   const { playlistId } = await params;
 
-  try {
-    const playlist = await getPlaylistDetails(playlistId);
+  // Fetch playlist data - errors are handled at the data layer
+  const playlist = await getPlaylistDetails(playlistId);
 
-    // Get unique artist IDs from tracks
-    const artistIds = Array.from(
-      new Set(
-        playlist.tracks.items
-          .filter((item) => item.track)
-          .flatMap((item) => item.track.artists.map((artist) => artist.id)),
-      ),
-    );
+  // Get unique artist IDs from tracks
+  const artistIds = Array.from(
+    new Set(
+      playlist.tracks.items
+        .filter((item) => item.track)
+        .flatMap((item) => item.track.artists.map((artist) => artist.id)),
+    ),
+  );
 
-    // Fetch artist details including genres and images
-    const artistMap = await getArtistDetails(artistIds);
+  // Fetch artist details including genres and images
+  const artistMap = await getArtistDetails(artistIds);
 
-    // Calculate total duration
-    const totalDuration = playlist.tracks.items
-      .filter((item) => item.track)
-      .reduce((sum, item) => sum + item.track.duration_ms, 0);
+  // Calculate total duration
+  const totalDuration = playlist.tracks.items
+    .filter((item) => item.track)
+    .reduce((sum, item) => sum + item.track.duration_ms, 0);
 
-    // Calculate genre statistics
-    const genreCounts = new Map<string, Set<string>>();
-    playlist.tracks.items
-      .filter((item) => item.track)
-      .forEach((item) => {
-        item.track.artists.forEach((artist) => {
-          const artistData = artistMap[artist.id];
-          const genres = artistData?.genres || [];
-          genres.forEach((genre) => {
-            if (!genreCounts.has(genre)) {
-              genreCounts.set(genre, new Set());
-            }
-            genreCounts.get(genre)!.add(item.track.id);
-          });
-        });
-      });
-
-    // Create genre stats with tracks
-    const genreStats = Array.from(genreCounts.entries())
-      .map(([genre, trackIds]) => {
-        const tracks = playlist.tracks.items
-          .filter((item) => item.track && trackIds.has(item.track.id))
-          .map((item) => item.track);
-
-        return {
-          genre,
-          count: trackIds.size,
-          percentage: Math.round((trackIds.size / playlist.tracks.total) * 100),
-          tracks,
-        };
-      })
-      .sort((a, b) => b.count - a.count);
-
-    // Calculate artist statistics with images
-    const artistCounts = new Map<
-      string,
-      { id: string; name: string; songCount: number; image?: string }
-    >();
-    playlist.tracks.items
-      .filter((item) => item.track)
-      .forEach((item) => {
-        item.track.artists.forEach((artist) => {
-          const existing = artistCounts.get(artist.id);
-          const artistData = artistMap[artist.id];
-          const image =
-            artistData?.images && artistData.images.length > 0
-              ? artistData.images[artistData.images.length - 1].url
-              : undefined;
-
-          if (existing) {
-            existing.songCount += 1;
-          } else {
-            artistCounts.set(artist.id, {
-              id: artist.id,
-              name: artist.name,
-              songCount: 1,
-              image,
-            });
+  // Calculate genre statistics
+  const genreCounts = new Map<string, Set<string>>();
+  playlist.tracks.items
+    .filter((item) => item.track)
+    .forEach((item) => {
+      item.track.artists.forEach((artist) => {
+        const artistData = artistMap[artist.id];
+        const genres = artistData?.genres || [];
+        genres.forEach((genre) => {
+          if (!genreCounts.has(genre)) {
+            genreCounts.set(genre, new Set());
           }
+          genreCounts.get(genre)!.add(item.track.id);
         });
       });
+    });
 
-    const artistStats = Array.from(artistCounts.values()).sort(
-      (a, b) => b.songCount - a.songCount,
-    );
+  // Create genre stats with tracks
+  const genreStats = Array.from(genreCounts.entries())
+    .map(([genre, trackIds]) => {
+      const tracks = playlist.tracks.items
+        .filter((item) => item.track && trackIds.has(item.track.id))
+        .map((item) => item.track);
 
-    // Decode HTML entities in description
-    const decodedDescription = playlist.description
-      ? decodeHtmlEntities(playlist.description)
-      : "";
+      return {
+        genre,
+        count: trackIds.size,
+        percentage: Math.round((trackIds.size / playlist.tracks.total) * 100),
+        tracks,
+      };
+    })
+    .sort((a, b) => b.count - a.count);
 
-    return (
-      <main className="flex flex-col">
-        {/* Header */}
-        <section className="py-6 sm:py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Link
-              href="/playlists"
-              className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-6 sm:mb-8 transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Playlists</span>
-            </Link>
+  // Calculate artist statistics with images
+  const artistCounts = new Map<
+    string,
+    { id: string; name: string; songCount: number; image?: string }
+  >();
+  playlist.tracks.items
+    .filter((item) => item.track)
+    .forEach((item) => {
+      item.track.artists.forEach((artist) => {
+        const existing = artistCounts.get(artist.id);
+        const artistData = artistMap[artist.id];
+        const image =
+          artistData?.images && artistData.images.length > 0
+            ? artistData.images[artistData.images.length - 1].url
+            : undefined;
 
-            <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
-              {/* Playlist Image */}
-              <div className="relative shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto md:mx-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5">
-                {playlist.images && playlist.images.length > 0 ? (
-                  <ImageWithFallback
-                    src={playlist.images[0].url}
-                    alt={playlist.name}
-                    fill
-                    priority
-                    sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Music className="w-24 h-24 text-gray-400 dark:text-gray-600" />
-                  </div>
+        if (existing) {
+          existing.songCount += 1;
+        } else {
+          artistCounts.set(artist.id, {
+            id: artist.id,
+            name: artist.name,
+            songCount: 1,
+            image,
+          });
+        }
+      });
+    });
+
+  const artistStats = Array.from(artistCounts.values()).sort(
+    (a, b) => b.songCount - a.songCount,
+  );
+
+  // Decode HTML entities in description
+  const decodedDescription = playlist.description
+    ? decodeHtmlEntities(playlist.description)
+    : "";
+
+  return (
+    <main className="flex flex-col">
+      {/* Header */}
+      <section className="py-6 sm:py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/playlists"
+            className="mb-6 inline-flex items-center space-x-2 text-sm text-gray-600 transition-colors hover:text-gray-900 sm:mb-8 dark:text-gray-400 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Playlists</span>
+          </Link>
+
+          <div className="flex flex-col gap-6 sm:gap-8 md:flex-row">
+            {/* Playlist Image */}
+            <div className="relative mx-auto h-48 w-48 shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-56 sm:w-56 md:mx-0 md:h-64 md:w-64 dark:bg-white/5">
+              {playlist.images && playlist.images.length > 0 ? (
+                <ImageWithFallback
+                  src={playlist.images[0].url}
+                  alt={playlist.name}
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <Music className="h-24 w-24 text-gray-400 dark:text-gray-600" />
+                </div>
+              )}
+            </div>
+
+            {/* Playlist Info */}
+            <div className="flex flex-1 flex-col justify-end">
+              <div className="mb-2 text-xs text-gray-600 sm:text-sm dark:text-gray-400">
+                Playlist
+              </div>
+              <h1 className="mb-6 text-3xl leading-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl dark:text-white">
+                {playlist.name}
+              </h1>
+              {decodedDescription && (
+                <p className="mb-8 line-clamp-3 text-sm text-gray-700 sm:text-base dark:text-gray-300">
+                  {decodedDescription}
+                </p>
+              )}
+
+              <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 sm:gap-4 sm:text-sm dark:text-gray-400">
+                <div className="flex items-center space-x-2">
+                  <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <a
+                    href={playlist.owner.external_urls.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-colors hover:text-gray-900 dark:hover:text-white"
+                  >
+                    {playlist.owner.display_name}
+                  </a>
+                </div>
+                <span className="hidden sm:inline">•</span>
+                <div className="flex items-center space-x-2">
+                  <Music className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span>{playlist.tracks.total} songs</span>
+                </div>
+                <span className="hidden sm:inline">•</span>
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span>{formatTotalDuration(totalDuration)}</span>
+                </div>
+                {playlist.followers && playlist.followers.total > 0 && (
+                  <>
+                    <span className="hidden sm:inline">•</span>
+                    <div className="flex items-center space-x-2">
+                      <span>
+                        {playlist.followers.total.toLocaleString()} followers
+                      </span>
+                    </div>
+                  </>
                 )}
               </div>
 
-              {/* Playlist Info */}
-              <div className="flex-1 flex flex-col justify-end">
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  Playlist
-                </div>
-                <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight text-gray-900 dark:text-white">
-                  {playlist.name}
-                </h1>
-                {decodedDescription && (
-                  <p className="mb-8 text-sm sm:text-base text-gray-700 dark:text-gray-300 line-clamp-3">
-                    {decodedDescription}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center space-x-2">
-                    <User className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <a
-                      href={playlist.owner.external_urls.spotify}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      {playlist.owner.display_name}
-                    </a>
-                  </div>
-                  <span className="hidden sm:inline">•</span>
-                  <div className="flex items-center space-x-2">
-                    <Music className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{playlist.tracks.total} songs</span>
-                  </div>
-                  <span className="hidden sm:inline">•</span>
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{formatTotalDuration(totalDuration)}</span>
-                  </div>
-                  {playlist.followers && playlist.followers.total > 0 && (
-                    <>
-                      <span className="hidden sm:inline">•</span>
-                      <div className="flex items-center space-x-2">
-                        <span>
-                          {playlist.followers.total.toLocaleString()} followers
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Open in Spotify Button */}
-                <div className="mt-6">
-                  <a
-                    href={playlist.external_urls.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-[#3d38f5] hover:bg-[#2d28e5] text-white transition-colors text-sm font-medium"
-                  >
-                    <span>Open in Spotify</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
+              {/* Open in Spotify Button */}
+              <div className="mt-6">
+                <a
+                  href={playlist.external_urls.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 rounded-full bg-[#3d38f5] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#2d28e5]"
+                >
+                  <span>Open in Spotify</span>
+                  <ExternalLink className="h-4 w-4" />
+                </a>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Genres */}
-        {genreStats.length > 0 && <PlaylistGenres genreStats={genreStats} />}
+      {/* Genres */}
+      {genreStats.length > 0 && <PlaylistGenres genreStats={genreStats} />}
 
-        {/* Artists */}
-        {artistStats.length > 0 && <PlaylistArtists artists={artistStats} />}
+      {/* Artists */}
+      {artistStats.length > 0 && <PlaylistArtists artists={artistStats} />}
 
-        {/* Tracks */}
-        <section className="py-6 sm:py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-xl sm:text-2xl text-gray-900 dark:text-white">
-              Tracks
-            </h2>
-            <div className="space-y-2">
-              {playlist.tracks.items.map((item, originalIndex) => {
-                if (!item?.track) return null;
+      {/* Tracks */}
+      <section className="py-6 sm:py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="mb-6 text-xl text-gray-900 sm:text-2xl dark:text-white">
+            Tracks
+          </h2>
+          <div className="space-y-2">
+            {playlist.tracks.items.map((item, originalIndex) => {
+              if (!item?.track) return null;
 
-                const track = item.track;
-                const trackGenres = track.artists
-                  .flatMap((artist) => {
-                    const artistData = artistMap[artist.id];
-                    return artistData?.genres || [];
-                  })
-                  .slice(0, 2);
+              const track = item.track;
+              const trackGenres = track.artists
+                .flatMap((artist) => {
+                  const artistData = artistMap[artist.id];
+                  return artistData?.genres || [];
+                })
+                .slice(0, 2);
 
-                return (
-                  <a
-                    key={track.id}
-                    href={track.external_urls.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center space-x-2 sm:space-x-4 p-2 sm:p-4 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors min-h-[72px] sm:min-h-[80px]"
-                  >
-                    {/* Track Number */}
-                    <div className="shrink-0 w-6 sm:w-8 text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500">
-                      {originalIndex + 1}
-                    </div>
+              return (
+                <a
+                  key={track.id}
+                  href={track.external_urls.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex min-h-[72px] items-center space-x-2 rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:min-h-[80px] sm:space-x-4 sm:p-4 dark:bg-white/5 dark:hover:bg-white/10"
+                >
+                  {/* Track Number */}
+                  <div className="w-6 shrink-0 text-center text-xs text-gray-400 sm:w-8 sm:text-sm dark:text-gray-500">
+                    {originalIndex + 1}
+                  </div>
 
-                    {/* Album Art */}
-                    <div className="relative shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden bg-gray-200 dark:bg-white/5">
-                      {track.album.images && track.album.images.length > 0 ? (
-                        <ImageWithFallback
-                          src={
-                            track.album.images[track.album.images.length - 1]
-                              .url
-                          }
-                          alt={track.album.name}
-                          fill
-                          sizes="(max-width: 640px) 40px, 48px"
-                          className="object-cover group-hover:scale-102 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Music className="w-4 h-4 text-gray-400" />
+                  {/* Album Art */}
+                  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded bg-gray-200 sm:h-12 sm:w-12 dark:bg-white/5">
+                    {track.album.images && track.album.images.length > 0 ? (
+                      <ImageWithFallback
+                        src={
+                          track.album.images[track.album.images.length - 1].url
+                        }
+                        alt={track.album.name}
+                        fill
+                        sizes="(max-width: 640px) 40px, 48px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-102"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Music className="h-4 w-4 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Track Info */}
+                  <div className="flex min-w-0 flex-1 items-center justify-between">
+                    {/* Left: Song & Artist */}
+                    <div className="min-w-0 shrink">
+                      <div className="mb-0.5 truncate text-sm font-medium text-gray-900 sm:text-base dark:text-white">
+                        {track.name}
+                      </div>
+                      <div className="truncate text-xs text-gray-600 sm:text-sm dark:text-gray-400">
+                        {track.artists.map((artist) => artist.name).join(", ")}
+                      </div>
+                      {/* Mobile: genres dot-separated on third line */}
+                      {trackGenres.length > 0 && (
+                        <div className="mt-1 truncate text-xs text-gray-500 sm:hidden dark:text-gray-500">
+                          {trackGenres.length > 0
+                            ? trackGenres.join(" • ")
+                            : "\u00A0"}
                         </div>
                       )}
                     </div>
 
-                    {/* Track Info */}
-                    <div className="flex-1 min-w-0 flex items-center justify-between">
-                      {/* Left: Song & Artist */}
-                      <div className="min-w-0 shrink">
-                        <div className="mb-0.5 text-sm sm:text-base font-medium truncate text-gray-900 dark:text-white">
-                          {track.name}
+                    {/* Right: Album & Genre chips (Desktop only) */}
+                    <div className="ml-4 hidden max-w-[400px] shrink-0 items-center gap-3 sm:flex">
+                      <span className="min-w-0 truncate text-xs text-gray-600 sm:text-sm dark:text-gray-400">
+                        {track.album.name}
+                      </span>
+                      {trackGenres.length > 0 && (
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          {trackGenres.map((genre, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-gray-300/50 px-2 py-0.5 text-xs whitespace-nowrap text-gray-600 dark:bg-white/5 dark:text-gray-400"
+                            >
+                              {genre}
+                            </span>
+                          ))}
                         </div>
-                        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
-                          {track.artists
-                            .map((artist) => artist.name)
-                            .join(", ")}
-                        </div>
-                        {/* Mobile: genres dot-separated on third line */}
-                        {trackGenres.length > 0 && (
-                          <div className="sm:hidden text-xs text-gray-500 dark:text-gray-500 mt-1 truncate">
-                            {trackGenres.length > 0
-                              ? trackGenres.join(" • ")
-                              : "\u00A0"}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Right: Album & Genre chips (Desktop only) */}
-                      <div className="hidden sm:flex items-center gap-3 shrink-0 ml-4 max-w-[400px]">
-                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate min-w-0">
-                          {track.album.name}
-                        </span>
-                        {trackGenres.length > 0 && (
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            {trackGenres.map((genre, idx) => (
-                              <span
-                                key={idx}
-                                className="px-2 py-0.5 text-xs rounded-full bg-gray-300/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 whitespace-nowrap"
-                              >
-                                {genre}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
+                  </div>
 
-                    {/* Duration */}
-                    <div className="shrink-0 text-xs sm:text-sm text-gray-500 dark:text-gray-500 font-mono">
-                      {formatDuration(track.duration_ms)}
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
+                  {/* Duration */}
+                  <div className="shrink-0 font-mono text-xs text-gray-500 sm:text-sm dark:text-gray-500">
+                    {formatDuration(track.duration_ms)}
+                  </div>
+                </a>
+              );
+            })}
           </div>
-        </section>
-      </main>
-    );
-  } catch (error: any) {
-    logger.error("Playlist Detail", `Error loading playlist: ${error.message}`);
-    return (
-      <main className="flex flex-col">
-        <section className="py-8 sm:py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="mb-4 text-4xl text-gray-900 dark:text-white">
-              Error Loading Playlist
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              There was a problem loading this playlist. Please try again later.
-            </p>
-            <Link
-              href="/playlists"
-              className="inline-flex items-center space-x-2 text-[#3d38f5] hover:text-[#2d28e5] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Playlists</span>
-            </Link>
-          </div>
-        </section>
-      </main>
-    );
-  }
+        </div>
+      </section>
+    </main>
+  );
 }
 
 export async function generateMetadata({

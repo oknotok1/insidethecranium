@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 declare global {
   interface Window {
@@ -143,6 +143,8 @@ export const useSpotifyPlayer = (accessToken: string | undefined) => {
         player.disconnect();
       }
     };
+    // player is intentionally not in deps - cleanup uses the player from state
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
 
   const play = useCallback(

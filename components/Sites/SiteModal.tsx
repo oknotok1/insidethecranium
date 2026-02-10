@@ -1,9 +1,11 @@
 "use client";
 
-import { X, ExternalLink, Star } from "lucide-react";
 import { useEffect } from "react";
-import SiteImage from "./SiteImage";
+
 import type { RecommendedSite } from "@/data/sites";
+import { ExternalLink, Star, X } from "lucide-react";
+
+import SiteImage from "./SiteImage";
 
 interface SiteModalProps {
   site: RecommendedSite;
@@ -34,52 +36,57 @@ export default function SiteModal({ site, isOpen, onClose }: SiteModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black border border-gray-200 dark:border-white/10 transition-all duration-300 hover:scale-110"
+          className="absolute top-4 right-4 z-20 rounded-full border border-gray-200 bg-white/90 p-2 transition-all duration-300 hover:scale-110 hover:bg-white dark:border-white/10 dark:bg-black/90 dark:hover:bg-black"
           aria-label="Close modal"
         >
-          <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+          <X className="h-5 w-5 text-gray-700 dark:text-gray-300" />
         </button>
 
         {/* Featured Badge */}
         {site.featured && (
           <div className="absolute top-4 left-4 z-20">
             <div
-              className="p-2 rounded-full backdrop-blur-sm"
+              className="rounded-full p-2 backdrop-blur-sm"
               style={{ backgroundColor: "rgba(61, 56, 245, 0.9)" }}
             >
-              <Star className="w-4 h-4 text-white fill-white" />
+              <Star className="h-4 w-4 fill-white text-white" />
             </div>
           </div>
         )}
 
         {/* Image Header */}
         <div className="shrink-0">
-          <SiteImage url={site.url} name={site.name} customImageUrl={site.imageUrl} preferFavicon={site.preferFavicon} />
+          <SiteImage
+            url={site.url}
+            name={site.name}
+            customImageUrl={site.imageUrl}
+            preferFavicon={site.preferFavicon}
+          />
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-8">
           {/* Title */}
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
             {site.name}
           </h2>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="mb-6 flex flex-wrap gap-2">
             {site.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-sm px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10"
+                className="rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 text-sm text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
               >
                 {tag}
               </span>
@@ -87,7 +94,7 @@ export default function SiteModal({ site, isOpen, onClose }: SiteModalProps) {
           </div>
 
           {/* Full Description */}
-          <p className="text-base leading-relaxed text-gray-600 dark:text-gray-400 mb-8">
+          <p className="mb-8 text-base leading-relaxed text-gray-600 dark:text-gray-400">
             {site.description}
           </p>
 
@@ -96,12 +103,12 @@ export default function SiteModal({ site, isOpen, onClose }: SiteModalProps) {
             href={site.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center space-x-2 w-full sm:w-auto px-6 py-3 rounded-full text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+            className="inline-flex w-full items-center justify-center space-x-2 rounded-full px-6 py-3 font-medium text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:w-auto"
             style={{ backgroundColor: "#3d38f5" }}
             onClick={(e) => e.stopPropagation()}
           >
             <span>Visit {site.name}</span>
-            <ExternalLink className="w-5 h-5" />
+            <ExternalLink className="h-5 w-5" />
           </a>
 
           {/* URL */}

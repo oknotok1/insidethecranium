@@ -1,11 +1,14 @@
 import { cache } from "react";
+
 import * as contentful from "contentful";
-import HeroSection from "@/components/Homepage/Hero";
+
+import { logger } from "@/utils/logger";
+
+import { ComingSoonPreview } from "@/components/common/ComingSoon";
 import CuratedSongs from "@/components/Homepage/CuratedSongs";
+import HeroSection from "@/components/Homepage/Hero";
 import Playlists from "@/components/Homepage/Playlists";
 import Sites from "@/components/Homepage/Sites";
-import { ComingSoonPreview } from "@/components/common/ComingSoon";
-import { logger } from "@/utils/logger";
 
 // Cache page for 24 hours (static content that rarely changes)
 export const revalidate = 86400;
@@ -124,8 +127,8 @@ export default async function Home() {
       <CuratedSongs tracks={curatedTracks} />
       <Playlists playlists={playlists} />
       <Sites />
-      <ComingSoonPreview 
-        title="Concert Memories" 
+      <ComingSoonPreview
+        title="Concert Memories"
         subtitle="Relive my live music experiences and concert memories"
         href="/concerts"
       />

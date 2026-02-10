@@ -3,6 +3,7 @@
  */
 
 import { cache } from "react";
+
 import { logger } from "./logger";
 
 /**
@@ -87,7 +88,10 @@ export const getFreshSpotifyAccessToken = async (): Promise<string> => {
     logger.log("Spotify", "Fetched fresh access token (bypassed cache)");
     return data.access_token;
   } catch (error: any) {
-    logger.error("Spotify", `Failed to get fresh access token: ${error.message}`);
+    logger.error(
+      "Spotify",
+      `Failed to get fresh access token: ${error.message}`,
+    );
     throw error;
   }
 };

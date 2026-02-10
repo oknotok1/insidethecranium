@@ -6,23 +6,23 @@
 
 .button {
   @apply flex items-center space-x-2;
-  @apply px-3 py-1.5 rounded-full;
+  @apply rounded-full px-3 py-1.5;
   @apply bg-gradient-to-r from-[#3d38f5] to-[#8b87ff];
-  @apply text-white text-xs;
+  @apply text-xs text-white;
   @apply transition-all hover:shadow-lg;
   @apply hover:scale-[1.02] active:scale-100;
   @apply w-full min-w-0;
   cursor: pointer;
 
   .playIcon {
-    @apply w-3 h-3 fill-current flex-shrink-0;
+    @apply h-3 w-3 flex-shrink-0 fill-current;
   }
 
   .textContainer {
-    @apply flex-1 min-w-0 overflow-hidden;
+    @apply min-w-0 flex-1 overflow-hidden;
 
     .marquee {
-      @apply whitespace-nowrap inline-block;
+      @apply inline-block whitespace-nowrap;
       animation: marquee 15s linear infinite;
       will-change: transform;
 
@@ -60,10 +60,10 @@
 }
 
 .popover {
-  @apply fixed left-1/2 -translate-x-1/2 top-20;
+  @apply fixed top-20 left-1/2 -translate-x-1/2;
   @apply lg:absolute lg:top-full lg:mt-2;
   @apply w-64 rounded-xl shadow-2xl;
-  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10;
+  @apply border border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900;
   @apply z-[70] overflow-hidden;
 
   .backgroundGradient {
@@ -95,33 +95,33 @@
     @apply relative p-5;
 
     .title {
-      @apply text-xs text-gray-600 dark:text-gray-400 mb-3 text-center;
+      @apply mb-3 text-center text-xs text-gray-600 dark:text-gray-400;
     }
 
     .albumArtwork {
-      @apply flex justify-center mb-3;
+      @apply mb-3 flex justify-center;
 
       .albumImage {
-        @apply w-32 h-32 rounded-lg overflow-hidden;
-        @apply bg-gray-200 dark:bg-white/5 shadow-xl;
+        @apply h-32 w-32 overflow-hidden rounded-lg;
+        @apply bg-gray-200 shadow-xl dark:bg-white/5;
         @apply border border-gray-300/50 dark:border-white/10;
 
         img {
-          @apply w-full h-full object-cover;
+          @apply h-full w-full object-cover;
         }
       }
     }
 
     .songInfo {
-      @apply text-center mb-3;
+      @apply mb-3 text-center;
 
       .songName {
-        @apply text-base font-medium mb-1;
+        @apply mb-1 text-base font-medium;
         @apply text-gray-900 dark:text-white;
       }
 
       .artistName {
-        @apply text-xs mb-1;
+        @apply mb-1 text-xs;
         @apply text-gray-700 dark:text-gray-300;
       }
 
@@ -132,7 +132,7 @@
     }
 
     .genres {
-      @apply text-center mb-3;
+      @apply mb-3 text-center;
 
       .genreText {
         @apply text-xs;
@@ -142,11 +142,11 @@
 
     .spotifyLink {
       @apply flex items-center justify-center space-x-2;
-      @apply w-full px-4 py-2 rounded-full;
+      @apply w-full rounded-full px-4 py-2;
       @apply bg-gray-900/10 hover:bg-gray-900/20;
       @apply dark:bg-white/10 dark:hover:bg-white/20;
       @apply border border-gray-300 dark:border-white/20;
-      @apply transition-colors text-xs;
+      @apply text-xs transition-colors;
     }
   }
 }

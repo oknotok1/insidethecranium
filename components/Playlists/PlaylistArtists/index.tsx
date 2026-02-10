@@ -25,20 +25,20 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
 
   return (
     <section className="py-6 sm:py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="mb-4 text-xl sm:text-2xl text-gray-900 dark:text-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 className="mb-4 text-xl text-gray-900 sm:text-2xl dark:text-white">
           Artists
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {displayedArtists.map((artist) => (
             <a
               key={artist.id}
               href={`https://open.spotify.com/artist/${artist.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center text-center space-y-2 p-3 sm:p-4 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+              className="flex flex-col items-center space-y-2 rounded-lg p-3 text-center transition-colors hover:bg-gray-100 sm:p-4 dark:hover:bg-white/5"
             >
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center bg-linear-to-br from-[#3d38f5]/20 to-[#8b87ff]/10">
+              <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-linear-to-br from-[#3d38f5]/20 to-[#8b87ff]/10 sm:h-24 sm:w-24">
                 {artist.image ? (
                   <Image
                     src={artist.image}
@@ -58,7 +58,7 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
                   />
                 )}
               </div>
-              <div className="text-xs sm:text-sm font-medium truncate w-full px-1 sm:px-2 text-gray-900 dark:text-white">
+              <div className="w-full truncate px-1 text-xs font-medium text-gray-900 sm:px-2 sm:text-sm dark:text-white">
                 {artist.name}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
@@ -69,7 +69,7 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
         </div>
         {artists.length > initialArtistCount && (
           <button
-            className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 rounded-lg bg-gray-200 dark:bg-white/5 text-xs sm:text-sm hover:bg-gray-300 dark:hover:bg-white/10 transition-colors text-gray-900 dark:text-white"
+            className="mt-4 rounded-lg bg-gray-200 px-4 py-2 text-xs text-gray-900 transition-colors hover:bg-gray-300 sm:mt-6 sm:px-6 sm:text-sm dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
             onClick={() => setShowAllArtists(!showAllArtists)}
           >
             {showAllArtists

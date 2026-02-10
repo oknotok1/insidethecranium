@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface Track {
   id: string;
@@ -29,27 +29,31 @@ export const useDisplayTrack = (
   nowPlayingTrack: NowPlayingTrack | null,
   recentlyPlayedTrack: RecentlyPlayedTrack | null,
 ) => {
-  // Keep track of the last valid track to prevent flickering
-  const lastValidTrack = useRef<Track | undefined>(undefined);
-
+  // Calculate the current track based on listening state
   const currentTrack = useMemo(() => {
     if (isListening) {
       return nowPlayingTrack?.item;
     }
-
     // When not listening, prefer nowPlayingTrack (what was just playing)
     // Only use recentlyPlayedTrack if nowPlayingTrack doesn't exist
-    // This ensures we show the song that was just stopped, not stale API data
     return nowPlayingTrack?.item || recentlyPlayedTrack?.items?.[0]?.track;
   }, [isListening, nowPlayingTrack?.item, recentlyPlayedTrack?.items]);
 
-  // Update last valid track whenever we have a valid current track
+  // Track the last valid track to prevent flickering using state
+  const [lastValidTrack, setLastValidTrack] = useState<Track | undefined>(
+    undefined,
+  );
+
+  // Update lastValidTrack when we have a valid currentTrack
+  // This caches the last valid track to prevent UI flickering
   useEffect(() => {
     if (currentTrack) {
-      lastValidTrack.current = currentTrack;
+      // Intentionally caching last valid track for UI stability
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLastValidTrack(currentTrack);
     }
   }, [currentTrack]);
 
   // Return current track if available, otherwise return last valid track
-  return currentTrack || lastValidTrack.current;
+  return currentTrack ?? lastValidTrack;
 };

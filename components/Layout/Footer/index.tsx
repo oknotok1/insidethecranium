@@ -1,6 +1,9 @@
 import Link from "next/link";
+
 import { Music2 } from "lucide-react";
+
 import { getFooterLinks } from "@/lib/navigation";
+
 import { ConnectLinks } from "./ConnectLinks";
 import styles from "./styles.module.scss";
 

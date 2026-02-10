@@ -1,8 +1,11 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
+import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+
 import { useAppContext } from "@/contexts/AppContext";
-import { Play, Pause, SkipForward, SkipBack } from "lucide-react";
-import { useState, useEffect } from "react";
+
 import styles from "./styles.module.scss";
 
 const formatTime = (ms: number): string => {
@@ -20,30 +23,48 @@ export default function WebPlayerControls() {
     setEnableWebPlayer,
     nowPlayingTrack,
   } = useAppContext();
-  const [currentPosition, setCurrentPosition] = useState(0);
+
+  // Track the current track ID to detect track changes
+  const currentTrackId = nowPlayingTrack?.item?.id;
+  const previousTrackIdRef = useRef<string | undefined>(currentTrackId);
+
+  // Initialize with current progress, or 0 if not available
+  const [currentPosition, setCurrentPosition] = useState(
+    () => nowPlayingTrack?.progress_ms ?? 0,
+  );
+
+  // Reset position when track changes or when progress_ms changes significantly (seek event)
+  // This synchronizes local UI state with external Spotify API state
+  useEffect(() => {
+    const progressMs = nowPlayingTrack?.progress_ms;
+    const hasTrackChanged = currentTrackId !== previousTrackIdRef.current;
+    const hasSignificantSeek =
+      progressMs !== undefined && Math.abs(progressMs - currentPosition) > 2000; // More than 2 seconds difference
+
+    if (hasTrackChanged || hasSignificantSeek) {
+      // Intentionally syncing external Spotify state to local state for UI
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCurrentPosition(progressMs ?? 0);
+      previousTrackIdRef.current = currentTrackId;
+    }
+  }, [currentTrackId, nowPlayingTrack?.progress_ms, currentPosition]);
 
   // Update position every second when playing
   useEffect(() => {
-    if (isListening && nowPlayingTrack?.progress_ms !== undefined) {
-      setCurrentPosition(nowPlayingTrack.progress_ms);
-
-      const interval = setInterval(() => {
-        setCurrentPosition((prev) => {
-          const newPosition = prev + 1000;
-          const duration = nowPlayingTrack?.item?.duration_ms || 0;
-          return newPosition < duration ? newPosition : duration;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    } else if (nowPlayingTrack?.progress_ms !== undefined) {
-      setCurrentPosition(nowPlayingTrack.progress_ms);
+    if (!isListening) {
+      return;
     }
-  }, [
-    isListening,
-    nowPlayingTrack?.progress_ms,
-    nowPlayingTrack?.item?.duration_ms,
-  ]);
+
+    const interval = setInterval(() => {
+      setCurrentPosition((prev) => {
+        const newPosition = prev + 1000;
+        const duration = nowPlayingTrack?.item?.duration_ms || 0;
+        return newPosition < duration ? newPosition : duration;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isListening, nowPlayingTrack?.item?.duration_ms]);
 
   return (
     <div className={styles.container}>

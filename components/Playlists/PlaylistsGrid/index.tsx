@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import PlaylistCard from "@/components/Playlists/PlaylistCard";
-import { Item as SpotifyPlaylist } from "@/types/spotify";
+import { useEffect, useRef, useState } from "react";
+
 import { Loader2 } from "lucide-react";
+
+import { Item as SpotifyPlaylist } from "@/types/spotify";
+
+import PlaylistCard from "@/components/Playlists/PlaylistCard";
 
 interface PlaylistsGridProps {
   initialPlaylists: SpotifyPlaylist[];
@@ -16,9 +19,8 @@ export default function PlaylistsGrid({
   initialPlaylists,
   totalCount,
 }: PlaylistsGridProps) {
-  const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>(
-    initialPlaylists,
-  );
+  const [playlists, setPlaylists] =
+    useState<SpotifyPlaylist[]>(initialPlaylists);
   const [isLoading, setIsLoading] = useState(false);
   const [isDone, setIsDone] = useState(initialPlaylists.length >= totalCount);
   const [loadError, setLoadError] = useState(false);
@@ -27,7 +29,7 @@ export default function PlaylistsGrid({
   useEffect(() => {
     const loadAllBatches = async () => {
       if (loadingRef.current || initialPlaylists.length >= totalCount) return;
-      
+
       loadingRef.current = true;
       setIsLoading(true);
 
@@ -80,11 +82,13 @@ export default function PlaylistsGrid({
     };
 
     loadAllBatches();
+    // Only run once on mount - initialPlaylists and totalCount are server props
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
         {playlists.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
@@ -93,7 +97,7 @@ export default function PlaylistsGrid({
       {/* Loading indicator at bottom */}
       {isLoading && !isDone && (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+          <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
             Loading more playlists...
           </span>

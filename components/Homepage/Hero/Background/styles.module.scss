@@ -17,7 +17,7 @@
 
 .animatedBackground {
   @apply absolute inset-0;
-  @apply overflow-hidden pointer-events-none;
+  @apply pointer-events-none overflow-hidden;
   z-index: 2;
 
   .gradientBlobLeft {

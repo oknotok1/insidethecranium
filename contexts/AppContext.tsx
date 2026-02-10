@@ -1,17 +1,18 @@
 "use client";
 
 // contexts/MyContext.tsx
-
 import React, {
   createContext,
-  useContext,
-  useState,
-  ReactNode,
   Dispatch,
+  ReactNode,
   SetStateAction,
+  useContext,
   useEffect,
+  useState,
 } from "react";
+
 import useSWR from "swr";
+
 import { useSpotifyPlayer } from "./hooks/useSpotifyPlayer";
 
 // Define interfaces for context state
@@ -147,24 +148,25 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
         return null;
       });
 
-  const { data: currentlyPlayingTrack, isLoading: isLoadingCurrentlyPlaying } = useSWR(
-    accessToken ? "/api/spotify/player/currently-playing" : null,
-    trackFetcher,
-    {
-      refreshInterval: 5000, // 5s polling for responsive UI
-      refreshWhenHidden: false,
-      refreshWhenOffline: false,
-      onSuccess: (data) => {
-        if (data) {
-          setNowPlayingTrack(data);
-          setIsListening(data.is_playing);
-        } else {
-          // Don't clear nowPlayingTrack - keep it to show last played song
-          setIsListening(false);
-        }
+  const { data: currentlyPlayingTrack, isLoading: isLoadingCurrentlyPlaying } =
+    useSWR(
+      accessToken ? "/api/spotify/player/currently-playing" : null,
+      trackFetcher,
+      {
+        refreshInterval: 5000, // 5s polling for responsive UI
+        refreshWhenHidden: false,
+        refreshWhenOffline: false,
+        onSuccess: (data) => {
+          if (data) {
+            setNowPlayingTrack(data);
+            setIsListening(data.is_playing);
+          } else {
+            // Don't clear nowPlayingTrack - keep it to show last played song
+            setIsListening(false);
+          }
+        },
       },
-    },
-  );
+    );
 
   // Separate fetcher for recently played (fails silently)
   const recentlyPlayedFetcher = (url: string) =>
@@ -189,7 +191,11 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       .catch(() => null); // Fail silently
 
   // Fetch recently played track (cached indefinitely, invalidated on-demand)
-  const { data: recentlyPlayed, mutate: mutateRecentlyPlayed, isLoading: isLoadingRecentlyPlayed } = useSWR(
+  const {
+    data: recentlyPlayed,
+    mutate: mutateRecentlyPlayed,
+    isLoading: isLoadingRecentlyPlayed,
+  } = useSWR(
     accessToken ? "/api/spotify/player/recently-played" : null,
     recentlyPlayedFetcher,
     {
@@ -241,7 +247,8 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
   );
 
   // Derive loading state
-  const isLoadingInitialData = isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed;
+  const isLoadingInitialData =
+    isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed;
 
   // Invalidate recently played when track changes or listening stops
   useEffect(() => {
@@ -254,7 +261,12 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [nowPlayingTrack?.item?.id, isListening, accessToken, mutateRecentlyPlayed]);
+  }, [
+    nowPlayingTrack?.item?.id,
+    isListening,
+    accessToken,
+    mutateRecentlyPlayed,
+  ]);
 
   // Derive if web player is the active device
   const isWebPlayerActive =

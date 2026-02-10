@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
+
 import {
-  getAllTags,
-  getSitesByTag,
-  getFeaturedSites,
   getAllSitesInOrder,
+  getAllTags,
+  getFeaturedSites,
+  getSitesByTag,
   type SiteTag,
 } from "@/data/sites";
+
 import SiteCard from "./SiteCard";
 
 export default function SitesContent() {
-  const [selectedTag, setSelectedTag] = useState<
-    SiteTag | "All" | "Featured"
-  >("All");
+  const [selectedTag, setSelectedTag] = useState<SiteTag | "All" | "Featured">(
+    "All",
+  );
   const tags = getAllTags();
   const allSites = getAllSitesInOrder();
   const featuredSites = getFeaturedSites();
@@ -30,14 +32,16 @@ export default function SitesContent() {
   const displayedSites = filteredSites;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
       {/* Header */}
       <div className="mb-8 sm:mb-12">
-        <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl">
+        <h1 className="mb-4 text-3xl sm:mb-6 sm:text-4xl md:text-5xl">
           Recommended Sites
         </h1>
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-          My favorite platforms for discovering and exploring music. From streaming services to analytics tools, these sites have shaped my musical journey.
+        <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+          My favorite platforms for discovering and exploring music. From
+          streaming services to analytics tools, these sites have shaped my
+          musical journey.
         </p>
       </div>
 
@@ -46,15 +50,13 @@ export default function SitesContent() {
         <div className="flex flex-wrap gap-2 sm:gap-3">
           <button
             onClick={() => setSelectedTag("All")}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 cursor-pointer ${
+            className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 sm:px-5 sm:py-2.5 sm:text-base ${
               selectedTag === "All"
-                ? "text-white shadow-lg scale-105"
-                : "bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10"
+                ? "scale-105 text-white shadow-lg"
+                : "border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
             }`}
             style={
-              selectedTag === "All"
-                ? { backgroundColor: "#3d38f5" }
-                : undefined
+              selectedTag === "All" ? { backgroundColor: "#3d38f5" } : undefined
             }
           >
             All
@@ -62,10 +64,10 @@ export default function SitesContent() {
           </button>
           <button
             onClick={() => setSelectedTag("Featured")}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 cursor-pointer ${
+            className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 sm:px-5 sm:py-2.5 sm:text-base ${
               selectedTag === "Featured"
-                ? "text-white shadow-lg scale-105"
-                : "bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10"
+                ? "scale-105 text-white shadow-lg"
+                : "border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
             }`}
             style={
               selectedTag === "Featured"
@@ -82,10 +84,10 @@ export default function SitesContent() {
               <button
                 key={tag}
                 onClick={() => setSelectedTag(tag)}
-                className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 cursor-pointer ${
+                className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 sm:px-5 sm:py-2.5 sm:text-base ${
                   selectedTag === tag
-                    ? "text-white shadow-lg scale-105"
-                    : "bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10"
+                    ? "scale-105 text-white shadow-lg"
+                    : "border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
                 }`}
                 style={
                   selectedTag === tag
@@ -102,22 +104,26 @@ export default function SitesContent() {
       </div>
 
       {/* Sites Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-        {displayedSites.map((site) => (
-          <SiteCard key={site.id} site={site} />
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+        {displayedSites.map((site, index) => (
+          <SiteCard
+            key={site.id}
+            site={site}
+            loadDelay={index * 500} // Stagger by 500ms per site
+          />
         ))}
       </div>
 
       {/* Empty State */}
       {displayedSites.length === 0 && (
-        <div className="text-center py-16 sm:py-20">
-          <div className="max-w-md mx-auto">
+        <div className="py-16 text-center sm:py-20">
+          <div className="mx-auto max-w-md">
             <p className="text-lg text-gray-600 dark:text-gray-400">
               No sites found in this category.
             </p>
             <button
               onClick={() => setSelectedTag("All")}
-              className="mt-6 px-6 py-3 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all duration-300"
+              className="mt-6 rounded-full border border-gray-200 bg-gray-100 px-6 py-3 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-gray-200 hover:text-gray-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white"
             >
               View All Sites
             </button>

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { createClient } from "contentful";
+
 import { logger } from "@/utils/logger";
 
 const { CONTENTFUL_SPACE_ID, CONTENTFUL_ACCESS_TOKEN } = process.env;

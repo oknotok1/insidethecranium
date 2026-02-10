@@ -32,9 +32,7 @@ const ThemeMenuItems = ({
   onSelect: (theme: string) => void;
 }) => (
   <>
-    <DropdownMenuItem onClick={() => onSelect("light")}>
-      Light
-    </DropdownMenuItem>
+    <DropdownMenuItem onClick={() => onSelect("light")}>Light</DropdownMenuItem>
     <DropdownMenuItem onClick={() => onSelect("dark")}>Dark</DropdownMenuItem>
     <DropdownMenuItem onClick={() => onSelect("system")}>
       System
@@ -46,7 +44,7 @@ export default function ThemeToggle({ isMobile = false }: ThemeToggleProps) {
   const { setTheme } = useTheme();
 
   const triggerButton = isMobile ? (
-    <button className="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 w-full">
+    <button className="flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">
       <ThemeIcon />
       <span>Theme</span>
     </button>
@@ -58,7 +56,12 @@ export default function ThemeToggle({ isMobile = false }: ThemeToggleProps) {
   );
 
   const contentProps = isMobile
-    ? { align: "start" as const, side: "bottom" as const, sideOffset: 4, alignOffset: 0 }
+    ? {
+        align: "start" as const,
+        side: "bottom" as const,
+        sideOffset: 4,
+        alignOffset: 0,
+      }
     : { align: "end" as const };
 
   return (

@@ -9,7 +9,7 @@
 }
 
 .container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+  @apply mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8;
 }
 
 .footerGrid {
@@ -19,7 +19,7 @@
 
 // Brand Section
 .brandSection {
-  @apply col-span-1 md:col-span-2 flex flex-col space-y-3;
+  @apply col-span-1 flex flex-col space-y-3 md:col-span-2;
 }
 
 .brandHeader {
@@ -27,7 +27,7 @@
 }
 
 .brandIcon {
-  @apply w-6 h-6;
+  @apply h-6 w-6;
   color: #3d38f5;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .sectionTitle {
-  @apply font-semibold text-sm uppercase tracking-wider text-gray-600;
+  @apply text-sm font-semibold tracking-wider text-gray-600 uppercase;
 
   :global(.dark) & {
     @apply text-gray-400;
@@ -77,7 +77,7 @@
   }
 
   &.disabled {
-    @apply opacity-40 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-40;
     pointer-events: auto; // Allow cursor to show
   }
 }
@@ -88,7 +88,7 @@
 }
 
 .connectLink {
-  @apply inline-flex items-center space-x-2 text-sm text-gray-700 transition-colors w-fit;
+  @apply inline-flex w-fit items-center space-x-2 text-sm text-gray-700 transition-colors;
 
   :global(.dark) & {
     @apply text-gray-300;
@@ -100,7 +100,7 @@
 }
 
 .connectLinkIcon {
-  @apply w-5 h-5;
+  @apply h-5 w-5;
   flex-shrink: 0;
   background-color: currentColor;
   transition: background-color 0.2s ease;
@@ -108,7 +108,7 @@
 
 // Copyright Section
 .copyright {
-  @apply col-span-full mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-500;
+  @apply col-span-full mt-8 border-t border-gray-200 pt-8 text-center text-sm text-gray-500;
 
   :global(.dark) & {
     @apply border-white/10 text-gray-400;

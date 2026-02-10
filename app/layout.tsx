@@ -1,15 +1,18 @@
-import "@/styles/tailwind.css";
-import "@/styles/globals.scss";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
-import { AppContext } from "@/contexts/AppContext";
-import ThemeProvider from "@/components/Theme/ThemeProvider";
-import Navbar from "@/components/Layout/Navbar";
-import Footer from "@/components/Layout/Footer";
-import WebPlayerControls from "@/components/Music/WebPlayerControls";
-import ScrollToTop from "@/components/common/ScrollToTop";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// Site Metadata Constants (DRY)
+import { AppContext } from "@/contexts/AppContext";
+
+import ScrollToTop from "@/components/common/ScrollToTop";
+import Footer from "@/components/Layout/Footer";
+import Navbar from "@/components/Layout/Navbar";
+import WebPlayerControls from "@/components/Music/WebPlayerControls";
+import ThemeProvider from "@/components/Theme/ThemeProvider";
+
+import "@/styles/globals.scss";
+import "@/styles/tailwind.css";
+
+// Site Metadata Constants
 const SITE_NAME = "Inside The Cranium";
 const SITE_URL = "https://insidethecranium.io";
 const SITE_TITLE = "Inside The Cranium - Discover Curated Spotify Playlists";

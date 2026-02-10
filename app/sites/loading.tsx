@@ -3,11 +3,11 @@ import { SiteCardSkeleton } from "@/components/Sites";
 export default function Loading() {
   return (
     <main className="min-h-[calc(100vh-4rem)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         {/* Header Skeleton */}
         <div className="mb-8 sm:mb-12">
-          <div className="h-10 sm:h-12 w-64 bg-gray-200 dark:bg-white/10 rounded animate-pulse mb-4 sm:mb-6" />
-          <div className="h-4 w-96 max-w-full bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+          <div className="mb-4 h-10 w-64 animate-pulse rounded bg-gray-200 sm:mb-6 sm:h-12 dark:bg-white/10" />
+          <div className="h-4 w-96 max-w-full animate-pulse rounded bg-gray-200 dark:bg-white/10" />
         </div>
 
         {/* Tag Filter Skeleton */}
@@ -16,14 +16,14 @@ export default function Loading() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-10 w-24 bg-gray-200 dark:bg-white/10 rounded-full animate-pulse"
+                className="h-10 w-24 animate-pulse rounded-full bg-gray-200 dark:bg-white/10"
               />
             ))}
           </div>
         </div>
 
         {/* Sites Grid Skeleton */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 12 }).map((_, i) => (
             <SiteCardSkeleton key={i} />
           ))}

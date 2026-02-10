@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSpotifyAccessToken } from "@/utils/spotify";
+
 import { logger } from "@/utils/logger";
+import { getSpotifyAccessToken } from "@/utils/spotify";
 
 // Cache tokens for 40 minutes (tokens last 1 hour, using safe margin)
 export const revalidate = 2400;

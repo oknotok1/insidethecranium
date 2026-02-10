@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface Track {
   id: string;
@@ -65,6 +65,8 @@ export const useTrackGenres = (
     };
 
     fetchGenres();
+    // We only depend on track.id and accessToken to avoid refetching when artist objects change reference
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track?.id, accessToken]);
 
   return genres;

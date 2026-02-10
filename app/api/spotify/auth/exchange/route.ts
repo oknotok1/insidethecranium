@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SPOTIFY_API } from "@/utils/spotify";
+
 import { logger } from "@/utils/logger";
+import { SPOTIFY_API } from "@/utils/spotify";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +20,10 @@ export async function POST(request: NextRequest) {
     const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", "http://127.0.0.1:3000/api/spotify/auth/callback");
+    params.append(
+      "redirect_uri",
+      "http://127.0.0.1:3000/api/spotify/auth/callback",
+    );
     params.append("client_id", SPOTIFY_CLIENT_ID || "");
     params.append("client_secret", SPOTIFY_CLIENT_SECRET || "");
 

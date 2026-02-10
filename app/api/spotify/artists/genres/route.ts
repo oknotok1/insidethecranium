@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
+
 import { logger } from "@/utils/logger";
+import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
 
 // Cache artist genres indefinitely (static data that rarely changes)
 export const revalidate = false;

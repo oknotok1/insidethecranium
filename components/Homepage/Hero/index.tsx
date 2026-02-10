@@ -1,16 +1,20 @@
 "use client";
 
-import { ExternalLink, Music2 } from "lucide-react";
 import React, { useEffect } from "react";
+
+import { ExternalLink, Music2 } from "lucide-react";
+
 import { useAppContext } from "@/contexts/AppContext";
+
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
+
 import { HeroBackground } from "./Background";
 import { HeroSkeleton } from "./HeroSkeleton";
-import { useTrackGenres } from "./hooks/useTrackGenres";
-import { useHeroTimestamp } from "./hooks/useHeroTimestamp";
 import { useDisplayTrack } from "./hooks/useDisplayTrack";
-import { extractSongData } from "./utils/songDataExtractor";
+import { useHeroTimestamp } from "./hooks/useHeroTimestamp";
+import { useTrackGenres } from "./hooks/useTrackGenres";
 import styles from "./styles.module.scss";
+import { extractSongData } from "./utils/songDataExtractor";
 
 interface SongMetadata {
   genres?: string[];
@@ -25,8 +29,13 @@ interface TimestampProps {
 }
 
 export default function HeroSection() {
-  const { nowPlayingTrack, recentlyPlayedTrack, isListening, accessToken, isLoadingInitialData } =
-    useAppContext();
+  const {
+    nowPlayingTrack,
+    recentlyPlayedTrack,
+    isListening,
+    accessToken,
+    isLoadingInitialData,
+  } = useAppContext();
 
   // Get the track to display (current or last played)
   const displayTrack = useDisplayTrack(
@@ -124,7 +133,7 @@ const AlbumArtwork = ({
 
   return (
     <div className={styles.placeholderIcon}>
-      <Music2 className="w-12 h-12" style={{ color: "var(--color-primary)" }} />
+      <Music2 className="h-12 w-12" style={{ color: "var(--color-primary)" }} />
     </div>
   );
 };
@@ -157,7 +166,10 @@ const SongInfo = ({
 
     <Metadata {...metadata} progress={progress} />
 
-    <div className={styles.spotifyLinkContainer} style={{ minHeight: spotifyUrl ? undefined : '2.5rem' }}>
+    <div
+      className={styles.spotifyLinkContainer}
+      style={{ minHeight: spotifyUrl ? undefined : "2.5rem" }}
+    >
       {spotifyUrl && <SpotifyLink url={spotifyUrl} />}
     </div>
   </>
@@ -168,17 +180,22 @@ const Metadata = ({
   duration,
 }: SongMetadata & { progress?: string }) => {
   return (
-    <div className={styles.metadata} style={{ minHeight: genres?.length ? undefined : '1.5rem' }}>
-      {genres && genres.length > 0 && genres.map((genre, index) => (
-        <React.Fragment key={index}>
-          <span key={genre}>{genre}</span>
-          {index < genres.length - 1 && (
-            <span key={`sep-${index}`} className={styles.metadataSeparator}>
-              •
-            </span>
-          )}
-        </React.Fragment>
-      ))}
+    <div
+      className={styles.metadata}
+      style={{ minHeight: genres?.length ? undefined : "1.5rem" }}
+    >
+      {genres &&
+        genres.length > 0 &&
+        genres.map((genre, index) => (
+          <React.Fragment key={index}>
+            <span key={genre}>{genre}</span>
+            {index < genres.length - 1 && (
+              <span key={`sep-${index}`} className={styles.metadataSeparator}>
+                •
+              </span>
+            )}
+          </React.Fragment>
+        ))}
       {/* {duration && (
         <>
           <span className={styles.metadataSeparator}>•</span>
@@ -197,7 +214,7 @@ const SpotifyLink = ({ url }: { url: string }) => (
     className={styles.spotifyLink}
   >
     <span>Listen on Spotify</span>
-    <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+    <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
   </a>
 );
 

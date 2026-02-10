@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { ArrowUp } from "lucide-react";
 
 export default function ScrollToTop() {
@@ -35,10 +36,10 @@ export default function ScrollToTop() {
   return (
     <button
       onClick={scrollToTop}
-      className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-gray-200/80 dark:bg-white/10 backdrop-blur-sm hover:bg-[#3d38f5] text-gray-700 dark:text-gray-300 hover:text-white shadow-lg transition-all duration-300 hover:scale-110"
+      className="fixed right-6 bottom-6 z-40 rounded-full bg-gray-200/80 p-3 text-gray-700 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[#3d38f5] hover:text-white dark:bg-white/10 dark:text-gray-300"
       aria-label="Scroll to top"
     >
-      <ArrowUp className="w-5 h-5" />
+      <ArrowUp className="h-5 w-5" />
     </button>
   );
 }

@@ -41,7 +41,9 @@ export function ImageWithFallback({
         className={`inline-block bg-gray-100 text-center align-middle ${className ?? ""}`}
         style={style}
       >
-        <div className="flex items-center justify-center w-full h-full">
+        <div className="flex h-full w-full items-center justify-center">
+          {/* Using native img for error fallback SVG - intentional for performance */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={ERROR_IMG_SRC}
             alt="Error loading image"
@@ -90,7 +92,9 @@ export function ImageWithFallback({
       src={src}
       alt={alt}
       fill
-      sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+      sizes={
+        sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      }
       className={className}
       style={style}
       priority={priority}

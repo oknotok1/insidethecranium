@@ -169,32 +169,35 @@ export default function TrackList({ tracks, artistMap }: TrackListProps) {
                       {track.name}
                     </a>
                     <div className="truncate text-xs text-gray-600 sm:text-sm dark:text-gray-400">
-                      {track.artists.map((artist, idx) => (
-                        <span key={artist.id}>
-                          {artist.external_urls?.spotify ? (
-                            <a
-                              href={artist.external_urls.spotify}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              onMouseEnter={(e) => {
-                                const card = e.currentTarget.closest('.group');
-                                card?.classList.add('hovering-title');
-                              }}
-                              onMouseLeave={(e) => {
-                                const card = e.currentTarget.closest('.group');
-                                card?.classList.remove('hovering-title');
-                              }}
-                              className="inline transition-colors hover:text-[#3d38f5] hover:underline dark:hover:text-[#8b87ff]"
-                            >
-                              {artist.name}
-                            </a>
-                          ) : (
-                            artist.name
-                          )}
-                          {idx < track.artists.length - 1 && ", "}
-                        </span>
-                      ))}
+                      {track.artists.map((artist, idx) => {
+                        const artistWithUrls = artist as typeof artist & { external_urls?: { spotify: string } };
+                        return (
+                          <span key={artist.id}>
+                            {artistWithUrls.external_urls?.spotify ? (
+                              <a
+                                href={artistWithUrls.external_urls.spotify}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                onMouseEnter={(e) => {
+                                  const card = e.currentTarget.closest('.group');
+                                  card?.classList.add('hovering-title');
+                                }}
+                                onMouseLeave={(e) => {
+                                  const card = e.currentTarget.closest('.group');
+                                  card?.classList.remove('hovering-title');
+                                }}
+                                className="inline transition-colors hover:text-[#3d38f5] hover:underline dark:hover:text-[#8b87ff]"
+                              >
+                                {artist.name}
+                              </a>
+                            ) : (
+                              artist.name
+                            )}
+                            {idx < track.artists.length - 1 && ", "}
+                          </span>
+                        );
+                      })}
                     </div>
                     {/* Mobile: genres dot-separated on third line */}
                     {trackGenres.length > 0 && (
@@ -208,23 +211,31 @@ export default function TrackList({ tracks, artistMap }: TrackListProps) {
 
                   {/* Right: Album & Genre chips (Desktop only) */}
                   <div className="ml-4 hidden max-w-[400px] shrink-0 items-center gap-3 sm:flex">
-                    <a
-                      href={track.album.external_urls?.spotify || `https://open.spotify.com/album/${track.album.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      onMouseEnter={(e) => {
-                        const card = e.currentTarget.closest('.group');
-                        card?.classList.add('hovering-title');
-                      }}
-                      onMouseLeave={(e) => {
-                        const card = e.currentTarget.closest('.group');
-                        card?.classList.remove('hovering-title');
-                      }}
-                      className="inline min-w-0 truncate text-xs text-gray-600 transition-colors hover:text-[#3d38f5] hover:underline sm:text-sm dark:text-gray-400 dark:hover:text-[#8b87ff]"
-                    >
-                      {track.album.name}
-                    </a>
+                    {(() => {
+                      const albumWithUrls = track.album as typeof track.album & { 
+                        external_urls?: { spotify: string }; 
+                        id?: string;
+                      };
+                      return (
+                        <a
+                          href={albumWithUrls.external_urls?.spotify || (albumWithUrls.id ? `https://open.spotify.com/album/${albumWithUrls.id}` : '#')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          onMouseEnter={(e) => {
+                            const card = e.currentTarget.closest('.group');
+                            card?.classList.add('hovering-title');
+                          }}
+                          onMouseLeave={(e) => {
+                            const card = e.currentTarget.closest('.group');
+                            card?.classList.remove('hovering-title');
+                          }}
+                          className="inline min-w-0 truncate text-xs text-gray-600 transition-colors hover:text-[#3d38f5] hover:underline sm:text-sm dark:text-gray-400 dark:hover:text-[#8b87ff]"
+                        >
+                          {track.album.name}
+                        </a>
+                      );
+                    })()}
                     {trackGenres.length > 0 && (
                       <div className="flex shrink-0 items-center gap-1.5">
                         {trackGenres.map((genre, idx) => (

@@ -10,10 +10,43 @@ interface YouTubePlayerProps {
   onError?: () => void;
 }
 
+// YouTube IFrame API Types
+interface YTPlayer {
+  playVideo: () => void;
+  pauseVideo: () => void;
+  getPlayerState: () => number;
+  destroy: () => void;
+}
+
+interface YTEvent {
+  target: YTPlayer;
+  data: number;
+}
+
+interface YTPlayerConstructor {
+  new (elementId: string, config: YTPlayerConfig): YTPlayer;
+}
+
+interface YTPlayerConfig {
+  height: number;
+  width: number;
+  videoId: string;
+  playerVars: Record<string, string | number>;
+  events: {
+    onReady: (event: YTEvent) => void;
+    onStateChange: (event: YTEvent) => void;
+    onError: (event: YTEvent) => void;
+  };
+}
+
+interface YouTubeAPI {
+  Player: YTPlayerConstructor;
+}
+
 declare global {
   interface Window {
     onYouTubeIframeAPIReady?: () => void;
-    YT?: any;
+    YT?: YouTubeAPI;
   }
 }
 
@@ -31,7 +64,7 @@ export function YouTubePlayer({
   onError: onErrorCallback,
 }: YouTubePlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { isPlaying, setIsPlaying, currentTrack } = usePreviewPlayer();
@@ -69,7 +102,7 @@ export function YouTubePlayer({
           origin: typeof window !== 'undefined' ? window.location.origin : '',
         },
         events: {
-          onReady: (event: any) => {
+          onReady: (event: YTEvent) => {
             const player = event.target;
             if (typeof player.playVideo === 'function') {
               setIsReady(true);
@@ -81,7 +114,7 @@ export function YouTubePlayer({
               }
             }
           },
-          onStateChange: (event: any) => {
+          onStateChange: (event: YTEvent) => {
             if (isManualChange.current) {
               isManualChange.current = false;
               return;
@@ -95,7 +128,7 @@ export function YouTubePlayer({
               setIsPlaying(false);
             }
           },
-          onError: (event: any) => {
+          onError: (event: YTEvent) => {
             const errorCode = event.data as keyof typeof YOUTUBE_ERROR_MESSAGES;
             const trackName = currentTrack?.name || "This track";
             const errorMessage = YOUTUBE_ERROR_MESSAGES[errorCode] || "Unable to play this video";

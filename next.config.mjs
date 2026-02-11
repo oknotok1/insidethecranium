@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Turbopack configuration
+  turbopack: {
+    root: process.cwd(), // Set workspace root to project directory
+  },
   images: {
     remotePatterns: [
       // Spotify CDN domains

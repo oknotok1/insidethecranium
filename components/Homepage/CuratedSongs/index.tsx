@@ -78,10 +78,13 @@ export default function CuratedSongs({
       className={styles.mobileTrackCardInner}
       trackId={track.id}
       album={track.album.name}
-      artists={track.artists.map(artist => ({
-        name: artist.name,
-        external_urls: artist.external_urls,
-      }))}
+      artists={track.artists.map(artist => {
+        const artistWithUrls = artist as typeof artist & { external_urls?: { spotify: string } };
+        return {
+          name: artist.name,
+          external_urls: artistWithUrls.external_urls,
+        };
+      })}
     />
   );
 

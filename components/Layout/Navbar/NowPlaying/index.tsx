@@ -197,14 +197,14 @@ const PopoverContentInner = ({
       // Pass the existing currentTrack which has the youtubeVideoId
       togglePlayPause(currentTrack);
     } else {
-      const youtubeVideoId = await searchVideo(track.name, track.artists[0]?.name || '');
+      const videoId = await searchVideo(track.name, track.artists[0]?.name || '');
       
       togglePlayPause({
         id: track.id,
         name: track.name,
         artists: track.artists,
         album: track.album,
-        youtubeVideoId,
+        youtubeVideoId: videoId || undefined,
         spotifyUrl: track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`,
       });
     }
@@ -277,30 +277,43 @@ const PopoverContentInner = ({
           </a>
           
           {/* Artist Name */}
-          {track.artists[0]?.external_urls?.spotify ? (
-            <a
-              href={track.artists[0].external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mb-1 block cursor-pointer text-xs text-gray-700 transition-colors hover:text-[#3d38f5] hover:underline dark:text-gray-300 dark:hover:text-[#8b87ff]"
-            >
-              {track.artists[0]?.name}
-            </a>
-          ) : (
-            <p className="mb-1 text-xs text-gray-700 dark:text-gray-300">
-              {track.artists[0]?.name}
-            </p>
-          )}
+          {(() => {
+            const artist = track.artists[0];
+            const artistWithUrls = artist as typeof artist & { external_urls?: { spotify: string } };
+            return artistWithUrls?.external_urls?.spotify ? (
+              <a
+                href={artistWithUrls.external_urls.spotify}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mb-1 block cursor-pointer text-xs text-gray-700 transition-colors hover:text-[#3d38f5] hover:underline dark:text-gray-300 dark:hover:text-[#8b87ff]"
+              >
+                {artist?.name}
+              </a>
+            ) : (
+              <p className="mb-1 text-xs text-gray-700 dark:text-gray-300">
+                {artist?.name}
+              </p>
+            );
+          })()}
           
           {/* Album Name */}
-          <a
-            href={track.album?.external_urls?.spotify || `https://open.spotify.com/album/${track.album?.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block cursor-pointer text-xs italic text-gray-600 transition-colors hover:text-[#3d38f5] hover:underline dark:text-gray-400 dark:hover:text-[#8b87ff]"
-          >
-            {track.album?.name}
-          </a>
+          {(() => {
+            const album = track.album;
+            const albumWithUrls = album as typeof album & { 
+              external_urls?: { spotify: string }; 
+              id?: string;
+            };
+            return (
+              <a
+                href={albumWithUrls?.external_urls?.spotify || (albumWithUrls?.id ? `https://open.spotify.com/album/${albumWithUrls.id}` : '#')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block cursor-pointer text-xs italic text-gray-600 transition-colors hover:text-[#3d38f5] hover:underline dark:text-gray-400 dark:hover:text-[#8b87ff]"
+              >
+                {album?.name}
+              </a>
+            );
+          })()}
         </div>
 
         {genres.length > 0 && (

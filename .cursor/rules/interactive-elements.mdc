@@ -1,0 +1,157 @@
+---
+description: Standards for interactive elements, cursors, and clickable components
+globs:
+  - "**/*.tsx"
+  - "**/*.ts"
+---
+
+# Interactive Elements & Cursor Standards
+
+## Cursor Pointer Rules
+
+All interactive elements MUST have `cursor-pointer` class:
+- All `<button>` elements
+- All `<a>` links
+- All clickable cards/divs with onClick handlers
+- Genre chips, badges, and pills (if clickable)
+
+## Spotify Links
+
+### Song Names
+- Link to Spotify track page: `track.external_urls.spotify`
+- Hover: Purple color + underline
+- Light mode: `hover:text-[#3d38f5]`
+- Dark mode: `hover:text-[#8b87ff]`
+- Use `onClick={(e) => e.stopPropagation()}` to prevent parent handlers
+
+### Artist Names
+- Link to Spotify artist page: `artist.external_urls.spotify`
+- Same hover styling as song names
+- If no URL available, render as plain text
+
+### Album Names
+- Link to Spotify album page: `album.external_urls.spotify`
+- Same hover styling as song names
+
+## Play/Pause Icons
+
+Use **filled** versions consistently:
+```tsx
+{isPlaying ? (
+  <Pause className="h-4 w-4 fill-current text-[#3d38f5]" />
+) : (
+  <Play className="h-4 w-4 fill-current text-gray-600" />
+)}
+```
+
+## Track Card Interaction Pattern
+
+Standard behavior for all track cards (curated songs, playlist tracks, genre accordion):
+
+1. **Click card body** → Opens mini player
+2. **Click song name** → Opens Spotify track page (new tab)
+3. **Click artist name** → Opens Spotify artist page (new tab, if URL available)
+4. **Click album name** → Opens Spotify album page (new tab, if shown)
+5. **Hover card** → Show play button overlay on album artwork
+6. **Hover song/artist/album name** → Hide play button + show underline
+
+### Play Button on Album Artwork
+
+ALL track cards must have a play button overlay on the album artwork:
+- Hidden by default (or subtle on mobile)
+- Appears on card hover (desktop)
+- Shows current playback state (play/pause icon)
+- Always visible when track is currently playing
+- Hides when hovering over any Spotify link (song/artist/album)
+
+### Implementation Pattern:
+```tsx
+<div onClick={handlePlayMiniPlayer} className="group cursor-pointer">
+  {/* Album art with play button overlay */}
+  <div className="group/artwork relative">
+    <img />
+    <button className="group-hover:opacity-100 group-[.hovering-title]:opacity-0">
+      {/* Play/pause icon */}
+    </button>
+  </div>
+  
+  {/* Links */}
+  <a 
+    onClick={(e) => e.stopPropagation()}
+    onMouseEnter={(e) => e.currentTarget.closest('.group')?.classList.add('hovering-title')}
+    onMouseLeave={(e) => e.currentTarget.closest('.group')?.classList.remove('hovering-title')}
+  >
+    Song Name
+  </a>
+</div>
+```
+
+## Brand Colors
+
+Primary purple: `#3d38f5`
+Light purple (dark mode): `#8b87ff`
+Lighter purple (dark mode hover): `#a6a3ff`
+
+## Contrast in Dark Mode
+
+Always test hover states in dark mode. Use lighter purple shades for better readability:
+- Regular text hover: `#8b87ff`
+- Active elements: `#a6a3ff`
+
+## Navbar Now Playing Popover
+
+### Structure & Behavior
+- Uses Shadcn UI Popover component for proper click-outside handling
+- Opens on button click, closes on click outside or escape key
+- Works on both desktop and mobile (touch events)
+- Progress outline visible only in dark mode
+
+### Progress Outline (Dark Mode Only)
+- Wrapper div has `dark:p-[1.75px]` for 1.75px border width
+- Uses CSS gradient to show progress:
+  - Filled: `rgba(55, 65, 81, 0.85)` (gray-700, 85% opacity)
+  - Unfilled: `rgba(107, 114, 128, 0.5)` (gray-500, 50% opacity)
+- Subtle glow: `boxShadow: '0 0 5px rgba(55, 65, 81, 0.4)'`
+- Scales with button on hover in dark mode
+
+### Popover Content
+1. **"Now Playing" title** - Small, muted text
+2. **Album artwork** - 128px square with rounded corners
+   - Clickable with play button overlay (opens mini player)
+   - Shows play/pause state when mini player is active
+   - Hover reveals play button overlay with background darken
+   - Always visible when track is currently playing in mini player
+3. **Track info** - Name, artist, album (center-aligned, all clickable)
+   - **Song name** - Links to Spotify track, purple hover + underline
+   - **Artist name** - Links to Spotify artist (if URL available), purple hover + underline
+   - **Album name** - Links to Spotify album, purple hover + underline
+4. **Genres** - Dot-separated list (if available)
+5. **Progress bar** - Gradient bar with timestamps
+   - Current time (left): `1:23` format
+   - Time remaining (right): `-0:23` format
+   - Bar color: Brand gradient (`from-[#3d38f5] to-[#8b87ff]`)
+6. **"Listen on Spotify" link** - Opens track in Spotify
+
+### Positioning
+- **Mobile**: Fixed, centered to screen (`max-lg:fixed max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:top-20`)
+- **Desktop**: Default Radix positioning (aligned with trigger)
+
+### Implementation Pattern:
+```tsx
+<Popover open={isOpen} onOpenChange={setIsOpen}>
+  <div className="dark:p-[1.75px]">
+    {/* Progress outline (dark mode only) */}
+    <div className="hidden dark:block" style={{ background: gradient }} />
+    
+    <PopoverTrigger asChild>
+      <button className="...">
+        {/* Now Playing button content */}
+      </button>
+    </PopoverTrigger>
+  </div>
+  
+  <PopoverContent className="w-64 p-0">
+    {/* Custom styled content */}
+  </PopoverContent>
+</Popover>
+```

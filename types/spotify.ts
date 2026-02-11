@@ -111,6 +111,7 @@ export interface Track {
   external_urls?: {
     spotify: string;
   };
+  preview_url?: string | null; // 30-second MP3 preview URL
 }
 
 // Playlist Track (track with added_at timestamp)

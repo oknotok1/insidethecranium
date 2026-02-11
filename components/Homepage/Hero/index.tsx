@@ -229,23 +229,18 @@ const Timestamp = ({
   time: string;
   isLive?: boolean;
 }) => {
+  const [colonVisible, setColonVisible] = useState(true);
+
   useEffect(() => {
     if (!isLive) {
-      // Ensure colon is visible when not live
-      const colon = document.getElementById("hero-timestamp-colon");
-      if (colon) {
-        colon.style.visibility = "visible";
-      }
+      setColonVisible(true);
       return undefined;
     }
 
     const interval = setInterval(() => {
-      const colon = document.getElementById("hero-timestamp-colon");
-      if (colon) {
-        colon.style.visibility =
-          colon.style.visibility === "hidden" ? "visible" : "hidden";
-      }
+      setColonVisible((prev) => !prev);
     }, 1000);
+
     return () => clearInterval(interval);
   }, [isLive]);
 
@@ -256,7 +251,7 @@ const Timestamp = ({
     <div className={styles.timestampContainer}>
       <div className={styles.timestamp}>
         {date} • {timeParts[0]}
-        <span id="hero-timestamp-colon">:</span>
+        <span style={{ visibility: colonVisible ? "visible" : "hidden" }}>:</span>
         {timeParts[1]}
       </div>
     </div>

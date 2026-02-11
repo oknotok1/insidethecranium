@@ -288,6 +288,11 @@ export default async function PlaylistDetailPage({
   params: Promise<{ playlistId: string }>;
 }) {
   const { playlistId } = await params;
+  
+  // Ignore source map requests from dev tools
+  if (playlistId.endsWith('.map') || playlistId.endsWith('.js')) {
+    notFound();
+  }
 
   // Fetch and prepare data
   let playlist: PlaylistDetails;

@@ -72,7 +72,7 @@ export function Card({ children, className = "", ...props }: CardProps) {
     return (
       <button
         onClick={onClick}
-        className={`${combinedClasses} w-full text-left`}
+        className={`${combinedClasses} w-full cursor-pointer text-left`}
       >
         {children}
       </button>

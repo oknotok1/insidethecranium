@@ -76,6 +76,12 @@ export default function CuratedSongs({
       artwork={track.album.images[0]?.url}
       spotifyUrl={getSpotifyTrackUrl(track.id)}
       className={styles.mobileTrackCardInner}
+      trackId={track.id}
+      album={track.album.name}
+      artists={track.artists.map(artist => ({
+        name: artist.name,
+        external_urls: artist.external_urls,
+      }))}
     />
   );
 

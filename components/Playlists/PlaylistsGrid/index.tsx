@@ -85,8 +85,8 @@ export default function PlaylistsGrid({
   return (
     <>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
-        {playlists.map((playlist) => (
-          <PlaylistCard key={playlist.id} playlist={playlist} />
+        {playlists.map((playlist, index) => (
+          <PlaylistCard key={`${playlist.id}-${index}`} playlist={playlist} />
         ))}
       </div>
 

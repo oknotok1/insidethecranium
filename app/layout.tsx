@@ -9,7 +9,9 @@ import ScrollToTop from "@/components/common/ScrollToTop";
 import Footer from "@/components/Layout/Footer";
 import Navbar from "@/components/Layout/Navbar";
 import WebPlayerControls from "@/components/Music/WebPlayerControls";
+import { PreviewPlayer } from "@/components/PreviewPlayer";
 import ThemeProvider from "@/components/Theme/ThemeProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 import "@/styles/tailwind.css";
 import "@/styles/globals.scss";
@@ -103,6 +105,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
               <Footer />
               <ScrollToTop />
+              <PreviewPlayer />
+              <Toaster />
               {/* <WebPlayerControls /> */}
             </AppContext>
             <Analytics />

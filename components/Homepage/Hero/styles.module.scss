@@ -10,13 +10,35 @@
   @apply relative z-10;
   @apply w-full max-w-7xl;
   @apply px-4 sm:px-6 lg:px-8;
-  @apply py-12 sm:py-16 lg:py-20;
-  @apply flex flex-col items-center justify-center;
+  @apply py-0 sm:py-16 lg:py-20;
+  @apply flex flex-col items-center;
   @apply text-center;
+  min-height: calc(100svh - 4rem);
+
+  @media (max-width: 639px) {
+    position: relative;
+    padding-top: 2.5rem;
+    padding-bottom: 0;
+    justify-content: flex-start;
+  }
+
+  @media (min-width: 640px) {
+    justify-content: center;
+  }
+
+  .mainContent {
+    @apply flex flex-col items-center;
+    @apply w-full;
+
+    @media (max-width: 639px) {
+      flex: 0 0 auto;
+      margin-bottom: 2rem;
+    }
+  }
 
   .albumContainer {
     @apply flex justify-center;
-    @apply mb-5 sm:mb-6 lg:mb-8;
+    @apply mb-6 sm:mb-6 lg:mb-8;
 
     .albumArtwork {
       @apply relative flex;
@@ -38,7 +60,7 @@
 
   .placeholderIcon {
     @apply flex items-center justify-center;
-    @apply mb-8 h-24 w-24 rounded-full;
+    @apply mb-6 h-24 w-24 rounded-full sm:mb-6 sm:h-24 sm:w-24;
     @apply bg-gray-200 backdrop-blur-sm;
     @apply border border-gray-300;
 
@@ -49,17 +71,18 @@
 
   .listeningLabel {
     @apply mb-5 sm:mb-6 lg:mb-8;
-    @apply text-sm sm:text-base;
-    @apply font-medium;
-    @apply text-gray-600;
+    @apply text-xs sm:text-sm;
+    @apply font-normal tracking-wide;
+    @apply text-gray-500;
+    @apply uppercase;
 
     :global(.dark) & {
-      @apply text-gray-400;
+      @apply text-gray-500;
     }
   }
 
   .title {
-    @apply mb-2;
+    @apply mb-2 sm:mb-2;
     @apply text-3xl text-balance sm:text-4xl md:text-5xl lg:text-6xl;
     @apply leading-tight;
     @apply text-gray-900;
@@ -92,17 +115,69 @@
 
   .metadata {
     @apply flex flex-wrap items-center justify-center;
-    @apply gap-2;
+    @apply gap-x-2;
     @apply text-xs sm:text-sm;
     @apply text-gray-600;
     @apply mb-5 sm:mb-6;
+    min-height: 1rem;
 
     :global(.dark) & {
       @apply text-gray-400;
     }
 
+    span {
+      @apply whitespace-nowrap;
+    }
+
     .metadataSeparator {
-      @apply inline-block mx-2;
+      @apply inline-flex items-center justify-center;
+      @apply mx-2;
+      user-select: none;
+      vertical-align: middle;
+    }
+  }
+
+  .progressContainer {
+    @apply mx-auto w-5/6 sm:w-full;
+    @apply mb-7 sm:mb-8;
+    @apply flex flex-row items-center;
+    @apply gap-2.5 sm:gap-3;
+    max-width: 500px;
+  }
+
+  .progressTime {
+    @apply text-[10px] sm:text-xs;
+    @apply text-gray-500;
+    @apply font-medium tabular-nums;
+    @apply whitespace-nowrap;
+
+    :global(.dark) & {
+      @apply text-gray-500;
+    }
+  }
+
+  .progressBarWrapper {
+    @apply flex-1;
+  }
+
+  .progressBarTrack {
+    @apply h-1 w-full sm:h-1;
+    @apply rounded-full bg-gray-900/20 backdrop-blur-sm;
+    @apply overflow-hidden;
+
+    :global(.dark) & {
+      @apply bg-white/20 backdrop-blur-sm;
+    }
+  }
+
+  .progressBarFill {
+    @apply h-full;
+    @apply bg-linear-to-r from-blue-500 to-purple-500;
+    @apply transition-all duration-1000 ease-linear;
+    @apply rounded-full;
+
+    :global(.dark) & {
+      @apply from-blue-400 to-purple-400;
     }
   }
 
@@ -130,9 +205,19 @@
 
   .timestampContainer {
     @apply flex flex-col items-center;
-    @apply mt-8 pt-6 sm:mt-12 sm:pt-8;
     @apply border-t border-gray-300;
-    @apply w-3/4 sm:w-full;
+    @apply w-5/6 sm:w-full;
+
+    @media (max-width: 639px) {
+      margin-top: auto;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      margin-top: 3rem;
+      padding-top: 2rem;
+    }
 
     :global(.dark) & {
       @apply border-white/10;

@@ -199,8 +199,11 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     },
   );
 
+  // Only show loading state if we're fetching AND don't have any data yet
   const isLoadingInitialData =
-    isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed;
+    (isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed) &&
+    !currentlyPlayingTrack &&
+    !recentlyPlayed;
 
   useEffect(() => {
     if (!isListening && accessToken) {

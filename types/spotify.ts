@@ -1,16 +1,16 @@
 // User Profile
-export interface UserProfile {
+interface UserProfile {
   display_name: string;
-  external_urls: ExternalUrls;
+  external_urls: Record<string, string>;
   href: string;
   id: string;
-  images: Image[];
+  images: BasicImage[];
   type: string;
   uri: string;
   followers: Followers;
 }
 
-export interface Followers {
+interface Followers {
   href: null;
   total: number;
 }
@@ -29,28 +29,28 @@ export interface UserPlaylists {
 export interface Playlist {
   collaborative: boolean;
   description: string;
-  external_urls: ExternalUrls;
+  external_urls: Record<string, string>;
   href: string;
   id: string;
-  images: Image[];
+  images: BasicImage[];
   name: string;
   owner: Owner;
   primary_color: null;
   public: boolean;
   snapshot_id: string;
   tracks: Tracks;
-  type: ItemType;
+  type: string;
   uri: string;
   topGenres?: string[]; // Top genres extracted from playlist artists
 }
 
 export interface Owner {
-  display_name: DisplayName;
-  external_urls: ExternalUrls;
+  display_name: string;
+  external_urls: Record<string, string>;
   href: string;
-  id: ID;
-  type: OwnerType;
-  uri: URI;
+  id: string;
+  type: string;
+  uri: string;
 }
 
 export interface Tracks {
@@ -58,23 +58,30 @@ export interface Tracks {
   total: number;
 }
 
-export interface Image {
-  height: null;
+// Image with dimensions (used for albums, artists, detailed playlists)
+interface Image {
   url: string;
+  height: number;
+  width: number;
+}
+
+// Image without guaranteed dimensions (used for user profiles and basic playlists)
+interface BasicImage {
+  url: string;
+  height: null;
   width: null;
 }
 
-// Common Types
-export interface StringMap {
-  [key: string]: string;
+// Album (base album object)
+interface Album {
+  name: string;
+  images: Image[];
 }
 
-export type ID = StringMap;
-export type ExternalUrls = StringMap;
-export type DisplayName = StringMap;
-export type ItemType = StringMap;
-export type OwnerType = StringMap;
-export type URI = StringMap;
+// Album with URI (used in Spotify Playback SDK)
+interface AlbumWithUri extends Album {
+  uri: string;
+}
 
 // Artist (base Spotify artist)
 export interface Artist {
@@ -85,11 +92,7 @@ export interface Artist {
 // Artist with full details (from Spotify API)
 export interface ArtistDetails extends Artist {
   genres: string[];
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
+  images: Image[];
 }
 
 // Artist aggregated for playlist view (with song count)
@@ -103,10 +106,7 @@ export interface Track {
   id: string;
   name: string;
   artists: Artist[];
-  album: {
-    name: string;
-    images: Array<{ url: string }>;
-  };
+  album: Album;
   duration_ms: number;
   external_urls?: {
     spotify: string;
@@ -121,21 +121,12 @@ export interface PlaylistTrack {
     external_urls: {
       spotify: string;
     };
-    album: {
-      name: string;
-      images: Array<{
-        url: string;
-        height: number;
-        width: number;
-      }>;
-    };
-    artists: Array<
-      Artist & {
-        external_urls: {
-          spotify: string;
-        };
-      }
-    >;
+    album: Album;
+    artists: (Artist & {
+      external_urls: {
+        spotify: string;
+      };
+    })[];
   };
 }
 
@@ -144,11 +135,7 @@ export interface PlaylistDetails {
   id: string;
   name: string;
   description: string;
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
+  images: Image[];
   owner: {
     display_name: string;
     external_urls: {
@@ -199,17 +186,11 @@ export interface SpotifyPlayerState {
       uri: string;
       name: string;
       duration_ms: number;
-      artists: Array<{
+      artists: {
         name: string;
         uri: string;
-      }>;
-      album: {
-        name: string;
-        uri: string;
-        images: Array<{
-          url: string;
-        }>;
-      };
+      }[];
+      album: AlbumWithUri;
     };
   };
 }

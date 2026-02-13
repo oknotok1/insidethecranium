@@ -852,14 +852,49 @@ When creating or modifying UI components, **always**:
    };
    ```
 
-2. **Prefer `interface` over `type`** - Use `interface` for object shapes, reserve
+2. **Array and Generic Syntax** - ALWAYS use `Type[]` syntax, NEVER `Array<Type>`:
+
+   ```typescript
+   // ✅ GOOD - Use Type[] syntax
+   const items: string[] = [];
+   const users: User[] = [];
+   const data: { id: string; name: string }[] = [];
+   
+   // ✅ GOOD - Use parentheses for complex types
+   const items: (User & { role: string })[] = [];
+   
+   // ❌ BAD - Never use Array<Type> syntax
+   const items: Array<string> = [];
+   const users: Array<User> = [];
+   const data: Array<{ id: string; name: string }> = [];
+   ```
+
+3. **Generic Object Types** - Use `Record<K, V>` for simple key-value objects:
+
+   ```typescript
+   // ✅ GOOD - Use Record for string maps
+   external_urls: Record<string, string>;
+   metadata: Record<string, unknown>;
+   
+   // ❌ BAD - Don't use index signatures for simple maps
+   external_urls: { [key: string]: string };
+   metadata: { [key: string]: unknown };
+   
+   // ✅ ACCEPTABLE - Index signature when mixing with known properties
+   interface Album {
+     spotify: string;
+     [key: string]: string; // Additional URLs
+   }
+   ```
+
+4. **Prefer `interface` over `type`** - Use `interface` for object shapes, reserve
    `type` for:
    - Union types: `type Status = "pending" | "success" | "error"`
    - Intersections: `type Combined = Base & Extension`
    - Primitive aliases: `type ID = string`
    - Mapped types: `type ReadOnly<T> = { readonly [K in keyof T]: T[K] }`
 
-3. **Type Utilities** - ALWAYS use `Pick`/`Omit` instead of duplicating types:
+5. **Type Utilities** - ALWAYS use `Pick`/`Omit` instead of duplicating types:
 
    ```typescript
    // ✅ GOOD - Use Pick for subset of properties
@@ -877,7 +912,7 @@ When creating or modifying UI components, **always**:
    // ❌ BAD - Duplicating type structure
    interface TrackSubset {
      id: string;
-     artists: Array<{ id: string; name: string }>;
+     artists: { id: string; name: string }[];
    }
    const useTrackGenres = (track: TrackSubset | undefined) => { ... };
 
@@ -892,7 +927,7 @@ When creating or modifying UI components, **always**:
    - `Required<T>` - Make all properties required
    - Combine them: `Partial<Pick<T, K>>` for optional subset
 
-4. **NEVER use `any`** - Always provide proper types:
+6. **NEVER use `any`** - Always provide proper types:
 
    ```typescript
    // ❌ NEVER
@@ -910,7 +945,7 @@ When creating or modifying UI components, **always**:
    if (isMyType(data)) { /* use data */ }
    ```
 
-5. **Minimize Type Assertions (`as`)** - Prefer type guards and proper typing:
+7. **Minimize Type Assertions (`as`)** - Prefer type guards and proper typing:
 
    ```typescript
    // ❌ Avoid when possible
@@ -928,13 +963,13 @@ When creating or modifying UI components, **always**:
    const fields = entry.fields as ContentfulFields;
    ```
 
-6. **Type File Extension**:
+8. **Type File Extension**:
    - **ALWAYS use `.ts` for type files**, NOT `.d.ts`
    - `.d.ts` files are ONLY for declaring types for external JavaScript libraries
    - `.ts` files provide better IDE support, type safety, and compiler checking
    - Example: `types/spotify.ts`, `types/contentful.ts`
 
-7. **Type Organization**:
+9. **Type Organization**:
    - **Source-based**: Group types by their API/service origin
      - `types/spotify.ts` - Spotify API types
      - `types/contentful.ts` - Contentful CMS types
@@ -957,6 +992,34 @@ When creating or modifying UI components, **always**:
        name: string;
      }
      ```
+
+10. **Type Export Policy** - Only export types that are used outside their file:
+
+    ```typescript
+    // ✅ GOOD - Internal types not exported
+    interface Image {
+      url: string;
+      height: number;
+      width: number;
+    }
+    
+    // Only export what's used externally
+    export interface Track {
+      id: string;
+      name: string;
+      images: Image[]; // Uses internal Image type
+    }
+    
+    // ❌ BAD - Exporting everything unnecessarily
+    export interface Image { ... }
+    export interface Album { ... }
+    export interface Track { ... }
+    ```
+    
+    **Before exporting a type, check:**
+    - Is it imported anywhere else? (`import { TypeName } from ...`)
+    - If NO, remove the `export` keyword
+    - Keep internal composition types (like `Image`, `Album`) non-exported
 
 #### Function Style
 
@@ -1071,7 +1134,7 @@ When writing code, ensure:
      interface TrackCardProps {
        id: string;
        name: string;
-       artists: Array<{ name: string }>;
+       artists: { name: string }[];
      }
      ```
 

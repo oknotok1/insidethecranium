@@ -280,7 +280,7 @@ export function analyzeGenreHierarchy(
   const mainGenreMap = new Map<string, number>();
   const subGenresByMain = new Map<
     string,
-    Array<{ genre: string; count: number }>
+    { genre: string; count: number }[]
   >();
 
   genres.forEach(({ genre, count }) => {

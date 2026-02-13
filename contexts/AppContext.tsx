@@ -244,7 +244,11 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
           })),
           album: {
             name: sdkTrack.album.name,
-            images: sdkTrack.album.images.map((img) => ({ url: img.url })),
+            images: sdkTrack.album.images.map((img) => ({
+              url: img.url,
+              height: img.height || 0,
+              width: img.width || 0,
+            })),
           },
           duration_ms: sdkTrack.duration_ms,
         },

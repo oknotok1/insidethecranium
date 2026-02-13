@@ -51,10 +51,10 @@ interface ExpandedPlayerProps {
   track: {
     id: string;
     name: string;
-    artists: Array<{ name: string }>;
+    artists: { name: string }[];
     album: {
       name: string;
-      images: Array<{ url: string }>;
+      images: { url: string }[];
     };
     spotifyUrl: string;
     youtubeVideoId?: string;

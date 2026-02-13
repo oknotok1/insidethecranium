@@ -20,7 +20,7 @@ interface MusicCardProps {
   // Preview player props
   trackId?: string;
   album?: string;
-  artists?: Array<{ name: string; external_urls?: { spotify: string } }>;
+  artists?: { name: string; external_urls?: { spotify: string } }[];
 }
 
 export { default as MusicCardSkeleton } from "./Skeleton";

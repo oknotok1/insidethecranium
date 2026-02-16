@@ -1,12 +1,15 @@
 "use client";
 
-import { X, ChevronRight, ChevronLeft, Play, Pause } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight, Pause, Play, X } from "lucide-react";
 import { toast } from "sonner";
+
+import { useEffect, useRef, useState } from "react";
+
 import Image from "next/image";
 
-import { YouTubePlayer } from "./YouTubePlayer";
 import { usePreviewPlayer } from "@/contexts/PreviewPlayerContext";
+
+import { YouTubePlayer } from "./YouTubePlayer";
 
 export function DesktopMiniPlayer() {
   const { currentTrack, stop, isPlaying, pause, resume } = usePreviewPlayer();
@@ -30,8 +33,9 @@ export function DesktopMiniPlayer() {
   // Reset component when a track starts playing after being closed
   useEffect(() => {
     const hadNoTrack = !lastTrackIdRef.current;
-    const isNewTrack = currentTrack && lastTrackIdRef.current !== currentTrack.id;
-    
+    const isNewTrack =
+      currentTrack && lastTrackIdRef.current !== currentTrack.id;
+
     if (currentTrack && (hadNoTrack || isNewTrack)) {
       if (hadNoTrack) {
         // Player was closed (no track was playing) - reset everything for fresh instance
@@ -49,12 +53,18 @@ export function DesktopMiniPlayer() {
   // Auto-minimize countdown on first open (per session)
   useEffect(() => {
     // Start countdown only once per session when player first opens (and not hovering)
-    if (currentTrack && !hasCountdownRun && !isMinimized && !isClosing && !isHoveringMinimize) {
+    if (
+      currentTrack &&
+      !hasCountdownRun &&
+      !isMinimized &&
+      !isClosing &&
+      !isHoveringMinimize
+    ) {
       // Start countdown if it hasn't been set yet
       if (countdown === null) {
         setCountdown(5);
       }
-      
+
       countdownIntervalRef.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev === null || prev <= 1) {
@@ -83,7 +93,14 @@ export function DesktopMiniPlayer() {
         countdownIntervalRef.current = null;
       }
     };
-  }, [currentTrack, hasCountdownRun, isMinimized, isClosing, isHoveringMinimize, countdown]);
+  }, [
+    currentTrack,
+    hasCountdownRun,
+    isMinimized,
+    isClosing,
+    isHoveringMinimize,
+    countdown,
+  ]);
 
   // Manual minimize should cancel countdown
   const handleMinimize = () => {
@@ -116,9 +133,12 @@ export function DesktopMiniPlayer() {
     }
 
     // Track changed while minimized
-    if (previousTrackRef.current && previousTrackRef.current !== currentTrack.id) {
+    if (
+      previousTrackRef.current &&
+      previousTrackRef.current !== currentTrack.id
+    ) {
       const artwork = currentTrack.album.images[0]?.url;
-      
+
       toast.custom(
         (t) => (
           <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/95 p-3 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/90">
@@ -126,7 +146,7 @@ export function DesktopMiniPlayer() {
             <div className="text-xs font-semibold text-gray-900 dark:text-white">
               Now Playing
             </div>
-            
+
             {/* Track Info with Artwork */}
             <div className="flex items-center gap-3">
               {/* Album Artwork */}
@@ -140,7 +160,7 @@ export function DesktopMiniPlayer() {
                   />
                 </div>
               )}
-              
+
               {/* Track Details */}
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium text-gray-900 dark:text-white">
@@ -153,7 +173,7 @@ export function DesktopMiniPlayer() {
             </div>
           </div>
         ),
-        { duration: 3000 }
+        { duration: 3000 },
       );
     }
 
@@ -187,7 +207,9 @@ export function DesktopMiniPlayer() {
       {/* Main Player - slides off screen when minimized or closing */}
       <div
         className={`fixed bottom-24 z-50 w-[400px] rounded-xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur-xl transition-all duration-300 dark:border-white/5 dark:bg-black/10 ${
-          isMinimized || isClosing ? "translate-x-[calc(100%+1.5rem)] opacity-0" : "translate-x-0 opacity-100"
+          isMinimized || isClosing
+            ? "translate-x-[calc(100%+1.5rem)] opacity-0"
+            : "translate-x-0 opacity-100"
         }`}
         style={{ right: "1.5rem" }}
       >
@@ -220,7 +242,7 @@ export function DesktopMiniPlayer() {
                 </button>
                 <button
                   onClick={handleCancelCountdown}
-                  className="cursor-pointer px-2.5 py-1.5 text-xs font-medium transition-all hover:bg-white/50 dark:text-gray-300 dark:hover:bg-white/10"
+                  className="cursor-pointer px-2.5 py-1.5 text-xs font-medium transition-all hover:bg-white/50 dark:text-gray-300 dark:hover:bg-white/11"
                   aria-label="Cancel countdown"
                 >
                   Cancel
@@ -229,7 +251,9 @@ export function DesktopMiniPlayer() {
             ) : (
               <button
                 onClick={handleMinimize}
-                onMouseEnter={() => countdown !== null ? setIsHoveringMinimize(true) : undefined}
+                onMouseEnter={() =>
+                  countdown !== null ? setIsHoveringMinimize(true) : undefined
+                }
                 onMouseLeave={() => setIsHoveringMinimize(false)}
                 className="cursor-pointer rounded-lg bg-gray-900/10 px-3 py-1.5 transition-all hover:bg-gray-900/15 dark:bg-white/15 dark:hover:bg-white/20"
                 aria-label="Minimize player"
@@ -246,7 +270,7 @@ export function DesktopMiniPlayer() {
             )}
             <button
               onClick={handleClose}
-              className="cursor-pointer rounded-full p-1.5 transition-colors hover:bg-white/50 dark:hover:bg-white/10"
+              className="cursor-pointer rounded-full p-1.5 transition-colors hover:bg-white/50 dark:hover:bg-white/11"
               aria-label="Close player"
             >
               <X className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
@@ -270,10 +294,10 @@ export function DesktopMiniPlayer() {
       {isMinimized && (
         <button
           onClick={() => setIsMinimized(false)}
-          className="group fixed bottom-24 right-0 z-50 flex cursor-pointer animate-pulse items-center gap-3 rounded-l-xl border border-r-0 border-[#3d38f5]/20 bg-linear-to-l from-[#3d38f5]/8 to-[#3d38f5]/4 py-3 pl-4 pr-3 shadow-2xl backdrop-blur-xl transition-all hover:from-[#3d38f5] hover:to-[#3d38f5]/90 hover:shadow-[0_0_20px_rgba(61,56,245,0.5)] dark:border-[#3d38f5]/30 dark:from-[#3d38f5]/10 dark:to-[#3d38f5]/5 dark:hover:from-[#3d38f5] dark:hover:to-[#3d38f5]/90"
-          style={{ 
+          className="group fixed right-0 bottom-24 z-50 flex animate-pulse cursor-pointer items-center gap-3 rounded-l-xl border border-r-0 border-[#3d38f5]/20 bg-linear-to-l from-[#3d38f5]/8 to-[#3d38f5]/4 py-3 pr-3 pl-4 shadow-2xl backdrop-blur-xl transition-all hover:from-[#3d38f5] hover:to-[#3d38f5]/90 hover:shadow-[0_0_20px_rgba(61,56,245,0.5)] dark:border-[#3d38f5]/30 dark:from-[#3d38f5]/10 dark:to-[#3d38f5]/5 dark:hover:from-[#3d38f5] dark:hover:to-[#3d38f5]/90"
+          style={{
             animationDuration: "3s",
-            animationTimingFunction: "ease-in-out"
+            animationTimingFunction: "ease-in-out",
           }}
           aria-label="Show player"
         >

@@ -46,7 +46,7 @@ export default function PlaylistArtists({ artists }: PlaylistArtistsProps) {
         </div>
         {artists.length > INITIAL_ARTISTS_SHOWN && (
           <button
-            className="mt-4 rounded-lg bg-gray-200 px-4 py-2 text-xs text-gray-900 transition-colors hover:bg-gray-300 sm:mt-6 sm:px-6 sm:text-sm dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+            className="mt-4 rounded-lg bg-gray-200 px-4 py-2 text-xs text-gray-900 transition-colors hover:bg-gray-300 sm:mt-6 sm:px-6 sm:text-sm dark:bg-white/6 dark:text-white dark:hover:bg-white/11"
             onClick={() => setShowAllArtists(!showAllArtists)}
           >
             {showAllArtists
@@ -65,7 +65,7 @@ const ArtistCard = ({ artist }: { artist: PlaylistArtist }) => (
     href={getSpotifyArtistUrl(artist.id)}
     target="_blank"
     rel="noopener noreferrer"
-    className="flex flex-col items-center space-y-2 rounded-lg p-3 text-center transition-colors hover:bg-gray-100 sm:p-4 dark:hover:bg-white/5"
+    className="flex flex-col items-center space-y-2 rounded-lg p-3 text-center transition-colors hover:bg-gray-100 sm:p-4 dark:hover:bg-white/6"
   >
     <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-linear-to-br from-[#3d38f5]/20 to-[#8b87ff]/10 sm:h-24 sm:w-24">
       <Image

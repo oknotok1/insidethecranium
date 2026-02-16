@@ -82,7 +82,7 @@ export default function SiteImage({
   }
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden bg-gray-100 dark:bg-white/5">
+    <div className="relative aspect-video w-full overflow-hidden bg-gray-100 dark:bg-white/6">
       <Image
         src={currentSource}
         alt={`${name} preview`}

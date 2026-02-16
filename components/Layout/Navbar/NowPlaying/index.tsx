@@ -1,19 +1,21 @@
 "use client";
 
-import { Play, Pause } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Image from "next/image";
 
 import { useAppContext, type NowPlayingTrack } from "@/contexts/AppContext";
 import { usePreviewPlayer } from "@/contexts/PreviewPlayerContext";
-import { useYouTubeSearch } from "@/hooks/useYouTubeSearch";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+import { useYouTubeSearch } from "@/hooks/useYouTubeSearch";
 
 import styles from "./styles.module.scss";
 
@@ -56,17 +58,24 @@ export default function NowPlaying({ className }: NowPlayingProps) {
       setIsMobile(window.innerWidth < 1024);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Update progress bar smoothly in real-time
   useEffect(() => {
-    if (!nowPlayingTrack?.item || !nowPlayingTrack.progress_ms || !nowPlayingTrack.item.duration_ms || !nowPlayingTrack.is_playing) {
+    if (
+      !nowPlayingTrack?.item ||
+      !nowPlayingTrack.progress_ms ||
+      !nowPlayingTrack.item.duration_ms ||
+      !nowPlayingTrack.is_playing
+    ) {
       // If not playing or no progress data, use the static progress
-      const staticProgress = nowPlayingTrack?.progress_ms && nowPlayingTrack?.item?.duration_ms
-        ? (nowPlayingTrack.progress_ms / nowPlayingTrack.item.duration_ms) * 100
-        : 0;
+      const staticProgress =
+        nowPlayingTrack?.progress_ms && nowPlayingTrack?.item?.duration_ms
+          ? (nowPlayingTrack.progress_ms / nowPlayingTrack.item.duration_ms) *
+            100
+          : 0;
       setCurrentProgress(staticProgress);
       startTimeRef.current = null;
       return;
@@ -82,14 +91,19 @@ export default function NowPlaying({ className }: NowPlayingProps) {
         const estimatedProgress = initialProgress + elapsed;
         const progressPercent = Math.min(
           (estimatedProgress / nowPlayingTrack.item.duration_ms) * 100,
-          100
+          100,
         );
         setCurrentProgress(progressPercent);
       }
     }, 100); // Update every 100ms for smooth animation
 
     return () => clearInterval(interval);
-  }, [nowPlayingTrack?.progress_ms, nowPlayingTrack?.is_playing, nowPlayingTrack?.item?.duration_ms, nowPlayingTrack?.item]);
+  }, [
+    nowPlayingTrack?.progress_ms,
+    nowPlayingTrack?.is_playing,
+    nowPlayingTrack?.item?.duration_ms,
+    nowPlayingTrack?.item,
+  ]);
 
   if (!nowPlayingTrack || !isListening || !nowPlayingTrack.item) return null;
 
@@ -104,15 +118,14 @@ export default function NowPlaying({ className }: NowPlayingProps) {
   return (
     <div className={`${styles.nowPlaying} ${className || ""} relative min-w-0`}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <div 
-          className="relative min-w-0 rounded-full transition-transform duration-200 dark:p-[1.75px] dark:hover:scale-[1.02] dark:active:scale-100"
-        >
+        <div className="relative min-w-0 rounded-full transition-transform duration-200 dark:p-[1.75px] dark:hover:scale-[1.02] dark:active:scale-100">
           {/* Progress outline - only visible in dark mode */}
-          <div 
+          <div
             className="pointer-events-none absolute inset-0 hidden rounded-full dark:block"
             style={{
               background: `linear-gradient(90deg, rgba(55, 65, 81, 0.85) 0%, rgba(55, 65, 81, 0.85) ${progress}%, rgba(107, 114, 128, 0.5) ${progress}%, rgba(107, 114, 128, 0.5) 100%)`,
-              boxShadow: '0 0 5px rgba(55, 65, 81, 0.4), inset 0 0 1.5px rgba(0, 0, 0, 0.15)'
+              boxShadow:
+                "0 0 5px rgba(55, 65, 81, 0.4), inset 0 0 1.5px rgba(0, 0, 0, 0.15)",
             }}
           />
           <PopoverTrigger asChild>
@@ -130,7 +143,7 @@ export default function NowPlaying({ className }: NowPlayingProps) {
             </button>
           </PopoverTrigger>
         </div>
-        <PopoverContent 
+        <PopoverContent
           className="w-64 overflow-hidden rounded-xl border border-gray-200 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-gray-900"
           align={isMobile ? "end" : "center"}
           side="bottom"
@@ -166,7 +179,7 @@ const formatTime = (ms: number) => {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 // Popover content component for expanded track details
@@ -192,20 +205,25 @@ const PopoverContentInner = ({
 
   const handlePlayClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     if (isCurrentTrack && currentTrack) {
       // Pass the existing currentTrack which has the youtubeVideoId
       togglePlayPause(currentTrack);
     } else {
-      const videoId = await searchVideo(track.name, track.artists[0]?.name || '');
-      
+      const videoId = await searchVideo(
+        track.name,
+        track.artists[0]?.name || "",
+      );
+
       togglePlayPause({
         id: track.id,
         name: track.name,
         artists: track.artists,
         album: track.album,
         youtubeVideoId: videoId || undefined,
-        spotifyUrl: track.external_urls?.spotify || `https://open.spotify.com/track/${track.id}`,
+        spotifyUrl:
+          track.external_urls?.spotify ||
+          `https://open.spotify.com/track/${track.id}`,
       });
     }
   };
@@ -226,7 +244,7 @@ const PopoverContentInner = ({
 
         {track.album?.images[0]?.url && (
           <div className="group mb-3 flex justify-center">
-            <div className="relative h-32 w-32 overflow-hidden rounded-lg border border-gray-300/50 bg-gray-200 shadow-xl dark:border-white/10 dark:bg-white/5">
+            <div className="relative h-32 w-32 overflow-hidden rounded-lg border border-gray-300/50 bg-gray-200 shadow-xl dark:border-white/10 dark:bg-white/8">
               <Image
                 src={track.album.images[0].url}
                 alt={track.album.name}
@@ -234,7 +252,7 @@ const PopoverContentInner = ({
                 sizes="128px"
                 className="object-cover"
               />
-              
+
               {/* Play Button Overlay - Always visible on mobile, hover on desktop */}
               <div
                 onClick={handlePlayClick}
@@ -249,7 +267,7 @@ const PopoverContentInner = ({
                 className={`absolute inset-0 flex cursor-pointer items-center justify-center transition-all duration-200 hover:bg-black/40 ${
                   isCurrentTrack
                     ? "bg-black/40 opacity-100"
-                    : "bg-black/20 opacity-100 max-lg:opacity-100 lg:opacity-0 group-hover:bg-black/40 lg:group-hover:opacity-100"
+                    : "bg-black/20 opacity-100 group-hover:bg-black/40 max-lg:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                 }`}
                 aria-label={isPlayingThis ? "Pause" : "Play preview"}
               >
@@ -275,11 +293,13 @@ const PopoverContentInner = ({
           >
             {track.name}
           </a>
-          
+
           {/* Artist Name */}
           {(() => {
             const artist = track.artists[0];
-            const artistWithUrls = artist as typeof artist & { external_urls?: { spotify: string } };
+            const artistWithUrls = artist as typeof artist & {
+              external_urls?: { spotify: string };
+            };
             return artistWithUrls?.external_urls?.spotify ? (
               <a
                 href={artistWithUrls.external_urls.spotify}
@@ -295,20 +315,25 @@ const PopoverContentInner = ({
               </p>
             );
           })()}
-          
+
           {/* Album Name */}
           {(() => {
             const album = track.album;
-            const albumWithUrls = album as typeof album & { 
-              external_urls?: { spotify: string }; 
+            const albumWithUrls = album as typeof album & {
+              external_urls?: { spotify: string };
               id?: string;
             };
             return (
               <a
-                href={albumWithUrls?.external_urls?.spotify || (albumWithUrls?.id ? `https://open.spotify.com/album/${albumWithUrls.id}` : '#')}
+                href={
+                  albumWithUrls?.external_urls?.spotify ||
+                  (albumWithUrls?.id
+                    ? `https://open.spotify.com/album/${albumWithUrls.id}`
+                    : "#")
+                }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block cursor-pointer text-xs italic text-gray-600 transition-colors hover:text-[#3d38f5] hover:underline dark:text-gray-400 dark:hover:text-[#8b87ff]"
+                className="block cursor-pointer text-xs text-gray-600 italic transition-colors hover:text-[#3d38f5] hover:underline dark:text-gray-400 dark:hover:text-[#8b87ff]"
               >
                 {album?.name}
               </a>

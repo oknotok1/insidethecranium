@@ -18,17 +18,17 @@ export default function PlaylistHeader({
   totalDuration,
 }: PlaylistHeaderProps) {
   return (
-    <section className="py-6 sm:py-8">
+    <section className="py-4 sm:py-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Link
           href="/playlists"
-          className="mb-6 inline-flex items-center space-x-2 text-sm text-gray-600 transition-colors hover:text-gray-900 sm:mb-8 dark:text-gray-400 dark:hover:text-white"
+          className="mb-4 inline-flex items-center space-x-2 text-sm text-gray-600 transition-colors hover:text-gray-900 sm:mb-5 dark:text-gray-400 dark:hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Playlists</span>
         </Link>
 
-        <div className="flex flex-col gap-6 sm:gap-8 md:flex-row">
+        <div className="flex flex-col gap-5 sm:gap-6 md:flex-row">
           {/* Playlist Image */}
           <div className="relative mx-auto h-48 w-48 shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-56 sm:w-56 md:mx-0 md:h-64 md:w-64 dark:bg-white/5">
             {playlist.images && playlist.images.length > 0 ? (
@@ -48,15 +48,15 @@ export default function PlaylistHeader({
           </div>
 
           {/* Playlist Info */}
-          <div className="flex flex-1 flex-col justify-end">
-            <div className="mb-2 text-xs text-gray-600 sm:text-sm dark:text-gray-400">
+          <div className="flex flex-1 flex-col">
+            <div className="mb-1.5 text-xs text-gray-600 sm:text-sm dark:text-gray-400">
               Playlist
             </div>
-            <h1 className="mb-6 text-3xl leading-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl dark:text-white">
+            <h1 className="mb-3 text-3xl leading-tight text-gray-900 sm:mb-4 sm:text-4xl md:text-5xl lg:text-6xl dark:text-white">
               {playlist.name}
             </h1>
             {decodedDescription && (
-              <p className="mb-8 line-clamp-3 text-sm text-gray-700 sm:text-base dark:text-gray-300">
+              <p className="mb-4 line-clamp-3 text-sm text-gray-700 sm:mb-5 sm:text-base dark:text-gray-300">
                 {decodedDescription}
               </p>
             )}
@@ -96,7 +96,7 @@ export default function PlaylistHeader({
             </div>
 
             {/* Open in Spotify Button */}
-            <div className="mt-6">
+            <div className="mt-4 sm:mt-5">
               <a
                 href={playlist.external_urls.spotify}
                 target="_blank"

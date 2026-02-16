@@ -35,7 +35,7 @@ export default function LegacyPlaylistCard({
   return (
     <Link
       href={playlistUrl}
-      className="group flex h-full flex-col self-start overflow-hidden rounded-lg bg-gray-100 transition-colors hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10"
+      className="group flex h-full flex-col self-start overflow-hidden rounded-lg bg-gray-100 transition-colors hover:bg-gray-200 dark:bg-white/6 dark:hover:bg-white/11"
     >
       <div
         className="relative aspect-square overflow-hidden"
@@ -78,7 +78,7 @@ export default function LegacyPlaylistCard({
               {genres.slice(0, 2).map((genre) => (
                 <span
                   key={genre}
-                  className="rounded-full bg-gray-300 px-3 py-1.5 text-xs text-gray-700 dark:bg-white/5 dark:text-gray-400"
+                  className="rounded-full bg-gray-300 px-3 py-1.5 text-xs text-gray-700 dark:bg-white/6 dark:text-gray-400"
                 >
                   {genre}
                 </span>

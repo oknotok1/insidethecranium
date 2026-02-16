@@ -72,7 +72,7 @@ export default function ComingSoonPage({
 
           {/* Description (if provided) */}
           {description && (
-            <div className="mx-auto max-w-2xl rounded-2xl border border-gray-200 bg-gray-100 p-6 backdrop-blur-sm sm:p-8 dark:border-white/10 dark:bg-white/5">
+            <div className="mx-auto max-w-2xl rounded-2xl border border-gray-200 bg-gray-100 p-6 backdrop-blur-sm sm:p-8 dark:border-white/10 dark:bg-white/6">
               <p className="leading-relaxed text-gray-600 dark:text-gray-400">
                 {description}
               </p>
@@ -95,7 +95,7 @@ export default function ComingSoonPage({
 
             <Link
               href="/playlists"
-              className="flex items-center justify-center space-x-2 rounded-full border border-gray-300 bg-gray-200 px-6 py-3 text-sm text-gray-700 transition-all duration-300 hover:bg-gray-300 hover:text-gray-900 sm:px-8 sm:py-4 sm:text-base dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white"
+              className="flex items-center justify-center space-x-2 rounded-full border border-gray-300 bg-gray-200 px-6 py-3 text-sm text-gray-700 transition-all duration-300 hover:bg-gray-300 hover:text-gray-900 sm:px-8 sm:py-4 sm:text-base dark:border-white/10 dark:bg-white/6 dark:text-gray-300 dark:hover:bg-white/11 dark:hover:text-white"
             >
               <span>Browse Playlists</span>
             </Link>

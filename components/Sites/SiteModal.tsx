@@ -88,7 +88,7 @@ export default function SiteModal({
             {site.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 text-sm text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                className="rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 text-sm text-gray-700 dark:border-white/10 dark:bg-white/6 dark:text-gray-300"
               >
                 {tag}
               </span>

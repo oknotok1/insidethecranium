@@ -54,7 +54,7 @@ export default function SiteCard({ site }: { site: RecommendedSite }) {
             {site.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-md bg-gray-200 px-2 py-1 text-xs leading-none text-gray-600 transition-colors group-hover:bg-gray-300 dark:bg-white/5 dark:text-gray-400 dark:group-hover:bg-white/10"
+                className="rounded-md bg-gray-200 px-2 py-1 text-xs leading-none text-gray-600 transition-colors group-hover:bg-gray-300 dark:bg-white/6 dark:text-gray-400 dark:group-hover:bg-white/11"
               >
                 {tag}
               </span>

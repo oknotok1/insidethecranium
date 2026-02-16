@@ -2,9 +2,11 @@
 
 import { Pause, Play } from "lucide-react";
 
+import { usePreviewPlayer } from "@/contexts/PreviewPlayerContext";
+
 import { Card } from "@/components/common/Card";
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
-import { usePreviewPlayer } from "@/contexts/PreviewPlayerContext";
+
 import { useYouTubeSearch } from "@/hooks/useYouTubeSearch";
 
 const MAX_GENRES_DISPLAY = 3;
@@ -37,7 +39,11 @@ export default function MusicCard({
   album,
   artists,
 }: MusicCardProps) {
-  const { togglePlayPause, currentTrack, isPlaying: globalIsPlaying } = usePreviewPlayer();
+  const {
+    togglePlayPause,
+    currentTrack,
+    isPlaying: globalIsPlaying,
+  } = usePreviewPlayer();
   const { searchVideo } = useYouTubeSearch();
 
   const isCurrentTrack = currentTrack?.id === trackId;
@@ -93,13 +99,13 @@ export default function MusicCard({
               onClick={(e) => e.stopPropagation()}
               onMouseEnter={(e) => {
                 // Hide play button when hovering song title
-                const card = e.currentTarget.closest('.group');
-                card?.classList.add('hovering-title');
+                const card = e.currentTarget.closest(".group");
+                card?.classList.add("hovering-title");
               }}
               onMouseLeave={(e) => {
                 // Show play button when leaving song title
-                const card = e.currentTarget.closest('.group');
-                card?.classList.remove('hovering-title');
+                const card = e.currentTarget.closest(".group");
+                card?.classList.remove("hovering-title");
               }}
               className="inline text-base font-medium text-gray-900 transition-colors hover:text-[#3d38f5] hover:underline sm:text-lg dark:text-white dark:hover:text-[#8b87ff]"
             >
@@ -115,12 +121,12 @@ export default function MusicCard({
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
                   onMouseEnter={(e) => {
-                    const card = e.currentTarget.closest('.group');
-                    card?.classList.add('hovering-title');
+                    const card = e.currentTarget.closest(".group");
+                    card?.classList.add("hovering-title");
                   }}
                   onMouseLeave={(e) => {
-                    const card = e.currentTarget.closest('.group');
-                    card?.classList.remove('hovering-title');
+                    const card = e.currentTarget.closest(".group");
+                    card?.classList.remove("hovering-title");
                   }}
                   className="inline transition-colors hover:text-[#3d38f5] hover:underline dark:hover:text-[#8b87ff]"
                 >
@@ -182,11 +188,7 @@ export default function MusicCard({
 
   // Card with mini player functionality
   return (
-    <Card
-      as="button"
-      onClick={handleCardClick}
-      className={className}
-    >
+    <Card as="button" onClick={handleCardClick} className={className}>
       {content}
     </Card>
   );
@@ -207,7 +209,7 @@ const AlbumArtwork = ({
   isCurrentTrack: boolean;
   onPlayClick: (e: React.MouseEvent) => void;
 }) => (
-  <div className="group/artwork relative aspect-square overflow-hidden bg-gray-200 dark:bg-white/5">
+  <div className="group/artwork relative aspect-square overflow-hidden bg-gray-200 dark:bg-white/8">
     {artwork ? (
       <ImageWithFallback
         src={artwork}
@@ -237,7 +239,7 @@ const AlbumArtwork = ({
         className={`absolute inset-0 flex cursor-pointer items-center justify-center transition-all duration-200 hover:bg-black/40 ${
           isCurrentTrack
             ? "bg-black/40 opacity-100" // Always visible if active
-            : "bg-black/20 lg:bg-black/0 lg:opacity-0 lg:group-hover:opacity-100 lg:group-hover:bg-black/40 lg:group-[.hovering-title]:opacity-0"
+            : "bg-black/20 lg:bg-black/0 lg:opacity-0 lg:group-hover:bg-black/40 lg:group-hover:opacity-100 lg:group-[.hovering-title]:opacity-0"
         }`}
         aria-label={isPlaying ? "Pause" : "Play preview"}
       >
@@ -266,7 +268,7 @@ const Genres = ({ genres }: { genres: string[] }) => {
         {displayGenres.map((genre, index) => (
           <span
             key={index}
-            className="cursor-pointer rounded-md bg-gray-200 px-2 py-1 text-xs text-gray-600 transition-colors group-hover:bg-gray-300 dark:bg-white/5 dark:text-gray-400 dark:group-hover:bg-white/10"
+            className="cursor-pointer rounded-md bg-gray-200 px-2 py-1 text-xs text-gray-600 transition-colors group-hover:bg-gray-300 dark:bg-white/6 dark:text-gray-400 dark:group-hover:bg-white/11"
           >
             {genre}
           </span>

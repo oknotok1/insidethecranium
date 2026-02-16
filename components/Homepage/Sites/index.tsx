@@ -29,7 +29,7 @@ const ViewAllLink = () => (
 const ViewMoreCard = ({ totalCount }: { totalCount: number }) => (
   <Link href="/sites" onClick={scrollToTop} className={styles.viewMoreCard}>
     <div
-      className={`${styles.viewMoreCardInner} border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/5 dark:hover:border-gray-600 dark:hover:bg-white/10`}
+      className={`${styles.viewMoreCardInner} border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/6 dark:hover:border-gray-600 dark:hover:bg-white/11`}
     >
       <h3 className="mb-2 text-center text-base font-medium text-gray-900 sm:text-lg dark:text-white">
         More Sites

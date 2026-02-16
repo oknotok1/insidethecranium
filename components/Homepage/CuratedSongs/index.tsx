@@ -30,7 +30,7 @@ const ShowAllButton = ({
 }) => (
   <button
     onClick={onClick}
-    className={`${styles.showAllButton} border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/5 dark:hover:border-gray-600 dark:hover:bg-white/10`}
+    className={`${styles.showAllButton} border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/6 dark:hover:border-gray-600 dark:hover:bg-white/11`}
   >
     <h3 className="mb-2 text-center text-base font-medium text-gray-900 sm:text-lg dark:text-white">
       Show All
@@ -78,8 +78,10 @@ export default function CuratedSongs({
       className={styles.mobileTrackCardInner}
       trackId={track.id}
       album={track.album.name}
-      artists={track.artists.map(artist => {
-        const artistWithUrls = artist as typeof artist & { external_urls?: { spotify: string } };
+      artists={track.artists.map((artist) => {
+        const artistWithUrls = artist as typeof artist & {
+          external_urls?: { spotify: string };
+        };
         return {
           name: artist.name,
           external_urls: artistWithUrls.external_urls,
@@ -139,7 +141,7 @@ export default function CuratedSongs({
         {hasMore && (
           <button
             onClick={handleToggle}
-            className={`${styles.toggleButton} border-gray-300 bg-gray-50 text-gray-900 hover:border-gray-400 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/5 dark:text-white dark:hover:border-gray-600 dark:hover:bg-white/10`}
+            className={`${styles.toggleButton} border-gray-300 bg-gray-50 text-gray-900 hover:border-gray-400 hover:bg-gray-100 dark:border-gray-700 dark:bg-white/6 dark:text-white dark:hover:border-gray-600 dark:hover:bg-white/11`}
           >
             {showAll ? "Show Less" : "Show More"}
           </button>

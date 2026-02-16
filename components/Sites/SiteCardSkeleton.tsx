@@ -1,6 +1,6 @@
 export default function SiteCardSkeleton() {
   return (
-    <div className="relative flex h-full flex-col overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
+    <div className="relative flex h-full flex-col overflow-hidden rounded-lg bg-gray-100 dark:bg-white/6">
       {/* Image Skeleton */}
       <div className="aspect-video animate-pulse bg-gray-200 dark:bg-white/10" />
 

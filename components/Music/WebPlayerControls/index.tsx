@@ -121,7 +121,7 @@ const StatusMessage = ({
     {action && (
       <button
         onClick={action.onClick}
-        className="mt-3 cursor-pointer rounded-full bg-gradient-to-r from-[#3d38f5] to-[#8b87ff] px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+        className="mt-3 cursor-pointer rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
       >
         {action.label}
       </button>
@@ -174,7 +174,7 @@ const ProgressBar = ({
     </span>
     <div className="h-[3px] flex-1 overflow-hidden rounded-sm bg-gray-300 dark:bg-white/20">
       <div
-        className={`h-full bg-gradient-to-r from-[#3d38f5] to-[#8b87ff] transition-all ${!isPlaying ? "opacity-30" : ""}`}
+        className={`h-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] transition-all ${!isPlaying ? "opacity-30" : ""}`}
         style={{ width: `${calculateProgress(current, duration)}%` }}
       />
     </div>
@@ -201,7 +201,7 @@ const ControlButtons = ({
   <div className="flex items-center justify-center gap-3 pt-1 md:gap-4">
     <button
       onClick={webPlayer.skipToPrevious}
-      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-200 text-gray-900 transition-all hover:scale-105 hover:bg-gray-300 active:scale-95 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-200 text-gray-900 transition-all hover:scale-105 hover:bg-gray-300 active:scale-95 dark:bg-white/12 dark:text-white dark:hover:bg-white/18"
       aria-label="Previous track"
     >
       <SkipBack size={ICON_SIZE_SMALL} />
@@ -209,7 +209,7 @@ const ControlButtons = ({
 
     <button
       onClick={webPlayer.togglePlay}
-      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-[#3d38f5] to-[#8b87ff] text-white transition-all hover:scale-105 hover:shadow-lg active:scale-95"
+      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white transition-all hover:scale-105 hover:shadow-lg active:scale-95"
       aria-label={isListening ? "Pause" : "Play"}
     >
       {isListening ? (
@@ -221,7 +221,7 @@ const ControlButtons = ({
 
     <button
       onClick={webPlayer.skipToNext}
-      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-200 text-gray-900 transition-all hover:scale-105 hover:bg-gray-300 active:scale-95 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-200 text-gray-900 transition-all hover:scale-105 hover:bg-gray-300 active:scale-95 dark:bg-white/12 dark:text-white dark:hover:bg-white/18"
       aria-label="Next track"
     >
       <SkipForward size={ICON_SIZE_SMALL} />

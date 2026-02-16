@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+
+import { useEffect, useRef, useState } from "react";
+
 import { usePreviewPlayer } from "@/contexts/PreviewPlayerContext";
 
 interface YouTubePlayerProps {
@@ -86,8 +88,8 @@ export function YouTubePlayer({
 
       const playerId = `youtube-player-${videoId}`;
       containerRef.current.id = playerId;
-      containerRef.current.innerHTML = '';
-      
+      containerRef.current.innerHTML = "";
+
       playerRef.current = new window.YT.Player(playerId, {
         height,
         width: containerRef.current.offsetWidth || 400,
@@ -99,12 +101,12 @@ export function YouTubePlayer({
           modestbranding: 1,
           controls: 1,
           enablejsapi: 1,
-          origin: typeof window !== 'undefined' ? window.location.origin : '',
+          origin: typeof window !== "undefined" ? window.location.origin : "",
         },
         events: {
           onReady: (event: YTEvent) => {
             const player = event.target;
-            if (typeof player.playVideo === 'function') {
+            if (typeof player.playVideo === "function") {
               setIsReady(true);
               setIsPlaying(true);
               try {
@@ -119,7 +121,7 @@ export function YouTubePlayer({
               isManualChange.current = false;
               return;
             }
-            
+
             const state = event.data;
             // 1 = playing, 2 = paused, 0 = ended
             if (state === 1) {
@@ -131,18 +133,20 @@ export function YouTubePlayer({
           onError: (event: YTEvent) => {
             const errorCode = event.data as keyof typeof YOUTUBE_ERROR_MESSAGES;
             const trackName = currentTrack?.name || "This track";
-            const errorMessage = YOUTUBE_ERROR_MESSAGES[errorCode] || "Unable to play this video";
-            
+            const errorMessage =
+              YOUTUBE_ERROR_MESSAGES[errorCode] || "Unable to play this video";
+
             if (errorCode === 150 || errorCode === 101) {
               toast.error(`${trackName} cannot be played`, {
-                description: "This video is restricted from embedding. Listen on Spotify instead.",
+                description:
+                  "This video is restricted from embedding. Listen on Spotify instead.",
               });
             } else {
               toast.error(`${trackName} is unavailable`, {
                 description: errorMessage,
               });
             }
-            
+
             setError(errorMessage);
             setIsPlaying(false);
             onErrorCallback?.();
@@ -157,7 +161,9 @@ export function YouTubePlayer({
         return;
       }
 
-      const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
+      const existingScript = document.querySelector(
+        'script[src="https://www.youtube.com/iframe_api"]',
+      );
       if (existingScript) {
         const checkReady = setInterval(() => {
           if (window.YT?.Player) {
@@ -195,7 +201,7 @@ export function YouTubePlayer({
     if (!playerRef.current || !isReady) return;
 
     const player = playerRef.current;
-    if (typeof player.playVideo !== 'function') return;
+    if (typeof player.playVideo !== "function") return;
 
     try {
       const currentState = player.getPlayerState();
@@ -216,7 +222,7 @@ export function YouTubePlayer({
   if (error) {
     return (
       <div
-        className="flex flex-col items-center justify-center gap-3 bg-gray-100 p-6 text-center dark:bg-white/5"
+        className="flex flex-col items-center justify-center gap-3 bg-gray-100 p-6 text-center dark:bg-white/6"
         style={{ width: "100%", height: `${height}px` }}
       >
         <div className="text-sm text-gray-600 dark:text-gray-400">{error}</div>

@@ -43,8 +43,8 @@ export function UpcomingShowCard({ show }: UpcomingShowCardProps) {
             ) : (
               <div className={`flex h-full w-full items-center justify-center ${
                 isConfirmed 
-                  ? 'bg-gradient-to-br from-[#3d38f5]/10 to-[#8b87ff]/10'
-                  : 'bg-gradient-to-br from-yellow-500/10 to-yellow-400/10'
+                  ? 'bg-linear-to-br from-[#3d38f5]/10 to-[#8b87ff]/10'
+                  : 'bg-linear-to-br from-yellow-500/10 to-yellow-400/10'
               }`}>
                 <Music className={`h-8 w-8 ${
                   isConfirmed
@@ -221,7 +221,7 @@ export function UpcomingShowCard({ show }: UpcomingShowCardProps) {
             rel="noopener noreferrer"
             className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium ${
               isConfirmed
-                ? 'bg-gradient-to-r from-[#3d38f5] to-[#8b87ff] text-white'
+                ? 'bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white'
                 : 'bg-gray-200 text-gray-900 dark:bg-white/10 dark:text-white'
             }`}
           >

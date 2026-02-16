@@ -88,7 +88,7 @@ export default async function ConcertsPage() {
                   <div className="h-2 w-2 rounded-full bg-green-500"></div>
                   <span>Confirmed ({confirmedShows.length})</span>
                 </h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
                   {confirmedShows.map((show) => (
                     <UpcomingShowCard key={show.id} show={show} />
                   ))}
@@ -103,7 +103,7 @@ export default async function ConcertsPage() {
                   <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
                   <span>Considering ({onFenceShows.length})</span>
                 </h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
                   {onFenceShows.map((show) => (
                     <UpcomingShowCard key={show.id} show={show} />
                   ))}
@@ -130,7 +130,7 @@ export default async function ConcertsPage() {
               <h3 className="mb-4 text-xl text-gray-900 sm:mb-6 sm:text-2xl dark:text-white">
                 Jump to Concert
               </h3>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3">
                 {pastConcertsList.map((concert) => (
                   <Link
                     key={concert.id}
@@ -138,7 +138,7 @@ export default async function ConcertsPage() {
                     className="group rounded-lg bg-gray-100 p-4 transition-all hover:bg-[#3d38f5]/20 dark:bg-white/5"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-[#3d38f5]/10 to-[#8b87ff]/5">
+                      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-linear-to-br from-[#3d38f5]/10 to-[#8b87ff]/5">
                         {concert.coverImageUrl ? (
                           <img
                             src={concert.coverImageUrl}

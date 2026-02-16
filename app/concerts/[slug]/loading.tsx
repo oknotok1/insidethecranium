@@ -43,7 +43,7 @@ export default function Loading() {
       {/* Media Gallery Skeleton */}
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-4 h-7 w-48 animate-pulse rounded bg-gray-200 sm:mb-6 sm:h-8 dark:bg-white/10" />
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-5 xl:grid-cols-6">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
             <div
               key={i}

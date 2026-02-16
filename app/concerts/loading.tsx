@@ -18,7 +18,7 @@ export default function Loading() {
           </div>
 
           {/* Show Cards Skeleton */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
@@ -60,7 +60,7 @@ export default function Loading() {
         {/* Jump to Concert Skeleton */}
         <div className="mb-16 sm:mb-20">
           <div className="mb-4 h-7 w-48 animate-pulse rounded bg-gray-200 sm:mb-6 sm:h-8 dark:bg-white/10" />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}

@@ -10,7 +10,6 @@ interface ConcertMediaGridProps {
   concertTitle: string;
   galleryImages: GalleryImage[];
   videos: VideoItem[];
-  spacing?: "normal" | "tight"; // "normal" for gap-4, "tight" for gap-2 sm:gap-4
   maxItems?: number; // Maximum number of items to display (undefined = show all)
 }
 
@@ -19,7 +18,6 @@ export function ConcertMediaGrid({
   concertTitle,
   galleryImages,
   videos,
-  spacing = "normal",
   maxItems,
 }: ConcertMediaGridProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -54,18 +52,16 @@ export function ConcertMediaGrid({
     setLightboxOpen(true);
   };
 
-  const gapClass = spacing === "tight" ? "gap-2 sm:gap-4" : "gap-4";
-
   return (
     <>
-      <div className={`grid grid-cols-2 ${gapClass} sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6`}>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-5 xl:grid-cols-6">
         {/* Gallery Images */}
         {displayedImages.map((image, idx) => (
           <button
             key={`img-${idx}`}
             onClick={() => handleMediaClick(idx)}
             type="button"
-            className="group relative aspect-[9/16] w-full cursor-pointer overflow-hidden rounded-lg bg-gray-200 transition-all hover:ring-2 hover:ring-[#3d38f5] dark:bg-white/5"
+            className="group relative aspect-9/16 w-full cursor-pointer overflow-hidden rounded-lg bg-gray-200 transition-all hover:ring-2 hover:ring-[#3d38f5] dark:bg-white/5"
           >
             <img
               src={image.url}
@@ -73,7 +69,7 @@ export function ConcertMediaGrid({
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
             {image.alt && (
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
                 <div className="absolute bottom-2 left-2 right-2">
                   <p className="line-clamp-2 text-xs text-white">{image.alt}</p>
                 </div>
@@ -90,7 +86,7 @@ export function ConcertMediaGrid({
               key={`vid-${idx}`}
               onClick={() => handleMediaClick(videoIndex)}
               type="button"
-              className="group relative aspect-[9/16] w-full cursor-pointer overflow-hidden rounded-lg bg-gray-200 transition-all hover:ring-2 hover:ring-[#3d38f5] dark:bg-white/5"
+              className="group relative aspect-9/16 w-full cursor-pointer overflow-hidden rounded-lg bg-gray-200 transition-all hover:ring-2 hover:ring-[#3d38f5] dark:bg-white/5"
             >
               <video
                 src={video.url}

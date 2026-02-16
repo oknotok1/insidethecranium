@@ -98,7 +98,6 @@ export default async function ConcertDetailPage({ params }: PageProps) {
             concertTitle={concert.title}
             galleryImages={concert.galleryImages}
             videos={concert.videos}
-            spacing="tight"
           />
         </div>
       )}

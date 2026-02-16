@@ -100,10 +100,28 @@ export const PreviewPlayerProvider: React.FC<{ children: ReactNode }> = ({
 
 export const usePreviewPlayer = (): PreviewPlayerContextType => {
   const context = useContext(PreviewPlayerContext);
+  
+  // Return a default context during SSR to prevent errors
   if (!context) {
-    throw new Error(
-      "usePreviewPlayer must be used within a PreviewPlayerProvider",
-    );
+    // Only throw in development after hydration
+    if (typeof window !== 'undefined') {
+      throw new Error(
+        "usePreviewPlayer must be used within a PreviewPlayerProvider",
+      );
+    }
+    
+    // Return no-op functions during SSR
+    return {
+      currentTrack: null,
+      isPlaying: false,
+      play: () => {},
+      pause: () => {},
+      resume: () => {},
+      stop: () => {},
+      togglePlayPause: () => {},
+      setIsPlaying: () => {},
+    };
   }
+  
   return context;
 };

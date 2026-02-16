@@ -1,31 +1,43 @@
 import { cache } from "react";
 
-import { ComingSoonPreview } from "@/components/common/ComingSoon";
+import Concerts from "@/components/Homepage/Concerts";
 import CuratedSongs from "@/components/Homepage/CuratedSongs";
 import HeroSection from "@/components/Homepage/Hero";
 import Playlists from "@/components/Homepage/Playlists";
 import Sites from "@/components/Homepage/Sites";
 
-import { fetchCuratedTracks } from "@/utils/contentful";
+import { fetchConcerts, fetchCuratedTracks } from "@/utils/contentful";
+import { enrichConcertsWithArtistImages } from "@/utils/spotify-enrichment";
 import { fetchPlaylists } from "@/utils/spotify";
 
 export const revalidate = 86400; // 24 hours
 
 const getData = cache(async () => {
-  // Fetch playlists and curated tracks in parallel
-  const [playlists, curatedTracks] = await Promise.all([
+  // Fetch playlists, curated tracks, and concerts in parallel
+  const [playlists, curatedTracks, concertsRaw] = await Promise.all([
     fetchPlaylists(50, 0, true), // Include genres for homepage playlists
     fetchCuratedTracks(),
+    fetchConcerts(), // Fetch past concerts for homepage
   ]);
+
+  // Filter past concerts and sort by most recent
+  const now = new Date();
+  const pastConcerts = concertsRaw
+    .filter((concert) => new Date(concert.eventDate) < now)
+    .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
+
+  // Enrich concerts with artist images for fallback
+  const concerts = await enrichConcertsWithArtistImages(pastConcerts);
 
   return {
     playlists,
     curatedTracks,
+    concerts,
   };
 });
 
 export default async function Home() {
-  const { playlists, curatedTracks } = await getData();
+  const { playlists, curatedTracks, concerts } = await getData();
 
   return (
     <main className="flex flex-col" data-page="homepage">
@@ -33,11 +45,7 @@ export default async function Home() {
       <CuratedSongs tracks={curatedTracks} />
       <Playlists playlists={playlists} />
       <Sites />
-      <ComingSoonPreview
-        title="Concert Memories"
-        subtitle="Relive my live music experiences and concert memories"
-        href="/concerts"
-      />
+      <Concerts concerts={concerts} />
     </main>
   );
 }

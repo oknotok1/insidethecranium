@@ -76,20 +76,25 @@ const createTrackFetcher = (accessToken: string | undefined) => {
     })
       .then((res) => {
         if (!res.ok) {
-          if (res.status === 401) {
-            console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
-            return null;
+          switch (res.status) {
+            case 401:
+              console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
+              return null;
+            case 429:
+              console.warn(`[AppContext] Rate limited on ${url}`);
+              return null;
+            case 500:
+              console.warn(`[AppContext] Server error on ${url} (HTTP 500)`);
+              return null;
+            default:
+              console.warn(`[AppContext] Request failed on ${url} (HTTP ${res.status})`);
+              return null;
           }
-          if (res.status === 429) {
-            console.warn(`[AppContext] Rate limited on ${url}`);
-            return null;
-          }
-          throw new Error(`HTTP ${res.status}`);
         }
         return res.json();
       })
       .catch((err) => {
-        console.error(err);
+        console.error(`[AppContext] Fetch error on ${url}:`, err);
         return null;
       });
 };
@@ -144,16 +149,28 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     })
       .then((res) => {
         if (!res.ok) {
-          // Silently handle auth errors
-          if (res.status === 401) {
-            console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
-            return null;
+          // Silently handle errors
+          switch (res.status) {
+            case 401:
+              console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
+              return null;
+            case 429:
+              console.warn(`[AppContext] Rate limited on ${url}`);
+              return null;
+            case 500:
+              console.warn(`[AppContext] Server error on ${url} (HTTP 500)`);
+              return null;
+            default:
+              console.warn(`[AppContext] Request failed on ${url} (HTTP ${res.status})`);
+              return null;
           }
-          throw new Error(`HTTP ${res.status}`);
         }
         return res.json();
       })
-      .catch(() => null); // Fail silently
+      .catch((err) => {
+        console.error(`[AppContext] Fetch error on ${url}:`, err);
+        return null;
+      });
 
   // Fetch recently played track (cached indefinitely, invalidated on-demand)
   const {

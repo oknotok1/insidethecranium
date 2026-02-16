@@ -93,6 +93,9 @@ export interface Artist {
 export interface ArtistDetails extends Artist {
   genres: string[];
   images: Image[];
+  external_urls?: {
+    spotify: string;
+  };
 }
 
 // Artist aggregated for playlist view (with song count)
@@ -224,5 +227,18 @@ export interface NextFetchOptions extends RequestInit {
   next?: {
     revalidate?: number | false;
     tags?: string[];
+  };
+}
+
+// Spotify Search API Response
+export interface SpotifySearchResponse {
+  artists: {
+    href: string;
+    items: ArtistDetails[];
+    limit: number;
+    next: string | null;
+    offset: number;
+    previous: string | null;
+    total: number;
   };
 }

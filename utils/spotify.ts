@@ -4,7 +4,11 @@
 
 import { cache } from "react";
 
-import type { NextFetchOptions, UserPlaylists } from "@/types/spotify";
+import type {
+  ArtistDetails,
+  SpotifySearchResponse,
+  UserPlaylists,
+} from "@/types/spotify";
 
 import { logger } from "./logger";
 import { shouldRetryRateLimit, waitForRetry } from "./rateLimitHandler";
@@ -86,6 +90,17 @@ const createTokenFetchOptions = (
 const fetchAccessTokenCore = async (
   bypassCache: boolean = false,
 ): Promise<string> => {
+  // Validate credentials before attempting to fetch
+  if (
+    !SPOTIFY_CREDENTIALS.clientId ||
+    !SPOTIFY_CREDENTIALS.clientSecret ||
+    !SPOTIFY_CREDENTIALS.refreshToken
+  ) {
+    throw new Error(
+      "Missing required Spotify credentials (CLIENT_ID, CLIENT_SECRET, or REFRESH_TOKEN)",
+    );
+  }
+
   const authToken = createAuthToken();
   const params = createTokenRequestParams();
   const fetchOptions = createTokenFetchOptions(authToken, params, bypassCache);
@@ -93,10 +108,15 @@ const fetchAccessTokenCore = async (
   const response = await fetch(SPOTIFY_API.TOKEN_URL, fetchOptions);
 
   if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+    const errorText = await response.text().catch(() => "Unknown error");
+    throw new Error(`Spotify API error ${response.status}: ${errorText}`);
   }
 
   const data = await response.json();
+
+  if (!data.access_token) {
+    throw new Error("No access token in Spotify response");
+  }
 
   if (bypassCache) {
     logger.log("Spotify", "Fetched fresh access token (bypassed cache)");
@@ -245,7 +265,7 @@ export const fetchSpotifyWithRetry = async <T>(
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(logContext, `Fetch error: ${message}`);
-      
+
       // Don't retry on network errors if we've already tried
       if (retryCount >= maxRetries) {
         return {
@@ -254,7 +274,7 @@ export const fetchSpotifyWithRetry = async <T>(
           status: 500,
         };
       }
-      
+
       retryCount++;
       // Small delay before retrying on network errors
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -316,3 +336,50 @@ export const fetchPlaylists = async (
     return EMPTY_PLAYLISTS;
   }
 };
+
+/**
+ * Searches for an artist on Spotify by name
+ * @param artistName - The artist name to search for
+ * @param limit - Maximum number of results (default: 1)
+ * @returns Artist details including images, or null if not found
+ */
+export const searchSpotifyArtist = cache(
+  async (
+    artistName: string,
+    limit: number = 1,
+  ): Promise<ArtistDetails | null> => {
+    try {
+      const accessToken = await getSpotifyAccessToken();
+      const encodedQuery = encodeURIComponent(artistName);
+      const url = `${SPOTIFY_API.BASE_URL}/search?q=${encodedQuery}&type=artist&limit=${limit}`;
+
+      const result = await fetchSpotifyWithRetry<SpotifySearchResponse>(
+        url,
+        {
+          accessToken,
+          next: {
+            revalidate: 86400, // Cache for 24 hours
+            tags: ["spotify-artist-search"],
+          },
+        },
+        "Spotify Artist Search",
+      );
+
+      if (result.data?.artists?.items && result.data.artists.items.length > 0) {
+        const artist = result.data.artists.items[0];
+        logger.success(
+          "Spotify",
+          `Found artist: ${artist.name} (${artist.images.length} images)`,
+        );
+        return artist;
+      }
+
+      logger.warn("Spotify", `No artist found for: ${artistName}`);
+      return null;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error("Spotify", `Error searching for artist: ${message}`);
+      return null;
+    }
+  },
+);

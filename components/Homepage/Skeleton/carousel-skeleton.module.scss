@@ -1,0 +1,26 @@
+/**
+ * Carousel Skeleton Responsive Widths
+ * Matches the responsive widths from mobile-carousel.module.scss
+ */
+
+.carouselItem {
+  flex-shrink: 0;
+  
+  // Mobile: 2 full cards + peek
+  width: calc((100vw - 4.75rem) / 2);
+  
+  // Very narrow screens
+  @media (max-width: 320px) {
+    width: calc(100vw - 6rem);
+  }
+  
+  // Tablet: 2.5 cards visible
+  @media (min-width: 640px) {
+    width: calc((100vw - 7rem) / 2.5);
+  }
+  
+  // Larger tablets: 3 cards + peek
+  @media (min-width: 768px) {
+    width: calc((100vw - 9rem) / 3.2);
+  }
+}

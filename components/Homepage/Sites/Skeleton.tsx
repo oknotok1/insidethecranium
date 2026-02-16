@@ -1,4 +1,5 @@
 import SiteCardSkeleton from "@/components/Sites/SiteCardSkeleton";
+import { CarouselSkeletonItem } from "@/components/Homepage/Skeleton/CarouselWrapper";
 
 export default function SitesSkeleton() {
   return (
@@ -17,15 +18,9 @@ export default function SitesSkeleton() {
         <div className="-mx-4 block overflow-hidden sm:-mx-6 lg:hidden">
           <div className="scrollbar-hide flex items-stretch gap-4 overflow-x-scroll">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className={`shrink-0 ${i === 0 ? "ml-4 sm:ml-6" : ""} ${i === 5 ? "mr-4 sm:mr-6" : ""}`}
-                style={{
-                  width: 'calc((100vw - 4.75rem) / 2)',
-                }}
-              >
+              <CarouselSkeletonItem key={i} index={i} totalItems={6}>
                 <SiteCardSkeleton />
-              </div>
+              </CarouselSkeletonItem>
             ))}
           </div>
         </div>

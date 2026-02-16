@@ -1,4 +1,5 @@
 import MusicCardSkeleton from "@/components/Music/MusicCard/Skeleton";
+import { CarouselSkeletonItem } from "@/components/Homepage/Skeleton/CarouselWrapper";
 
 export default function CuratedSongsSkeleton() {
   return (
@@ -14,17 +15,9 @@ export default function CuratedSongsSkeleton() {
         <div className="-mx-4 block overflow-hidden sm:-mx-6 lg:hidden">
           <div className="scrollbar-hide flex items-stretch gap-4 overflow-x-scroll">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className={`shrink-0 ${i === 0 ? "ml-4 sm:ml-6" : ""} ${i === 7 ? "mr-4 sm:mr-6" : ""}`}
-                style={{
-                  width: 'calc((100vw - 4.75rem) / 2)',
-                }}
-              >
-                <div className="h-full">
-                  <MusicCardSkeleton />
-                </div>
-              </div>
+              <CarouselSkeletonItem key={i} index={i} totalItems={8}>
+                <MusicCardSkeleton />
+              </CarouselSkeletonItem>
             ))}
           </div>
         </div>

@@ -1,0 +1,87 @@
+@use "../../../styles/mobile-carousel.module.scss" as *;
+@reference "../../../styles/tailwind.css";
+
+.section {
+  @apply py-12 sm:py-16 lg:py-20;
+
+  .container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+
+    // Header section
+    .header {
+      @apply mb-8 sm:mb-12;
+      @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+    }
+
+    .title {
+      @apply mb-4;
+      @apply text-2xl sm:text-3xl md:text-4xl;
+    }
+
+    .viewAllLink {
+      @apply flex;
+      @apply w-fit items-center space-x-2;
+      @apply text-sm text-nowrap;
+      @apply transition-colors;
+    }
+
+    // Mobile carousel using shared styles
+    .mobileCarouselWrapper {
+      @extend .wrapper;
+    }
+
+    .mobileCarousel {
+      @extend .carousel;
+    }
+
+    .concertCard {
+      @extend .card;
+    }
+
+    .concertCardFirst {
+      @extend .cardFirst;
+    }
+
+    .concertCardInner {
+      @extend .cardInner;
+    }
+
+    .viewMoreCard {
+      @apply mr-4 sm:mr-6;
+      @apply shrink-0;
+      
+      // Match card width
+      width: calc((100vw - 4.75rem) / 2);
+      
+      @media (max-width: 320px) {
+        width: calc(100vw - 6rem);
+      }
+      
+      @media (min-width: 640px) {
+        width: calc((100vw - 7rem) / 2.5);
+      }
+      
+      @media (min-width: 768px) {
+        width: calc((100vw - 9rem) / 3.2);
+      }
+
+      .viewMoreCardInner {
+        @apply flex h-full flex-col items-center justify-center;
+        @apply p-6;
+        @apply rounded-xl;
+        @apply border-2 border-dashed;
+        @apply transition-colors;
+      }
+    }
+
+    // Desktop grid
+    .desktopGrid {
+      @apply hidden lg:grid;
+      @apply grid-cols-3 gap-3 sm:gap-4 md:gap-6 xl:grid-cols-4;
+
+      .concertCardWrapper {
+        @apply flex;
+      }
+    }
+  }
+}

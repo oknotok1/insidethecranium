@@ -1,5 +1,5 @@
+@use "../../../styles/mobile-carousel.module.scss" as *;
 @reference "../../../styles/tailwind.css";
-@import "../../../styles/mobile-carousel.module.scss";
 
 .section {
   @apply py-12 sm:py-16 lg:py-20;

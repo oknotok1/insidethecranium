@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 

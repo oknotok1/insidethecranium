@@ -2,7 +2,7 @@
 
 .background {
   @apply absolute inset-0;
-  @apply bg-gradient-to-br from-gray-50 via-white to-gray-100;
+  @apply bg-linear-to-br from-gray-50 via-white to-gray-100;
   z-index: 0;
 
   :global(.dark) & {

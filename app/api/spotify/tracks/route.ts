@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { logger } from "@/utils/logger";
 import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
+import { getFreshSpotifyAccessToken } from "@/utils/spotify";
 
 // Cache tracks indefinitely (static content)
 export const revalidate = false;
@@ -36,13 +37,14 @@ export async function GET(request: NextRequest) {
       throw new Error("Failed to get access token");
     }
 
-    const { access_token } = await tokenResponse.json();
+    let { access_token } = await tokenResponse.json();
     logger.success("Tracks API", "Got access token");
 
-    // Fetch tracks from Spotify with retry logic for rate limiting
+    // Fetch tracks from Spotify with retry logic for rate limiting and token expiration
     let tracksData;
     let retryCount = 0;
     const maxRetries = 3;
+    let tokenRetried = false;
 
     while (retryCount <= maxRetries) {
       const tracksResponse = await fetch(
@@ -57,6 +59,25 @@ export async function GET(request: NextRequest) {
           },
         },
       );
+
+      // Handle token expiration with retry (only retry once)
+      if (tracksResponse.status === 401 && !tokenRetried) {
+        logger.warn(
+          "Tracks API",
+          "Token expired, fetching fresh token and retrying",
+        );
+        try {
+          access_token = await getFreshSpotifyAccessToken();
+          tokenRetried = true;
+          continue; // Retry with fresh token
+        } catch (tokenError) {
+          logger.error("Tracks API", "Failed to refresh token");
+          return NextResponse.json(
+            { error: "Failed to refresh token", tracks: [] },
+            { status: 401 },
+          );
+        }
+      }
 
       // Handle rate limiting with retry
       if (tracksResponse.status === 429) {

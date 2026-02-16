@@ -521,13 +521,36 @@ export default function AdminPage() {
             <h2 className="mb-4 text-lg font-semibold text-gray-900 sm:text-xl dark:text-white">
               Quick Links
             </h2>
-            <Link
-              href="/admin/spotify/auth"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#3d38f5] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[#2e29cc] hover:shadow-lg hover:scale-105 active:scale-100 sm:text-base dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
-            >
-              <Key className="h-4 w-4" />
-              <span className="whitespace-nowrap">Spotify Authorization Helper</span>
-            </Link>
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link
+                href="/admin/spotify/auth"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#3d38f5] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[#2e29cc] hover:shadow-lg hover:scale-105 active:scale-100 sm:text-base dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
+              >
+                <Key className="h-4 w-4" />
+                <span className="whitespace-nowrap">
+                  Spotify Authorization Helper
+                </span>
+              </Link>
+              <Link
+                href="/admin/content/concerts"
+                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-lg hover:scale-105 active:scale-100 sm:text-base dark:border-white/20 dark:bg-black/20 dark:text-white dark:hover:bg-black/30"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                  />
+                </svg>
+                <span className="whitespace-nowrap">Manage Concerts</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

@@ -2663,6 +2663,17 @@ content-type@^1.0.5:
   resolved "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz"
   integrity sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==
 
+contentful-management@^11.69.2:
+  version "11.69.2"
+  resolved "https://registry.yarnpkg.com/contentful-management/-/contentful-management-11.69.2.tgz#a5a7dc9738b074aceca139c2e415803fe2d0d0c2"
+  integrity sha512-/OhITo4/fqcJayTjHKsFZ4JM89gTuDZ65jrDwyb2sJMGycFNpQSgerngLtM6nDhBNN/4OU4MIL5m6q3+lpH1/w==
+  dependencies:
+    "@contentful/rich-text-types" "^16.6.1"
+    axios "^1.12.2"
+    contentful-sdk-core "^9.4.2"
+    fast-copy "^3.0.0"
+    globals "^15.15.0"
+
 contentful-resolve-response@^1.9.4:
   version "1.9.5"
   resolved "https://registry.npmjs.org/contentful-resolve-response/-/contentful-resolve-response-1.9.5.tgz"
@@ -3459,7 +3470,7 @@ express@^5.2.1:
     type-is "^2.0.1"
     vary "^1.1.2"
 
-fast-copy@^3.0.2:
+fast-copy@^3.0.0, fast-copy@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/fast-copy/-/fast-copy-3.0.2.tgz"
   integrity sha512-dl0O9Vhju8IrcLndv2eU4ldt1ftXMqqfgN4H1cpmGV7P6jeB9FwpN9a2c8DPGE1Ys88rNUJVYDHq73CGAGOPfQ==
@@ -3800,6 +3811,11 @@ globals@^13.19.0:
   integrity sha512-AhO5QUcj8llrbG09iWhPU2B204J1xnPeL8kQmVorSsy+Sjj1sk8gIyh6cUocGmH4L0UuhAJy+hJMRA4mgA4mFQ==
   dependencies:
     type-fest "^0.20.2"
+
+globals@^15.15.0:
+  version "15.15.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-15.15.0.tgz#7c4761299d41c32b075715a4ce1ede7897ff72a8"
+  integrity sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==
 
 globalthis@^1.0.4:
   version "1.0.4"
@@ -6429,6 +6445,11 @@ yargs@^17.7.2:
     string-width "^4.2.3"
     y18n "^5.0.5"
     yargs-parser "^21.1.1"
+
+yet-another-react-lightbox@^3.29.1:
+  version "3.29.1"
+  resolved "https://registry.yarnpkg.com/yet-another-react-lightbox/-/yet-another-react-lightbox-3.29.1.tgz#0657c6a76365127c13bde0f55ceb50c620019062"
+  integrity sha512-0cpa+wlleiy2cWNjS9qrcY0+SgZQH/4PDx2uupLMI9Ofip1f7pCgZ95PlVp/EsFsO4ufwOTea51bkLhcEXJJSg==
 
 yocto-queue@^0.1.0:
   version "0.1.0"

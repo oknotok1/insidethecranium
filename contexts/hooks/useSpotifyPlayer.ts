@@ -127,14 +127,26 @@ export const useSpotifyPlayer = (accessToken: string | undefined) => {
     async (spotify_uri?: string) => {
       if (!deviceId || !accessToken) return;
 
-      await fetch(buildPlayerUrl(deviceId), {
-        method: "PUT",
-        body: JSON.stringify(spotify_uri ? { uris: [spotify_uri] } : undefined),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      try {
+        const response = await fetch(buildPlayerUrl(deviceId), {
+          method: "PUT",
+          body: JSON.stringify(
+            spotify_uri ? { uris: [spotify_uri] } : undefined,
+          ),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          console.error(
+            `[Spotify Player] Play failed: ${response.status} ${response.statusText}`,
+          );
+        }
+      } catch (error) {
+        console.error("[Spotify Player] Play error:", error);
+      }
     },
     [deviceId, accessToken],
   );

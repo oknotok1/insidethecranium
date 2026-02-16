@@ -7,6 +7,7 @@ import { cache } from "react";
 import type { NextFetchOptions, UserPlaylists } from "@/types/spotify";
 
 import { logger } from "./logger";
+import { shouldRetryRateLimit, waitForRetry } from "./rateLimitHandler";
 
 /**
  * Spotify credentials from environment variables
@@ -142,26 +143,130 @@ export const extractSpotifyId = (url: string): string | undefined => {
 };
 
 /**
- * Generic safe fetch for Spotify API endpoints with error handling and logging
+ * Fetch from Spotify API with automatic 401 & 429 retry logic
+ * Automatically refreshes token on 401 and retries rate limits on 429
  */
-export const safeFetchSpotify = async <T>(
+export const fetchSpotifyWithRetry = async <T>(
   url: string,
-  options: NextFetchOptions,
+  options: {
+    accessToken: string;
+    method?: string;
+    body?: any;
+    next?: NextFetchRequestConfig;
+  },
   logContext: string,
-): Promise<T | null> => {
-  try {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      logger.error(logContext, `HTTP ${response.status}`);
-      return null;
+): Promise<{ data: T | null; error?: string; status?: number }> => {
+  let accessToken = options.accessToken;
+  let tokenRetried = false;
+  let retryCount = 0;
+  const maxRetries = 3;
+
+  // Build fetch options
+  const buildFetchOptions = (token: string) => ({
+    method: options.method || "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(options.body && { "Content-Type": "application/json" }),
+    },
+    ...(options.body && { body: JSON.stringify(options.body) }),
+    ...(options.next && { next: options.next }),
+  });
+
+  while (retryCount <= maxRetries) {
+    try {
+      let response = await fetch(url, buildFetchOptions(accessToken));
+
+      // Handle 401 - Token expired, retry with fresh token (only once)
+      if (response.status === 401 && !tokenRetried) {
+        logger.warn(
+          logContext,
+          "Token expired, fetching fresh token and retrying",
+        );
+        try {
+          accessToken = await getFreshSpotifyAccessToken();
+          tokenRetried = true;
+          continue; // Retry with fresh token
+        } catch (tokenError) {
+          logger.error(logContext, "Failed to refresh token");
+          return {
+            data: null,
+            error: "Failed to refresh token",
+            status: 401,
+          };
+        }
+      }
+
+      // Handle 429 - Rate limiting with retry
+      if (response.status === 429) {
+        const retryAfterHeader = response.headers.get("retry-after");
+        const retryAfterSeconds = parseInt(retryAfterHeader || "5");
+
+        const result = shouldRetryRateLimit(
+          retryAfterSeconds,
+          retryCount,
+          maxRetries,
+        );
+
+        if (!result.shouldRetry) {
+          logger.error(logContext, result.message);
+          return {
+            data: null,
+            error: "Rate limited",
+            status: 429,
+          };
+        }
+
+        logger.warn(logContext, result.message);
+        await waitForRetry(result.retryAfter);
+        retryCount++;
+        continue; // Retry after waiting
+      }
+
+      // Handle other non-OK responses
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error?.message || errorMessage;
+        } catch {
+          // Ignore JSON parse errors
+        }
+        logger.error(logContext, errorMessage);
+        return {
+          data: null,
+          error: errorMessage,
+          status: response.status,
+        };
+      }
+
+      // Success
+      const data = await response.json();
+      return { data: data as T };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(logContext, `Fetch error: ${message}`);
+      
+      // Don't retry on network errors if we've already tried
+      if (retryCount >= maxRetries) {
+        return {
+          data: null,
+          error: message,
+          status: 500,
+        };
+      }
+      
+      retryCount++;
+      // Small delay before retrying on network errors
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-    const data = await response.json();
-    return data.error ? null : (data as T);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger.error(logContext, message);
-    return null;
   }
+
+  // Should not reach here, but just in case
+  return {
+    data: null,
+    error: "Max retries exceeded",
+    status: 500,
+  };
 };
 
 /**
@@ -178,7 +283,7 @@ const EMPTY_PLAYLISTS: UserPlaylists = {
 };
 
 /**
- * Fetches user playlists from the Spotify API
+ * Fetches user playlists from our API endpoint
  */
 export const fetchPlaylists = async (
   limit: number = 50,
@@ -187,16 +292,27 @@ export const fetchPlaylists = async (
 ): Promise<UserPlaylists> => {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/playlists?limit=${limit}&offset=${offset}&includeGenres=${includeGenres}`;
 
-  const playlists = await safeFetchSpotify<UserPlaylists>(
-    url,
-    { next: { revalidate: 86400, tags: ["playlists"] } },
-    "Fetch playlists",
-  );
+  try {
+    const response = await fetch(url, {
+      next: { revalidate: 86400, tags: ["playlists"] },
+    });
 
-  if (playlists?.items) {
-    logger.success("Spotify", `Fetched ${playlists.items.length} playlists`);
-    return playlists;
+    if (!response.ok) {
+      logger.error("Spotify", `Failed to fetch playlists: ${response.status}`);
+      return EMPTY_PLAYLISTS;
+    }
+
+    const playlists = await response.json();
+
+    if (playlists?.items) {
+      logger.success("Spotify", `Fetched ${playlists.items.length} playlists`);
+      return playlists;
+    }
+
+    return EMPTY_PLAYLISTS;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error("Spotify", `Error fetching playlists: ${message}`);
+    return EMPTY_PLAYLISTS;
   }
-
-  return EMPTY_PLAYLISTS;
 };

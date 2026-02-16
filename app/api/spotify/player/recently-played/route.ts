@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { logger } from "@/utils/logger";
 import {
-  getFreshSpotifyAccessToken,
+  fetchSpotifyWithRetry,
   getSpotifyAccessToken,
   SPOTIFY_API,
 } from "@/utils/spotify";
@@ -38,64 +38,64 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch with cache tag for on-demand invalidation
-    let response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      next: {
-        revalidate: false, // Cache forever
-        tags: ["recently-played"], // Tag for invalidation
-      },
-    });
-
-    // If 401 and we used a server token, retry with fresh token
-    if (response.status === 401 && isServerToken) {
-      logger.warn(
-        "Recently Played API",
-        "Token expired, fetching fresh token and retrying",
-      );
-      try {
-        accessToken = await getFreshSpotifyAccessToken();
-        response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+    // Use centralized fetch with automatic retry (only for server tokens)
+    // For client tokens, let the client handle auth refresh
+    if (isServerToken) {
+      const { data, error, status } = await fetchSpotifyWithRetry(
+        url,
+        {
+          accessToken,
           next: {
             revalidate: false,
             tags: ["recently-played"],
           },
-        });
-      } catch (retryErr: any) {
-        logger.error(
-          "Recently Played API",
-          `Retry failed: ${retryErr.message}`,
-        );
+        },
+        "Recently Played API",
+      );
+
+      if (error) {
         return NextResponse.json(
-          { error: "Failed to refresh token" },
-          { status: 500 },
+          {
+            error: "Failed to fetch recently played tracks",
+            details: error,
+          },
+          { status: status || 500 },
         );
       }
-    }
 
-    if (!response.ok) {
-      const error = await response.json();
-      logger.error(
-        "Recently Played API",
-        `Error: ${response.status} - ${error.error?.message || "Unknown"}`,
-      );
-      return NextResponse.json(
-        {
-          error: "Failed to fetch recently played tracks",
-          details: error.error?.message || "Unknown error",
+      logger.success("Recently Played API", "✓ ✓ Cached recently played track");
+      return NextResponse.json(data);
+    } else {
+      // Client token - single fetch without retry
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        { status: response.status },
-      );
-    }
+        next: {
+          revalidate: false,
+          tags: ["recently-played"],
+        },
+      });
 
-    const data = await response.json();
-    logger.success("Recently Played API", "✓ Cached recently played track");
-    return NextResponse.json(data);
+      if (!response.ok) {
+        const error = await response.json();
+        logger.error(
+          "Recently Played API",
+          `Error: ${response.status} - ${error.error?.message || "Unknown"}`,
+        );
+        return NextResponse.json(
+          {
+            error: "Failed to fetch recently played tracks",
+            details: error.error?.message || "Unknown error",
+          },
+          { status: response.status },
+        );
+      }
+
+      const data = await response.json();
+      logger.success("Recently Played API", "✓ Cached recently played track");
+      return NextResponse.json(data);
+    }
   } catch (err: any) {
     logger.error("Recently Played API", `Fatal error: ${err.message}`);
     return NextResponse.json(

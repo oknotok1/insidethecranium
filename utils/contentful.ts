@@ -8,7 +8,7 @@ import type { FeaturedMusicFields, FeaturedSong } from "@/types/contentful";
 import type { TracksResponse, TrackWithGenres } from "@/types/spotify";
 
 import { logger } from "./logger";
-import { extractSpotifyId, safeFetchSpotify } from "./spotify";
+import { extractSpotifyId } from "./spotify";
 
 // Constants
 const DEFAULT_ENTRY_ID = "6CiY2zbMl3CvJpY0FD2Wu1";
@@ -45,20 +45,26 @@ export const fetchCuratedTracks = async (
       return [];
     }
 
-    // Fetch track details from Spotify API
+    // Fetch track details from our API endpoint
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const tracks = await safeFetchSpotify<TracksResponse>(
+    const response = await fetch(
       `${baseUrl}/api/spotify/tracks?ids=${trackIds.join(",")}`,
       { next: { revalidate: false, tags: ["curated-tracks"] } },
-      "Curated tracks",
     );
 
-    if (tracks?.tracks) {
+    if (!response.ok) {
+      logger.error("Contentful", `Failed to fetch tracks: ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+
+    if (data?.tracks) {
       logger.success(
         "Contentful",
-        `Fetched ${tracks.tracks.length} curated tracks`,
+        `Fetched ${data.tracks.length} curated tracks`,
       );
-      return tracks.tracks;
+      return data.tracks;
     }
 
     return [];

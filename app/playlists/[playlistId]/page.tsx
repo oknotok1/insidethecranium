@@ -8,6 +8,7 @@ import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
 import { logger } from "@/utils/logger";
 import {
   decodeHtmlEntities,
+  fetchSpotifyWithRetry,
   getSpotifyAccessToken,
   SPOTIFY_API,
 } from "@/utils/spotify";
@@ -157,28 +158,30 @@ async function fetchPlaylistDetails(
 
     logger.log("Playlist Detail", `Fetching playlist: ${cleanPlaylistId}`);
 
-    // Use fetch with aggressive caching for static playlist data
-    const response = await fetch(
+    // Use centralized fetch with automatic 401 retry
+    const {
+      data,
+      error,
+      status,
+    } = await fetchSpotifyWithRetry<PlaylistDetails>(
       `${SPOTIFY_API.BASE_URL}/playlists/${cleanPlaylistId}`,
       {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        accessToken,
         next: {
           revalidate: false, // Cache indefinitely
           tags: ["playlists", `playlist:${cleanPlaylistId}`],
         },
       },
+      "Playlist Detail",
     );
 
-    if (!response.ok) {
-      const error: any = new Error("Failed to fetch playlist");
-      error.status = response.status;
-      logger.error("Playlist Detail", `Failed: ${response.status}`);
-      throw error;
+    if (!data || error) {
+      const err: any = new Error(error || "Failed to fetch playlist");
+      err.status = status || 500;
+      logger.error("Playlist Detail", `Failed: ${status}`);
+      throw err;
     }
 
-    const data = await response.json();
     logger.success(
       "Playlist Detail",
       `Fetched playlist with ${data.tracks.total} tracks`,

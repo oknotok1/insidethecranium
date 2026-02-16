@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { logger } from "@/utils/logger";
 import {
-  getFreshSpotifyAccessToken,
+  fetchSpotifyWithRetry,
   getSpotifyAccessToken,
   SPOTIFY_API,
 } from "@/utils/spotify";
@@ -36,50 +36,45 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Use native fetch for consistency
-    let response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      cache: "no-store", // Don't cache real-time data
-    });
-
-    // If 401 and we used a server token, retry with fresh token
-    if (response.status === 401 && isServerToken) {
-      logger.warn(
+    // Use centralized fetch with automatic retry (only for server tokens)
+    if (isServerToken) {
+      const { data, error, status } = await fetchSpotifyWithRetry(
+        url,
+        {
+          accessToken,
+          next: { revalidate: 0 }, // Don't cache real-time data
+        },
         "Currently Playing API",
-        "Token expired, fetching fresh token and retrying",
       );
-      try {
-        accessToken = await getFreshSpotifyAccessToken();
-        response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          cache: "no-store",
-        });
-      } catch (retryErr: any) {
-        logger.error(
-          "Currently Playing API",
-          `Retry failed: ${retryErr.message}`,
-        );
+
+      if (error) {
         return NextResponse.json(
-          { error: "Failed to refresh token" },
-          { status: 500 },
+          { error: "Failed to fetch currently playing" },
+          { status: status || 500 },
         );
       }
-    }
 
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(
-        { error: "Failed to fetch currently playing" },
-        { status: response.status },
-      );
-    }
+      return NextResponse.json(data);
+    } else {
+      // Client token - single fetch without retry
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        cache: "no-store",
+      });
 
-    const data = await response.json();
-    return NextResponse.json(data);
+      if (!response.ok) {
+        const error = await response.json();
+        return NextResponse.json(
+          { error: "Failed to fetch currently playing" },
+          { status: response.status },
+        );
+      }
+
+      const data = await response.json();
+      return NextResponse.json(data);
+    }
   } catch (err: any) {
     logger.error("Currently Playing API", err.message);
     return NextResponse.json(

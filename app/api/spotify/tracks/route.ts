@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { logger } from "@/utils/logger";
-import { shouldRetryRateLimit, waitForRetry } from "@/utils/rateLimitHandler";
-import { getFreshSpotifyAccessToken } from "@/utils/spotify";
+import { fetchSpotifyWithRetry } from "@/utils/spotify";
 
 // Cache tracks indefinitely (static content)
 export const revalidate = false;
@@ -37,99 +36,31 @@ export async function GET(request: NextRequest) {
       throw new Error("Failed to get access token");
     }
 
-    let { access_token } = await tokenResponse.json();
+    const { access_token } = await tokenResponse.json();
     logger.success("Tracks API", "Got access token");
 
-    // Fetch tracks from Spotify with retry logic for rate limiting and token expiration
-    let tracksData;
-    let retryCount = 0;
-    const maxRetries = 3;
-    let tokenRetried = false;
-
-    while (retryCount <= maxRetries) {
-      const tracksResponse = await fetch(
-        `https://api.spotify.com/v1/tracks?ids=${trackIds}`,
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-          next: {
-            revalidate: false, // Cache forever
-            tags: ["tracks", ...trackIds.split(",").map((id) => `track:${id}`)],
-          },
+    // Fetch tracks from Spotify with automatic 401 retry
+    const {
+      data: tracksData,
+      error,
+      status,
+    } = await fetchSpotifyWithRetry<{ tracks: any[] }>(
+      `https://api.spotify.com/v1/tracks?ids=${trackIds}`,
+      {
+        accessToken: access_token,
+        next: {
+          revalidate: false, // Cache forever
+          tags: ["tracks", ...trackIds.split(",").map((id) => `track:${id}`)],
         },
+      },
+      "Tracks API",
+    );
+
+    if (!tracksData || error) {
+      return NextResponse.json(
+        { error: error || "Failed to fetch tracks", tracks: [] },
+        { status: status || 500 },
       );
-
-      // Handle token expiration with retry (only retry once)
-      if (tracksResponse.status === 401 && !tokenRetried) {
-        logger.warn(
-          "Tracks API",
-          "Token expired, fetching fresh token and retrying",
-        );
-        try {
-          access_token = await getFreshSpotifyAccessToken();
-          tokenRetried = true;
-          continue; // Retry with fresh token
-        } catch (tokenError) {
-          logger.error("Tracks API", "Failed to refresh token");
-          return NextResponse.json(
-            { error: "Failed to refresh token", tracks: [] },
-            { status: 401 },
-          );
-        }
-      }
-
-      // Handle rate limiting with retry
-      if (tracksResponse.status === 429) {
-        const retryAfterHeader = tracksResponse.headers.get("retry-after");
-        const retryAfterSeconds = parseInt(retryAfterHeader || "5");
-
-        const result = shouldRetryRateLimit(
-          retryAfterSeconds,
-          retryCount,
-          maxRetries,
-        );
-
-        if (!result.shouldRetry) {
-          logger.error("Tracks API", result.message);
-          return NextResponse.json(
-            {
-              error: "Rate limited",
-              tracks: [],
-            },
-            { status: 429 },
-          );
-        }
-
-        logger.warn("Tracks API", result.message);
-        await waitForRetry(result.retryAfter);
-        retryCount++;
-        continue;
-      }
-
-      if (!tracksResponse.ok) {
-        // Try to parse error as JSON, fall back to text
-        let errorMessage = "Failed to fetch tracks";
-        try {
-          const error = await tracksResponse.json();
-          errorMessage = error.error?.message || errorMessage;
-        } catch {
-          errorMessage = await tracksResponse.text();
-        }
-
-        logger.error(
-          "Tracks API",
-          `Spotify API error: ${tracksResponse.status} - ${errorMessage}`,
-        );
-        return NextResponse.json(
-          { error: errorMessage, tracks: [] },
-          { status: tracksResponse.status },
-        );
-      }
-
-      // Success - break retry loop
-      tracksData = await tracksResponse.json();
-      break;
     }
 
     const validTracks = tracksData.tracks.filter(

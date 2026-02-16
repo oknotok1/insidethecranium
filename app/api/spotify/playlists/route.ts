@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import type { UserPlaylists } from "@/types/spotify";
+
 import { logger } from "@/utils/logger";
 import {
   decodeHtmlEntities,
-  getFreshSpotifyAccessToken,
+  fetchSpotifyWithRetry,
   getSpotifyAccessToken,
   SPOTIFY_API,
 } from "@/utils/spotify";
@@ -23,51 +25,31 @@ export async function GET(request: NextRequest) {
   );
 
   try {
-    let accessToken = await getSpotifyAccessToken();
+    const accessToken = await getSpotifyAccessToken();
 
-    // Get playlists with pagination using native fetch
+    // Get playlists with pagination using centralized fetch with retry
     const fetchStart = Date.now();
-    let response = await fetch(
+    const {
+      data: playlists,
+      error,
+      status,
+    } = await fetchSpotifyWithRetry<UserPlaylists>(
       `${SPOTIFY_API.BASE_URL}/users/${SPOTIFY_API.USER_ID}/playlists?offset=${offset}&limit=${limit}`,
       {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        accessToken,
         next: {
           revalidate: 86400, // Cache for 24 hours
           tags: ["playlists", `user-playlists:${SPOTIFY_API.USER_ID}`],
         },
       },
+      "Playlists API",
     );
-
-    // If 401, retry with fresh token
-    if (response.status === 401) {
-      logger.warn(
-        "Playlists API",
-        "Token expired, fetching fresh token and retrying",
-      );
-      accessToken = await getFreshSpotifyAccessToken();
-      response = await fetch(
-        `${SPOTIFY_API.BASE_URL}/users/${SPOTIFY_API.USER_ID}/playlists?offset=${offset}&limit=${limit}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          next: {
-            revalidate: 86400,
-            tags: ["playlists", `user-playlists:${SPOTIFY_API.USER_ID}`],
-          },
-        },
-      );
-    }
 
     const fetchTime = Date.now() - fetchStart;
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    if (!playlists || error) {
+      throw new Error(error || `HTTP ${status}`);
     }
-
-    const playlists = await response.json();
 
     // Indicate if cached (< 50ms likely from cache)
     const source = fetchTime < 50 ? "[CACHE]" : "[SPOTIFY API]";

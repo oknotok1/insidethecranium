@@ -1,10 +1,11 @@
 "use client";
 
-import { Clock, Key, LogOut, RefreshCw, Trash2, X } from "lucide-react";
+import { Clock, Key, LogOut, RefreshCw, Trash2, X, Zap } from "lucide-react";
 import type { Session } from "next-auth";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import Link from "next/link";
 
@@ -19,6 +20,7 @@ interface RevalidationEvent {
 export default function AdminPage() {
   const { data: session, status } = useSession();
   const [refreshing, setRefreshing] = useState<string | null>(null);
+  const [isRevalidating, setIsRevalidating] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<string | null>(null);
   const [lastRefreshTime, setLastRefreshTime] = useState<string | null>(null);
   const [buildTime, setBuildTime] = useState<string | null>(null);
@@ -194,6 +196,46 @@ export default function AdminPage() {
       setRefreshError("Network error purging cache");
     } finally {
       setRefreshing(null);
+    }
+  };
+
+  const handleRevalidate = async () => {
+    if (isRevalidating) return;
+
+    setIsRevalidating(true);
+    const revalidateToast = toast.loading("Revalidating pages...");
+
+    try {
+      const response = await fetch("/api/admin/revalidate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          paths: ["/", "/concerts", "/playlists"],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Revalidation failed");
+      }
+
+      toast.success(
+        `Successfully revalidated ${data.revalidated.length} page(s)`,
+        { id: revalidateToast }
+      );
+      
+      // Refresh the page to show new data
+      window.location.reload();
+    } catch (error) {
+      toast.error(
+        `Revalidation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        { id: revalidateToast }
+      );
+    } finally {
+      setIsRevalidating(false);
     }
   };
 

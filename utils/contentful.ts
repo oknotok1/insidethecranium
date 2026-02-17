@@ -5,8 +5,6 @@
 import * as contentful from "contentful";
 import type { Entry } from "contentful";
 
-import { cache } from "react";
-
 import type {
   Concert,
   ConcertDetail,
@@ -198,12 +196,11 @@ const transformConcertToDetail = (
  * @param order - Order of results (default: '-fields.eventDate' for newest first)
  * @returns Array of concert list items
  */
-export const fetchConcerts = cache(
-  async (
-    limit: number = 100,
-    order: string = "-fields.eventDate",
-  ): Promise<ConcertListItem[]> => {
-    try {
+export const fetchConcerts = async (
+  limit: number = 100,
+  order: string = "-fields.eventDate",
+): Promise<ConcertListItem[]> => {
+  try {
       const client = getContentfulClient();
 
       // First, try fetching ALL concerts without published filter to debug
@@ -241,8 +238,7 @@ export const fetchConcerts = cache(
       console.error("Contentful Error Details:", error);
       return [];
     }
-  },
-);
+};
 
 /**
  * Fetches all published concerts with full details including media
@@ -250,12 +246,11 @@ export const fetchConcerts = cache(
  * @param order - Order of results (default: '-fields.eventDate' for newest first)
  * @returns Array of detailed concerts with gallery and video data
  */
-export const fetchConcertsDetailed = cache(
-  async (
-    limit: number = 100,
-    order: string = "-fields.eventDate",
-  ): Promise<ConcertDetail[]> => {
-    try {
+export const fetchConcertsDetailed = async (
+  limit: number = 100,
+  order: string = "-fields.eventDate",
+): Promise<ConcertDetail[]> => {
+  try {
       const client = getContentfulClient();
 
       const response = await client.getEntries({
@@ -290,8 +285,7 @@ export const fetchConcertsDetailed = cache(
       console.error("Contentful Error Details:", error);
       return [];
     }
-  },
-);
+};
 
 /**
  * Fetches a single concert by slug
@@ -299,8 +293,9 @@ export const fetchConcertsDetailed = cache(
  * @param slug - The concert slug
  * @returns Concert detail or null if not found
  */
-export const fetchConcertBySlug = cache(
-  async (slug: string): Promise<ConcertDetail | null> => {
+export async function fetchConcertBySlug(
+  slug: string
+): Promise<ConcertDetail | null> {
     try {
       const client = getContentfulClient();
 
@@ -337,8 +332,7 @@ export const fetchConcertBySlug = cache(
       logger.error("Contentful", `Failed to fetch concert by slug: ${message}`);
       return null;
     }
-  },
-);
+}
 
 /**
  * Fetches all concerts (including unpublished) for admin use

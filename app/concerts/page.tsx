@@ -14,8 +14,8 @@ export const metadata = {
   description: "Concert memories and upcoming shows",
 };
 
-// Revalidate every 24 hours or when webhook triggers
-export const revalidate = 86400;
+// Only revalidate on webhook trigger, not on a schedule
+export const revalidate = false;
 
 export default async function ConcertsPage() {
   // Fetch all concerts (list items for counting and navigation)

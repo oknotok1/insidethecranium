@@ -28,6 +28,15 @@ Personal project demonstrating modern web development practices with server-side
 - Artist metadata aggregation from multiple API sources
 - Smooth client-side polling with SWR (stale-while-revalidate)
 
+### 🎤 Concert Archive & Management
+
+- **Public Concert Pages**: Chronological archive of past shows with media galleries
+- **Contentful CMS Integration**: Headless CMS for concert content with webhook-driven updates
+- **Rich Media Support**: Image galleries and video embeds with full-screen lightbox viewer
+- **Spotify Artist Integration**: Automatic artist metadata enrichment with genre tags
+- **Markdown Reflections**: Detailed writeups with proper markdown rendering
+- **Admin Content Management**: Full CRUD operations with media upload and compression
+
 ### 🎮 Interactive Music Player
 
 #### Desktop Experience
@@ -53,12 +62,13 @@ Personal project demonstrating modern web development practices with server-side
 ### ⚡ Performance Optimizations
 
 - **Aggressive Server-Side Caching**: Next.js Data Cache with indefinite TTL for static content
-- **Smart Revalidation**: Tag-based cache invalidation with on-demand purging
+- **Webhook-Driven Revalidation**: Pages refresh only when Contentful webhooks fire (no time-based revalidation)
+- **Manual Cache Control**: Admin dashboard button for on-demand page revalidation
+- **Smart Revalidation**: Tag-based cache invalidation with on-demand purging for Spotify data
 - **Rate Limit Handling**:
   - Exponential backoff with capped retry delays
   - Fail-fast strategy for deep rate limits (>60s)
   - Sequential batch processing to prevent concurrent API hammering
-- **ISR (Incremental Static Regeneration)**: 24-hour revalidation for semi-static pages
 
 ### 🛠️ Engineering Highlights
 
@@ -72,13 +82,21 @@ Personal project demonstrating modern web development practices with server-side
 #### Caching Strategy
 
 ```
-Static Data (Tracks/Artists/Genres) → Cache: Indefinite
-Access Tokens                       → Cache: 50 minutes
-User Playlists                      → Cache: 24 hours
-Now Playing                         → Cache: None (real-time SWR polling)
-Recently Played                     → Cache: Indefinite
-Curated Tracks                      → Cache: Indefinite
-YouTube Video IDs                   → Cache: 24 hours (server) + In-memory (client)
+Spotify Data:
+  Static Data (Tracks/Artists/Genres) → Cache: Indefinite (tag-based invalidation)
+  Access Tokens                       → Cache: 50 minutes
+  User Playlists                      → Cache: 24 hours
+  Now Playing                         → Cache: None (real-time SWR polling)
+  Recently Played                     → Cache: Indefinite
+  Curated Tracks                      → Cache: Indefinite
+
+Content (Contentful CMS):
+  Concert Pages                       → Cache: Indefinite (webhook-triggered revalidation)
+  Homepage                            → Cache: Indefinite (webhook-triggered revalidation)
+  Manual Override                     → Admin "Revalidate Pages" button
+
+Other:
+  YouTube Video IDs                   → Cache: 24 hours (server) + In-memory (client)
 ```
 
 **Multi-Layer YouTube Caching**:
@@ -88,14 +106,35 @@ YouTube Video IDs                   → Cache: 24 hours (server) + In-memory (cl
 
 #### Admin Dashboard
 
-A secure management interface for maintaining cache freshness:
+A secure management interface for cache and content management:
 
-- **Cache Revalidation System**: Tag-specific and bulk cache invalidation with real-time feedback
+**Cache Management:**
+- **Spotify Cache Revalidation**: Tag-specific and bulk cache invalidation with real-time feedback
+- **Page Revalidation**: Manual trigger for Contentful-powered pages (concerts, homepage)
 - **Refresh Tracking**: Individual timestamps per cache tag showing last refresh time
 - **Revalidation History**: Server-side activity log of cache management operations (last 100 events)
 - **Build Information**: Deployment timestamp visibility for cache lifecycle tracking
-- **Spotify OAuth Helper**: Utilities for managing Spotify API token refresh
-- **Responsive Design**: Mobile-optimized interface with hover states and smooth interactions
+
+**Content Management (Contentful CMS):**
+- **Concert CRUD**: Full create, read, update, delete operations for concert entries
+- **Media Management**: Upload images and videos with optional compression
+  - Client-side compression using browser-image-compression and FFmpeg.wasm
+  - Video conversion to MP4 (H.264) for optimal Contentful compatibility
+  - Drag-to-reorder media galleries
+- **Publish/Unpublish Toggle**: Control concert visibility with live status indicators
+- **Rich Text Support**: Markdown editor for concert reflections and descriptions
+- **Real-time Webhook Integration**: Automatic cache invalidation on content changes
+- **Detailed Error Modals**: Structured error display with copy-to-clipboard functionality
+
+**OAuth & Authentication:**
+- Google OAuth via NextAuth for admin access
+- Spotify OAuth helper utilities for managing API token refresh
+- CMA token expiration reminders with helpful UI prompts
+
+**Design:**
+- Shadcn UI sidebar navigation with collapsible sections
+- Mobile-optimized interface with hover states and smooth interactions
+- Toast notifications for all actions (success/error states)
 
 ### 🎨 UI/UX Features
 
@@ -113,6 +152,28 @@ A secure management interface for maintaining cache freshness:
 ### Why Server Components?
 
 Moved data fetching to RSC to leverage Next.js Data Cache and reduce client bundle size. This enabled better cache control and eliminated the need for state management libraries.
+
+### Webhook-Only Revalidation Strategy
+
+Replaced time-based ISR with webhook-driven revalidation for Contentful pages:
+
+**Why?**
+- React's `cache()` wrapper was interfering with `revalidatePath()`
+- Time-based revalidation caused stale data issues between webhook triggers
+- Manual control needed for instant updates during content management
+
+**How It Works:**
+1. Pages set `revalidate = false` (cache indefinitely)
+2. Contentful webhook fires on content publish/update
+3. `revalidatePath()` clears Next.js cache for affected routes
+4. Next request fetches fresh data
+5. Manual override available via admin "Revalidate Pages" button
+
+**Benefits:**
+- Zero stale data issues
+- Instant updates on content changes
+- Reduced unnecessary API calls
+- Full cache control for admins
 
 ### Rate Limit Mitigation
 

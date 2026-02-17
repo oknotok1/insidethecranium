@@ -14,8 +14,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-// Revalidate every 24 hours or when webhook triggers
-export const revalidate = 86400;
+// Only revalidate on webhook trigger, not on a schedule
+export const revalidate = false;
 
 // Generate static params for published concerts at build time
 export const dynamicParams = true;

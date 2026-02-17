@@ -10,7 +10,8 @@ import { fetchConcertsDetailed, fetchCuratedTracks } from "@/utils/contentful";
 import { enrichConcertsWithArtistImages } from "@/utils/spotify-enrichment";
 import { fetchPlaylists } from "@/utils/spotify";
 
-export const revalidate = 86400; // 24 hours
+// Only revalidate on webhook trigger, not on a schedule
+export const revalidate = false;
 
 const getData = cache(async () => {
   // Fetch playlists, curated tracks, and concerts in parallel

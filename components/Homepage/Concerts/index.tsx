@@ -59,7 +59,7 @@ const ConcertCard = ({ concert }: { concert: EnrichedConcert }) => {
   return (
     <Link
       href={`/concerts/${concert.slug}`}
-      className="group block h-full overflow-hidden rounded-lg bg-gray-100 transition-all duration-300 hover:bg-gray-200 dark:bg-white/6 dark:hover:bg-white/11"
+      className="group block h-full overflow-hidden rounded-lg bg-gray-50 transition-all duration-300 hover:bg-gray-100 dark:bg-white/6 dark:hover:bg-white/11"
     >
       {/* Cover Image */}
       <div className="relative aspect-2/3 w-full overflow-hidden bg-gray-100 dark:bg-white/5">
@@ -84,10 +84,15 @@ const ConcertCard = ({ concert }: { concert: EnrichedConcert }) => {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="mb-3 line-clamp-2 text-base leading-tight font-medium text-gray-900 sm:text-lg dark:text-white">
+        <h3 className="mb-1 line-clamp-2 text-base leading-tight font-medium text-gray-900 sm:text-lg dark:text-white">
           {concert.artistBand}
         </h3>
-        <div className="flex flex-col space-y-1.5 text-xs text-gray-500 dark:text-gray-500">
+        {concert.subtitle && (
+          <p className="mb-3 line-clamp-1 text-xs text-gray-600 dark:text-gray-400">
+            {concert.subtitle}
+          </p>
+        )}
+        <div className={`flex flex-col space-y-1.5 text-xs text-gray-500 dark:text-gray-500 ${concert.subtitle ? '' : 'mt-3'}`}>
           <div className="flex items-center space-x-1.5">
             <Calendar className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">{formattedDate}</span>

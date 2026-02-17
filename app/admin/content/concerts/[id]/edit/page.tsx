@@ -36,38 +36,37 @@ export default async function EditConcertPage({ params }: PageProps) {
   }
 
   return (
-    <main className="flex flex-col">
-      <section className="py-12 sm:py-16 lg:py-20">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <Link
-              href="/admin/content/concerts"
-              className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24">
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Back to Concerts
-            </Link>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl">
-              Edit Concert
-            </h1>
-            <p className="mt-2 text-sm text-gray-600 sm:text-base dark:text-gray-400">
-              Update concert information and media
-            </p>
-          </div>
-
-          {/* Edit Form */}
-          <ConcertEditForm concert={concert} />
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        {/* Header */}
+        <div className="mb-8 sm:mb-12">
+          <Link
+            href="/admin/content/concerts"
+            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 sm:mb-8 dark:text-gray-400 dark:hover:text-white"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24">
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Concerts
+          </Link>
+          
+          <h1 className="mb-4 text-3xl sm:mb-6 sm:text-4xl md:text-5xl">
+            Edit Concert
+          </h1>
+          <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+            Update concert information and media
+          </p>
         </div>
-      </section>
+
+        {/* Edit Form */}
+        <ConcertEditForm concert={concert} />
+      </div>
     </main>
   );
 }

@@ -44,8 +44,8 @@ export default async function Home() {
       <HeroSection />
       <CuratedSongs tracks={curatedTracks} />
       <Playlists playlists={playlists} />
-      <Sites />
       <Concerts concerts={concerts} />
+      <Sites />
     </main>
   );
 }

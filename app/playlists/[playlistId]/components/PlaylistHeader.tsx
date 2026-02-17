@@ -18,16 +18,8 @@ export default function PlaylistHeader({
   totalDuration,
 }: PlaylistHeaderProps) {
   return (
-    <section className="py-4 sm:py-6">
+    <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Link
-          href="/playlists"
-          className="mb-4 inline-flex items-center space-x-2 text-sm text-gray-600 transition-colors hover:text-gray-900 sm:mb-5 dark:text-gray-400 dark:hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Playlists</span>
-        </Link>
-
         <div className="flex flex-col gap-5 sm:gap-6 md:flex-row">
           {/* Playlist Image */}
           <div className="relative mx-auto h-48 w-48 shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-56 sm:w-56 md:mx-0 md:h-64 md:w-64 dark:bg-white/5">

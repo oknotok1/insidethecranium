@@ -6,12 +6,15 @@ const METADATA_SKELETON_COUNT = 4;
 
 export default function Loading() {
   return (
-    <main className="flex flex-col">
+    <main className="flex min-h-screen flex-col">
+      {/* Back Link Skeleton */}
+      <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8">
+        <div className="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
+      </div>
+
       {/* Header Skeleton */}
-      <section className="py-4 sm:py-6">
+      <section className="py-6 sm:py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Back Button Skeleton */}
-          <div className="mb-4 h-5 w-32 animate-pulse rounded bg-gray-200 sm:mb-5 dark:bg-white/10" />
 
           <div className="flex flex-col gap-5 sm:gap-6 md:flex-row">
             {/* Image Skeleton */}

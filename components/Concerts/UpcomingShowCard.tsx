@@ -28,7 +28,7 @@ export function UpcomingShowCard({ show }: UpcomingShowCardProps) {
 
   return (
     <div
-      className="group rounded-lg bg-gray-100 p-4 transition-all duration-300 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10"
+      className="group rounded-lg bg-gray-50 p-4 transition-all duration-300 hover:bg-gray-100 dark:bg-white/6 dark:hover:bg-white/11"
     >
       <div className="mb-4 flex gap-4">
         {/* Artist Image/Icon */}
@@ -57,7 +57,7 @@ export function UpcomingShowCard({ show }: UpcomingShowCardProps) {
 
           {/* Status Badge */}
           <div className="absolute -bottom-1 -right-1">
-            <div className={`flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-100 shadow-lg dark:border-gray-900 ${
+            <div className={`flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-50 shadow-lg transition-colors group-hover:border-gray-100 dark:border-gray-900 ${
               isConfirmed ? 'bg-green-500' : 'bg-yellow-500'
             }`}>
               {isConfirmed ? (
@@ -213,35 +213,35 @@ export function UpcomingShowCard({ show }: UpcomingShowCardProps) {
       </div>
 
       {/* Card Label */}
-      <div className="border-t border-gray-200 pt-3 dark:border-white/10">
+      <div className="border-t border-gray-200 pt-3 transition-colors group-hover:border-gray-300 dark:border-white/10 dark:group-hover:border-white/15">
         {show.ticketLink ? (
           <a
             href={show.ticketLink}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium ${
+            className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
               isConfirmed
-                ? 'bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white'
-                : 'bg-gray-200 text-gray-900 dark:bg-white/10 dark:text-white'
+                ? 'bg-linear-to-r from-[#3d38f5] to-[#8b87ff] text-white group-hover:from-[#2d28e5] group-hover:to-[#7b77ef] hover:bg-[#3d38f5]!'
+                : 'bg-gray-100 text-gray-900 group-hover:bg-gray-200 hover:bg-[#3d38f5]! hover:text-white! dark:bg-white/10 dark:text-white dark:group-hover:bg-white/15 dark:hover:bg-[#3d38f5]!'
             }`}
           >
-            <Ticket className="h-4 w-4" />
-            <span>{isConfirmed ? 'Get Tickets' : 'View Tickets'}</span>
+            <Ticket className="h-4 w-4 shrink-0" />
+            <span className="leading-none">{isConfirmed ? 'Get Tickets' : 'View Tickets'}</span>
           </a>
         ) : show.organizerUrl ? (
           <a
             href={show.organizerUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-200 px-4 py-2.5 text-sm font-medium text-gray-900 dark:bg-white/10 dark:text-white"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors group-hover:bg-gray-200 hover:bg-[#3d38f5]! hover:text-white! dark:bg-white/10 dark:text-white dark:group-hover:bg-white/15 dark:hover:bg-[#3d38f5]!"
           >
-            <ExternalLink className="h-4 w-4" />
-            <span>Event Info</span>
+            <ExternalLink className="h-4 w-4 shrink-0" />
+            <span className="leading-none">Event Info</span>
           </a>
         ) : (
-          <div className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-200 px-4 py-2.5 text-sm font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
-            <Clock className="h-4 w-4" />
-            <span>Tickets Coming Soon</span>
+          <div className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
+            <Clock className="h-4 w-4 shrink-0" />
+            <span className="leading-none">Tickets Coming Soon</span>
           </div>
         )}
       </div>

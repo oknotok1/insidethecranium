@@ -46,61 +46,72 @@ export default async function ConcertDetailPage({ params }: PageProps) {
   const enrichedConcert = await enrichConcertWithArtistUrl(concert);
 
   return (
-    <div className="mx-auto min-h-screen max-w-7xl pb-12 pt-20 sm:pb-20 sm:pt-24">
-      {/* Header */}
-      <div className="mb-8 px-4 sm:mb-12 sm:px-6 lg:px-8">
+    <main className="flex min-h-screen flex-col">
+      {/* Back Link */}
+      <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8">
         <Link
           href="/concerts"
-          className="mb-6 inline-flex items-center space-x-2 text-sm text-gray-600 transition-colors hover:text-gray-900 sm:mb-8 dark:text-gray-400 dark:hover:text-white"
+          className="inline-flex items-center space-x-2 text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Concerts</span>
         </Link>
+      </div>
 
-        <div className="space-y-4 sm:space-y-6">
-          <h1 className="text-3xl leading-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl dark:text-white">
-            {enrichedConcert.title}
-          </h1>
+      {/* Header Section */}
+      <section className="py-6 sm:py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="space-y-4 sm:space-y-6">
+            <h1 className="text-3xl leading-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl dark:text-white">
+              {enrichedConcert.title}
+            </h1>
 
-          {enrichedConcert.subtitle && (
-            <p className="text-lg text-gray-600 sm:text-xl dark:text-gray-400">{enrichedConcert.subtitle}</p>
-          )}
+            {enrichedConcert.subtitle && (
+              <p className="text-lg text-gray-600 sm:text-xl dark:text-gray-400">{enrichedConcert.subtitle}</p>
+            )}
 
-          <ConcertDetailsStrip
-            artistBand={enrichedConcert.artistBand}
-            artistSpotifyUrl={enrichedConcert.artistSpotifyUrl}
-            eventDate={enrichedConcert.eventDate}
-            venueName={enrichedConcert.venueName}
-            venueLocation={enrichedConcert.venueLocation}
-            venueLink={enrichedConcert.venueLink}
-            setlistFmLink={enrichedConcert.setlistFmLink}
-            ticketLink={enrichedConcert.ticketLink}
-            genres={enrichedConcert.genres}
-          />
+            <ConcertDetailsStrip
+              artistBand={enrichedConcert.artistBand}
+              artistSpotifyUrl={enrichedConcert.artistSpotifyUrl}
+              eventDate={enrichedConcert.eventDate}
+              venueName={enrichedConcert.venueName}
+              venueLocation={enrichedConcert.venueLocation}
+              venueLink={enrichedConcert.venueLink}
+              setlistFmLink={enrichedConcert.setlistFmLink}
+              ticketLink={enrichedConcert.ticketLink}
+              genres={enrichedConcert.genres}
+            />
+          </div>
+        </div>
+      </section>
 
-          {/* Reflection */}
-          {concert.reflection && (
+      {/* Reflection Section */}
+      {concert.reflection && (
+        <section className="py-6 sm:py-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl rounded-lg bg-gray-100 p-4 sm:p-6 dark:bg-white/5">
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700 sm:text-base dark:text-gray-300">
                 {concert.reflection}
               </p>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Media Gallery */}
-      {(concert.galleryImages.length > 0 || concert.videos.length > 0) && (
-        <div className="px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-4 text-xl text-gray-900 sm:mb-6 sm:text-2xl dark:text-white">Photos & Videos</h2>
-          <ConcertMediaGrid
-            concertSlug={concert.slug}
-            concertTitle={concert.title}
-            galleryImages={concert.galleryImages}
-            videos={concert.videos}
-          />
-        </div>
+          </div>
+        </section>
       )}
-    </div>
+
+      {/* Media Gallery Section */}
+      {(concert.galleryImages.length > 0 || concert.videos.length > 0) && (
+        <section className="py-6 sm:py-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 className="mb-4 text-xl text-gray-900 sm:mb-6 sm:text-2xl dark:text-white">Photos & Videos</h2>
+            <ConcertMediaGrid
+              concertSlug={concert.slug}
+              concertTitle={concert.title}
+              galleryImages={concert.galleryImages}
+              videos={concert.videos}
+            />
+          </div>
+        </section>
+      )}
+    </main>
   );
 }

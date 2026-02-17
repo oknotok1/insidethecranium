@@ -247,6 +247,67 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
 
 ### Layout & Spacing
 
+#### Page Padding Standards
+
+All pages MUST use consistent vertical padding to maintain a uniform user experience.
+
+**Standard Page Padding** (`py-8 sm:py-12 lg:py-14`):
+- Public list pages (`/concerts`, `/playlists`, `/sites`, etc.)
+- Admin landing page (no back link)
+- All loading skeletons for these pages
+
+**Detail Pages - Sectional Layout**:
+- **Main container**: `<main className="flex min-h-screen flex-col">`
+- **Back link container**: `<div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8">` (no bottom padding)
+- **All sections** (header and content): `<section className="py-6 sm:py-8">`
+- Each section wraps content: `<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">`
+- Examples: `/concerts/[slug]`, `/playlists/[playlistId]`
+
+**Admin Pages with Back Links**: `py-12 sm:py-16 lg:py-20`
+- Back links remain inside main container with `mb-6 sm:mb-8`
+- Examples: `/admin/content/concerts`, `/admin/content/concerts/[id]/edit`
+
+**Implementation Examples**:
+
+```tsx
+// ✅ List pages & admin landing
+<main className="min-h-[calc(100vh-4rem)]">
+  <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
+    {/* Page content */}
+  </div>
+</main>
+
+// ✅ Detail pages with sectional layout
+<main className="flex min-h-screen flex-col">
+  {/* Back Link - Outside sections */}
+  <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8">
+    <Link href="/parent">Back to Parent</Link>
+  </div>
+
+  {/* Header Section */}
+  <section className="py-6 sm:py-8">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Header content */}
+    </div>
+  </section>
+
+  {/* Content Sections */}
+  <section className="py-6 sm:py-8">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Section content */}
+    </div>
+  </section>
+</main>
+
+// ✅ Admin pages with back link
+<main className="min-h-screen">
+  <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+    <Link href="/admin" className="mb-6 sm:mb-8">Back to Admin</Link>
+    {/* Page content */}
+  </div>
+</main>
+```
+
 1. **Section Spacing**: Use consistent spacing for homepage sections
 
    ```tsx
@@ -261,11 +322,11 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
 
 3. **Background Patterns**:
    - **Alternating backgrounds**: Currently commented out in `styles/tailwind.css` - clean, uniform background throughout
-   - **Card backgrounds**: `bg-gray-100 dark:bg-white/5` at rest, becomes `bg-gray-200 dark:bg-white/10` on hover for subtle feedback
+   - **Card backgrounds**: `bg-gray-50 dark:bg-white/6` at rest, becomes `bg-gray-100 dark:bg-white/11` on hover for subtle feedback
    - **Card borders & shadows**: Removed for cleaner, modern look - background contrast provides sufficient visual separation
    - **Card hover effects**: Background color change only (no scale animation)
-   - **Internal borders/dividers**: Use `border-gray-200 group-hover:border-gray-300 dark:border-white/10 dark:group-hover:border-white/15` to maintain visibility on card hover
-   - **Chips/badges inside cards**: Use `bg-gray-200 group-hover:bg-gray-300 dark:bg-white/5 dark:group-hover:bg-white/10` to maintain contrast on card hover
+   - **Internal borders/dividers**: Use `border-gray-100 group-hover:border-gray-200 dark:border-white/10 dark:group-hover:border-white/20` to maintain visibility on card hover
+   - **Buttons inside cards**: Use `bg-gray-100 group-hover:bg-gray-200 dark:bg-white/10 dark:group-hover:bg-white/15` to maintain contrast on card hover
 
 4. **Mobile Carousels**: Homepage sections use horizontal scrolling carousels on mobile (< lg breakpoint)
 
@@ -348,11 +409,11 @@ You are working on "Inside The Cranium", a Next.js music showcase website that i
 
    - **DO NOT** manually apply card styling - use the Card component
    - **Border Radius**: `rounded-lg` (handled by Card component)
-   - **Background**: `bg-gray-100 dark:bg-white/5` at rest → `hover:bg-gray-200 dark:hover:bg-white/10`
+   - **Background**: `bg-gray-50 dark:bg-white/6` at rest → `hover:bg-gray-100 dark:hover:bg-white/11`
    - **Borders & Shadows**: Removed for clean, modern aesthetic - background contrast provides visual separation
    - **Hover Effects**: Background color change only (no scale, no shadow change)
    - **Transitions**: `transition-all duration-300` for smooth animations
-   - **Image Hover**: All card images should use `group-hover:scale-102 transition-transform duration-300`
+   - **Image Hover**: All card images should use `group-hover:scale-105 transition-transform duration-300`
    - **Grid Layout**: Use `items-stretch` in carousels or wrapper `flex` to ensure cards in same row match height
    - **Legacy**: Old design saved in `components/common/LegacyPlaylistCard.tsx`
 

@@ -35,7 +35,7 @@ export default function LegacyPlaylistCard({
   return (
     <Link
       href={playlistUrl}
-      className="group flex h-full flex-col self-start overflow-hidden rounded-lg bg-gray-100 transition-colors hover:bg-gray-200 dark:bg-white/6 dark:hover:bg-white/11"
+      className="group flex h-full flex-col self-start overflow-hidden rounded-lg bg-gray-50 transition-colors hover:bg-gray-100 dark:bg-white/6 dark:hover:bg-white/11"
     >
       <div
         className="relative aspect-square overflow-hidden"

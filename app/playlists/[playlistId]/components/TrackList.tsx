@@ -80,7 +80,7 @@ export default function TrackList({ tracks, artistMap }: TrackListProps) {
                     handlePlayClick(e, track, trackGenres);
                   }
                 }}
-                className="group relative flex min-h-[72px] cursor-pointer items-center space-x-2 rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:min-h-[80px] sm:space-x-4 sm:p-4 dark:bg-white/5 dark:hover:bg-white/10"
+                className="group relative flex min-h-[72px] cursor-pointer items-center space-x-2 rounded-lg bg-gray-50 p-2 transition-colors hover:bg-gray-100 sm:min-h-[80px] sm:space-x-4 sm:p-4 dark:bg-white/5 dark:hover:bg-white/10"
               >
                 {/* Track Index */}
                 <div

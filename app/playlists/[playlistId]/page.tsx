@@ -1,6 +1,8 @@
 import { cache } from "react";
 
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import PlaylistArtists from "@/components/Playlists/PlaylistArtists";
 import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
@@ -332,7 +334,18 @@ export default async function PlaylistDetailPage({
 
   // Render UI
   return (
-    <main className="flex flex-col">
+    <main className="flex min-h-screen flex-col">
+      {/* Back Link */}
+      <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8">
+        <Link
+          href="/playlists"
+          className="inline-flex items-center space-x-2 text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Playlists</span>
+        </Link>
+      </div>
+
       <PlaylistHeader
         playlist={playlist}
         decodedDescription={decodedDescription}

@@ -66,7 +66,7 @@ export default function PlaylistGenres({
         </div>
         {genreStats.length > INITIAL_GENRES_SHOWN && (
           <button
-            className="mt-3 rounded-lg bg-gray-100 px-3 py-2 text-xs text-gray-900 transition-colors hover:bg-gray-200 sm:mt-4 sm:px-4 sm:text-sm dark:bg-white/6 dark:text-white dark:hover:bg-white/11"
+            className="mt-3 rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-900 transition-colors hover:bg-gray-100 sm:mt-4 sm:px-4 sm:text-sm dark:bg-white/6 dark:text-white dark:hover:bg-white/11"
             onClick={() => setShowAllGenres(!showAllGenres)}
           >
             {showAllGenres ? "Show Less" : "Show More"}
@@ -99,7 +99,7 @@ const GenreItem = ({
         className={`group relative w-full cursor-pointer overflow-hidden rounded-lg px-3 py-2.5 text-left text-sm transition-colors sm:px-4 sm:py-3 sm:text-base ${
           isExpanded
             ? "bg-[#3d38f5] text-white"
-            : "bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-white/6 dark:text-white dark:hover:bg-white/11"
+            : "bg-gray-50 text-gray-900 hover:bg-gray-100 dark:bg-white/6 dark:text-white dark:hover:bg-white/11"
         }`}
         onClick={onToggle}
       >
@@ -191,7 +191,7 @@ const TrackCard = ({ track }: { track: Track }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="group relative flex cursor-pointer items-center space-x-2 rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:space-x-3 sm:p-3 dark:bg-white/6 dark:hover:bg-white/11"
+      className="group relative flex cursor-pointer items-center space-x-2 rounded-lg bg-gray-50 p-2 transition-colors hover:bg-gray-100 sm:space-x-3 sm:p-3 dark:bg-white/6 dark:hover:bg-white/11"
     >
       {/* Album Art with Play Button */}
       <div className="group/artwork relative h-10 w-10 shrink-0 overflow-hidden rounded bg-gray-200 sm:h-12 sm:w-12 dark:bg-white/8">

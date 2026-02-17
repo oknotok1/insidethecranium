@@ -6,7 +6,7 @@ const SKELETON_COUNT = 20;
 export default function Loading() {
   return (
     <main className="min-h-[calc(100vh-4rem)]">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
         {/* Header Skeleton */}
         <div className="mb-8 sm:mb-12">
           <div className="mb-4 h-10 w-64 animate-pulse rounded bg-gray-200 sm:mb-6 sm:h-12 dark:bg-white/10" />

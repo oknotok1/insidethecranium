@@ -47,7 +47,6 @@ async function refreshAccessToken() {
     );
   }
 
-  lastTokenFetch = now;
   logger.log("Token API", "Refreshing access token");
 
   try {
@@ -57,6 +56,9 @@ async function refreshAccessToken() {
     }
 
     const accessToken = await getSpotifyAccessToken();
+    
+    // Only update timestamp after successful fetch
+    lastTokenFetch = now;
     consecutiveFailures = 0; // Reset on success
     logger.success("Token API", "Token refreshed successfully");
     return NextResponse.json({ access_token: accessToken });

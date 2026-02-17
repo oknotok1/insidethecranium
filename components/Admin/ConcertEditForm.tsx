@@ -149,21 +149,21 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
         error={error}
       />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
 
       <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
           Basic Information
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Title */}
           <div>
             <label
               htmlFor="title"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
-              Title *
+              Title <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -172,7 +172,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
             />
           </div>
 
@@ -180,7 +180,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="subtitle"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Subtitle
             </label>
@@ -190,7 +190,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               name="subtitle"
               value={formData.subtitle}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
             />
           </div>
 
@@ -198,9 +198,9 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="artistBand"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
-              Artist/Band *
+              Artist/Band <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -209,7 +209,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.artistBand}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
             />
           </div>
 
@@ -217,9 +217,10 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="genres"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
-              Genres (comma-separated)
+              Genres
+              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(comma-separated)</span>
             </label>
             <input
               type="text"
@@ -228,7 +229,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.genres}
               onChange={handleChange}
               placeholder="indie pop, dream pop, electronic"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
         </div>
@@ -240,14 +241,14 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           Venue & Event Details
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Venue Name */}
           <div>
             <label
               htmlFor="venueName"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
-              Venue Name *
+              Venue Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -256,7 +257,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.venueName}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
             />
           </div>
 
@@ -264,7 +265,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="venueLocation"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Venue Location
             </label>
@@ -275,7 +276,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.venueLocation}
               onChange={handleChange}
               placeholder="City, Country"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
 
@@ -283,7 +284,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="eventDate"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Event Date *
             </label>
@@ -294,7 +295,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.eventDate}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
 
@@ -302,9 +303,10 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="organizer"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Organizer
+              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(optional)</span>
             </label>
             <input
               type="text"
@@ -312,7 +314,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               name="organizer"
               value={formData.organizer}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
 
@@ -320,7 +322,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="organizerUrl"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Organizer URL
             </label>
@@ -331,7 +333,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.organizerUrl}
               onChange={handleChange}
               placeholder="https://..."
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
 
@@ -339,7 +341,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="status"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Status
             </label>
@@ -348,7 +350,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             >
               <option value="">None</option>
               <option value="confirmed">Confirmed (upcoming)</option>
@@ -361,9 +363,10 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="price"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Ticket Price
+              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(optional)</span>
             </label>
             <input
               type="text"
@@ -372,7 +375,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.price}
               onChange={handleChange}
               placeholder="$50"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
         </div>
@@ -384,12 +387,12 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           Links
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Ticket Link */}
           <div>
             <label
               htmlFor="ticketLink"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Ticket Link
             </label>
@@ -400,7 +403,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.ticketLink}
               onChange={handleChange}
               placeholder="https://..."
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
 
@@ -408,7 +411,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="venueLink"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Venue Link
             </label>
@@ -419,7 +422,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.venueLink}
               onChange={handleChange}
               placeholder="https://..."
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
 
@@ -427,7 +430,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
           <div>
             <label
               htmlFor="setlistFmLink"
-              className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Setlist.fm Link
             </label>
@@ -438,7 +441,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               value={formData.setlistFmLink}
               onChange={handleChange}
               placeholder="https://www.setlist.fm/..."
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
         </div>
@@ -453,7 +456,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
         <div>
           <label
             htmlFor="reflection"
-            className="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white"
+            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
           >
             Your thoughts and reflections (Markdown supported)
           </label>
@@ -464,7 +467,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
             onChange={handleChange}
             rows={8}
             placeholder="Write your thoughts about the concert..."
-            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
           />
           <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
             Supports Markdown formatting
@@ -473,10 +476,10 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/5">
+      <div className="sticky bottom-0 flex items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-lg sm:p-5 dark:border-white/10 dark:bg-white/5">
         <Link
           href="/admin/content/concerts"
-          className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
         >
           Cancel
         </Link>

@@ -3,7 +3,7 @@ import { Music } from "lucide-react";
 import styles from "./styles.module.scss";
 
 const ConcertCardSkeleton = () => (
-  <div className="h-full overflow-hidden rounded-lg bg-gray-100 dark:bg-white/6">
+  <div className="h-full overflow-hidden rounded-lg bg-gray-50 dark:bg-white/6">
     {/* Cover Image Skeleton */}
     <div className="relative aspect-2/3 w-full overflow-hidden bg-gray-100 dark:bg-white/5">
       <div className="flex h-full items-center justify-center">
@@ -13,11 +13,13 @@ const ConcertCardSkeleton = () => (
     </div>
 
     {/* Content Skeleton */}
-    <div className="space-y-2 p-4">
+    <div className="p-4">
       {/* Artist (Title) */}
-      <div className="h-5 w-2/3 animate-pulse rounded bg-gray-200 sm:h-6 dark:bg-white/10" />
+      <div className="mb-1 h-5 w-2/3 animate-pulse rounded bg-gray-200 sm:h-6 dark:bg-white/10" />
+      {/* Subtitle */}
+      <div className="mb-3 h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
       {/* Date & Venue */}
-      <div className="mt-3 space-y-1.5">
+      <div className="space-y-1.5">
         <div className="h-3.5 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
         <div className="h-3.5 w-4/5 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
       </div>

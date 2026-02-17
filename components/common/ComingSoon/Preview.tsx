@@ -80,7 +80,7 @@ export default function ComingSoonPreview({
               <div className="pt-4">
                 <Link
                   href={href}
-                  className="group inline-flex items-center space-x-2 rounded-lg bg-gray-100 px-6 py-3 text-gray-900 transition-all duration-300 hover:bg-gray-200 sm:px-8 sm:py-4 dark:bg-white/6 dark:text-white dark:hover:bg-white/11"
+                  className="group inline-flex items-center space-x-2 rounded-lg bg-gray-50 px-6 py-3 text-gray-900 transition-all duration-300 hover:bg-gray-100 sm:px-8 sm:py-4 dark:bg-white/6 dark:text-white dark:hover:bg-white/11"
                 >
                   <span className="text-sm sm:text-base">
                     Explore Concert Memories

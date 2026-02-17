@@ -46,6 +46,8 @@ export default function Navbar() {
   const links = getNavbarLinks();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [playlistName, setPlaylistName] = useState<string>("");
+  
+  const isAdminRoute = pathname.startsWith('/admin');
 
   const handleLinkClick = () => setIsMenuOpen(false);
 
@@ -66,7 +68,7 @@ export default function Navbar() {
       <nav
         className={`${styles.navbar} border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-white/10 dark:bg-black/80`}
       >
-        <div className={styles.container}>
+        <div className={isAdminRoute ? styles.containerFullWidth : styles.container}>
           <div className={styles.content}>
             <NavbarLogo handleLinkClick={handleLinkClick} />
 

@@ -9,7 +9,7 @@ import { AdminAPIEndpoints } from "@/components/Admin/AdminAPIEndpoints";
 import TokenExpiryReminder from "@/components/Admin/TokenExpiryReminder";
 
 export const metadata = {
-  title: "Manage Concerts - Admin",
+  title: "Manage Concerts",
   robots: {
     index: false,
     follow: false,
@@ -41,14 +41,18 @@ export default async function AdminConcertsPage() {
   ];
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <AdminPageHeader
-          backLink="/admin"
-          backLabel="Back to Admin"
-          title="Manage Concerts"
-          subtitle="View, edit, and publish concert entries from Contentful"
-          actionButton={
+    <div className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 sm:mb-12">
+          <div className="mb-4 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h1 className="mb-4 text-3xl sm:mb-6 sm:text-4xl md:text-5xl">
+                Manage Concerts
+              </h1>
+              <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+                View, edit, and publish concert entries from Contentful
+              </p>
+            </div>
             <a
               href={`https://app.contentful.com/spaces/${contentfulSpaceId}/entries?contentTypeId=concert`}
               target="_blank"
@@ -75,8 +79,8 @@ export default async function AdminConcertsPage() {
                 />
               </svg>
             </a>
-          }
-        />
+          </div>
+        </div>
 
         <TokenExpiryReminder />
 
@@ -95,7 +99,7 @@ export default async function AdminConcertsPage() {
         />
 
         {concerts.length > 0 && (
-          <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+          <>
             <h2 className="mb-6 text-xl font-semibold text-gray-900 dark:text-white">
               All Concerts ({concerts.length})
             </h2>
@@ -108,7 +112,7 @@ export default async function AdminConcertsPage() {
                 />
               ))}
             </div>
-          </div>
+          </>
         )}
 
         {concerts.length === 0 && (
@@ -154,6 +158,6 @@ export default async function AdminConcertsPage() {
 
         <AdminAPIEndpoints endpoints={apiEndpoints} />
       </div>
-    </main>
+    </div>
   );
 }

@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
-    title: `${concert.title} - Concerts`,
+    title: concert.title,
     description: concert.reflection
       ? concert.reflection.substring(0, 160)
       : `${concert.artistBand} at ${concert.venueName} on ${new Date(concert.eventDate).toLocaleDateString()}`,

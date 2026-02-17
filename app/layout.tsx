@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 import { AppContext } from "@/contexts/AppContext";
 
 import ScrollToTop from "@/components/common/ScrollToTop";
-import Footer from "@/components/Layout/Footer";
+import ConditionalFooter from "@/components/Layout/ConditionalFooter";
 import Navbar from "@/components/Layout/Navbar";
 import WebPlayerControls from "@/components/Music/WebPlayerControls";
 import { PreviewPlayer } from "@/components/PreviewPlayer";
@@ -30,7 +30,7 @@ export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: SITE_NAME,
-    template: `%s | ${SITE_NAME}`,
+    template: `%s - ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   keywords: [
@@ -103,7 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AppContext>
               <Navbar />
               {children}
-              <Footer />
+              <ConditionalFooter />
               <ScrollToTop />
               <PreviewPlayer />
               <Toaster />

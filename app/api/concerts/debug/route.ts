@@ -18,9 +18,18 @@ export async function GET() {
       limit: 100,
     });
 
+    // Format concerts for sidebar
+    const concerts = response.items.map((item: any) => ({
+      id: item.sys.id,
+      slug: item.fields.slug,
+      title: item.fields.title,
+      published: Boolean(item.sys.publishedVersion),
+    }));
+
     return NextResponse.json({
       success: true,
       totalEntries: response.items.length,
+      concerts, // For sidebar
       entries: response.items.map((item) => ({
         id: item.sys.id,
         contentType: item.sys.contentType.sys.id,

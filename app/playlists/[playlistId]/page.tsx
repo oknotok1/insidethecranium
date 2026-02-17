@@ -372,7 +372,7 @@ export async function generateMetadata({
     const playlist = await getPlaylistDetails(playlistId);
 
     return {
-      title: `${playlist.name} - Inside The Cranium`,
+      title: playlist.name,
       description: playlist.description
         ? decodeHtmlEntities(playlist.description)
         : `Listen to ${playlist.name} playlist`,
@@ -383,7 +383,7 @@ export async function generateMetadata({
       `Error in generateMetadata: ${error.message}`,
     );
     return {
-      title: "Playlist - Inside The Cranium",
+      title: "Playlist",
       description: "Explore this playlist",
     };
   }

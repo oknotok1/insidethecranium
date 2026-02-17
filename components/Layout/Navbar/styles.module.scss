@@ -9,6 +9,10 @@
   @apply px-4 sm:px-6 lg:px-8;
 }
 
+.containerFullWidth {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
 .content {
   @apply flex h-16 items-center justify-between gap-2;
 }

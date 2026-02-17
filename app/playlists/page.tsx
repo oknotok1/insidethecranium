@@ -5,7 +5,7 @@ import PlaylistsGrid from "@/components/Playlists/PlaylistsGrid";
 import { fetchPlaylists } from "@/utils/spotify";
 
 export const metadata = {
-  title: "All Playlists - Inside The Cranium",
+  title: "All Playlists",
   description: "Browse all of Jeff's curated Spotify playlists",
 };
 

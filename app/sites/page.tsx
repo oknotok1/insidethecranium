@@ -1,7 +1,7 @@
 import SitesClient from "./client";
 
 export const metadata = {
-  title: "Recommended Sites - Inside The Cranium",
+  title: "Recommended Sites",
   description:
     "My favorite platforms for discovering and exploring music. From streaming services to analytics tools, these sites have shaped my musical journey.",
 };

@@ -9,7 +9,7 @@ import { ConcertArchiveSection } from "@/components/Concerts/ConcertArchiveSecti
 import { ConcertsEmptyState } from "@/components/Concerts/ConcertsEmptyState";
 
 export const metadata = {
-  title: "Concerts - Inside The Cranium",
+  title: "Concerts",
   description: "Concert memories and upcoming shows",
 };
 

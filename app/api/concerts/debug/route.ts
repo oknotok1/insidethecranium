@@ -16,6 +16,7 @@ export async function GET() {
     const response = await client.getEntries({
       content_type: "concert",
       limit: 100,
+      order: ["-fields.eventDate"], // Sort by event date, newest first
     });
 
     // Format concerts for sidebar
@@ -24,6 +25,7 @@ export async function GET() {
       slug: item.fields.slug,
       title: item.fields.title,
       published: Boolean(item.sys.publishedVersion),
+      eventDate: item.fields.eventDate,
     }));
 
     return NextResponse.json({

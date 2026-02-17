@@ -37,7 +37,7 @@ export default async function EditConcertPage({ params }: PageProps) {
 
   return (
     <div className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-7xl">
       {/* Header */}
       <div className="mb-8 sm:mb-12">
         <h1 className="mb-4 text-3xl sm:mb-6 sm:text-4xl md:text-5xl">

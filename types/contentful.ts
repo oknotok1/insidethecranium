@@ -8,11 +8,6 @@
  * 2. Featured Music Types - Homepage featured songs
  * 3. Concert Types - Concert entries and transformed views
  * 
- * Field Name Quirks:
- * The Contentful schema has some inconsistencies that we normalize in our app:
- * - `vanueLocation` (Contentful) → `venueLocation` (our types)
- * - `setlistFmLink` (Contentful) → `setlistFmLink` (our types)
- * 
  * @see utils/contentful.ts for transformation functions
  * @see utils/contentful-management.ts for CMS operations
  */
@@ -77,43 +72,41 @@ export interface FeaturedMusicFields {
 /**
  * Raw concert fields from Contentful CMS
  * 
- * IMPORTANT: Field names must match Contentful exactly:
- * - `vanueLocation` has a typo (not `venueLocation`)
- * - `setlistFmLink` is camelCase (not `setlistfmLink`)
- * 
- * Schema last updated: 2026-02-16T19:34:14.885Z
- * Total fields: 18 (3 required, 15 optional)
+ * Schema last updated: 2026-02-17T09:18:37.809Z
+ * Total fields: 19 (4 required: title, slug, venueName, eventDate)
  */
 export interface ConcertFields {
-  // Required Fields
+  // Required Fields (4)
   title: string;                    // Symbol, required
   slug: string;                     // Symbol, required, unique
   venueName: string;                // Symbol, required
-
-  // Basic Information
-  subtitle?: string;                // Symbol, optional
-  artistBand: string;               // Symbol, optional (but logically should always be set)
-  genres?: string[];                // Array of Symbols, optional
-
-  // Venue & Event
-  vanueLocation?: string;           // Symbol, optional - WARNING: Typo in Contentful
   eventDate: string;                // Date, required - ISO 8601 date string
-  organizer?: string;               // Symbol, optional
-  organizerUrl?: string;            // Symbol, optional, URL validation
 
-  // Show Status & Pricing
-  status?: "confirmed" | "on-fence" | "went"; // Symbol, optional, enum values
+  // Basic Information (2)
+  subtitle?: string;                // Symbol, optional
+  artistBand?: string;              // Symbol, optional
+  
+  // Venue & Location (2)
+  venueLocation?: string;           // Symbol, optional
+  venueLink?: string;               // Symbol, optional, URL validation
+
+  // Event Details (3)
+  genres?: string[];                // Array of Symbols, optional
+  status?: "confirmed" | "on-fence" | "went"; // Symbol, optional, enum values, default: "confirmed"
   price?: string;                   // Symbol, optional - e.g., "$50", "€30"
 
-  // Content
+  // Organization & Tickets (3)
+  organizer?: string;               // Symbol, optional
+  organizerUrl?: string;            // Symbol, optional, URL validation
+  ticketLink?: string;              // Symbol, optional, URL validation
+
+  // Content (1)
   reflection?: string;              // Text, optional - Markdown supported
 
-  // Links (all have URL validation)
-  ticketLink?: string;              // Symbol, optional, URL validation
-  venueLink?: string;               // Symbol, optional, URL validation
+  // Links & References (1)
   setlistFmLink?: string;           // Symbol, optional, URL validation - WARNING: camelCase
 
-  // Media Assets (may be ContentfulAsset or unresolved Link depending on API response)
+  // Media Assets (3) - may be ContentfulAsset or unresolved Link
   coverImage?: ContentfulAsset | { sys: { id: string } };     // Link to Asset (image), optional
   galleryImages?: (ContentfulAsset | { sys: { id: string } })[]; // Array of Links to Assets (images), optional
   videos?: (ContentfulAsset | { sys: { id: string } })[]; // Array of Links to Assets (videos), optional
@@ -137,16 +130,16 @@ export interface ConcertListItem {
   title: string;
   subtitle?: string;
   slug: string;
-  artistBand: string;
+  artistBand?: string;
   genres?: string[];
   venueName: string;
-  venueLocation?: string; // Corrected field name (from Contentful's `vanueLocation`)
+  venueLocation?: string;
   eventDate: string;
   organizer?: string;
   organizerUrl?: string;
   status?: "confirmed" | "on-fence" | "went";
   price?: string;
-  coverImageUrl?: string; // Optional for upcoming shows
+  coverImageUrl?: string;
   coverImageAlt?: string;
   ticketLink?: string;
   venueLink?: string;

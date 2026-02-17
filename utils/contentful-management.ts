@@ -131,7 +131,7 @@ export const createConcert = async (data: {
         slug: { "en-GB": data.slug },
         artistBand: { "en-GB": data.artistBand },
         venueName: { "en-GB": data.venueName },
-        vanueLocation: data.venueLocation
+        venueLocation: data.venueLocation
           ? { "en-GB": data.venueLocation }
           : undefined,
         eventDate: { "en-GB": data.eventDate },
@@ -248,18 +248,12 @@ export const updateConcert = async (
     const entry = await environment.getEntry(entryId);
 
     // Update only provided fields
-    // Map our clean names to Contentful's field names
-    const fieldMapping: Record<string, string> = {
-      venueLocation: "vanueLocation", // Contentful has typo
-      setlistFmLink: "setlistFmLink", // Contentful uses camelCase
-    };
-
     // URL fields that should be deleted if empty (Contentful validates URL format)
     const urlFields = ["ticketLink", "venueLink", "setlistFmLink", "organizerUrl"];
 
     Object.keys(data).forEach((key) => {
       const value = data[key as keyof typeof data];
-      const contentfulFieldName = fieldMapping[key] || key;
+      const contentfulFieldName = key;
 
       if (value !== undefined) {
         // For URL fields, delete the field if empty string (Contentful validates URL format)

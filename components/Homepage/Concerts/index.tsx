@@ -4,14 +4,17 @@ import { ArrowRight, Calendar, MapPin, Music } from "lucide-react";
 
 import Link from "next/link";
 
-import type { ConcertListItem } from "@/types/contentful";
+import type { ConcertDetail } from "@/types/contentful";
 
 import styles from "./styles.module.scss";
 
 const DESKTOP_LIMIT = 8;
 
-// Type for enriched concert with artist image
-type EnrichedConcert = ConcertListItem & { artistImage: string | null };
+// Type for enriched concert with artist image and first gallery image
+type EnrichedConcert = ConcertDetail & { 
+  artistImage: string | null;
+  firstGalleryImage: string | null;
+};
 
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -67,6 +70,12 @@ const ConcertCard = ({ concert }: { concert: EnrichedConcert }) => {
           <img
             src={concert.coverImageUrl}
             alt={concert.coverImageAlt || concert.title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : concert.firstGalleryImage ? (
+          <img
+            src={concert.firstGalleryImage}
+            alt={concert.title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : concert.artistImage ? (

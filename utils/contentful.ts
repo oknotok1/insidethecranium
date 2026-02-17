@@ -113,7 +113,7 @@ const transformConcertToListItem = (
     artistBand: fields.artistBand,
     genres: fields.genres,
     venueName: fields.venueName,
-    venueLocation: fields.vanueLocation, // Note: Contentful has typo "vanueLocation"
+    venueLocation: fields.venueLocation,
     eventDate: fields.eventDate,
     organizer: fields.organizer,
     organizerUrl: fields.organizerUrl,

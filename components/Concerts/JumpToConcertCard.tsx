@@ -3,7 +3,10 @@ import { Music } from "lucide-react";
 
 import type { ConcertListItem } from "@/types/contentful";
 
-type EnrichedConcert = ConcertListItem & { artistImage: string | null };
+type EnrichedConcert = ConcertListItem & { 
+  artistImage: string | null;
+  firstGalleryImage?: string | null;
+};
 
 interface JumpToConcertCardProps {
   concert: EnrichedConcert;
@@ -21,6 +24,12 @@ export function JumpToConcertCard({ concert }: JumpToConcertCardProps) {
             <img
               src={concert.coverImageUrl}
               alt={concert.coverImageAlt || concert.title}
+              className="h-full w-full object-cover"
+            />
+          ) : concert.firstGalleryImage ? (
+            <img
+              src={concert.firstGalleryImage}
+              alt={concert.title}
               className="h-full w-full object-cover"
             />
           ) : concert.artistImage ? (

@@ -4,7 +4,7 @@ import { Calendar, MapPin, Music, ExternalLink, Clock, Ticket } from "lucide-rea
 
 interface UpcomingShow {
   id: string;
-  artistBand: string;
+  artistBand?: string;
   artistImage: string | null;
   artistSpotifyUrl?: string | null;
   genres?: string[];

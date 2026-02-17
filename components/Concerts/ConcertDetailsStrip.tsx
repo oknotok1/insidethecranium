@@ -1,7 +1,7 @@
 import { Calendar, MapPin, Music, ListMusic, Ticket } from "lucide-react";
 
 interface ConcertDetailsStripProps {
-  artistBand: string;
+  artistBand?: string;
   artistSpotifyUrl?: string | null;
   eventDate: string;
   venueName: string;
@@ -30,21 +30,23 @@ export function ConcertDetailsStrip({
       {/* Main Info Row */}
       <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
         {/* Artist */}
-        <div className="flex items-center space-x-2">
-          <Music className="h-4 w-4" />
-          {artistSpotifyUrl ? (
-            <a
-              href={artistSpotifyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:underline"
-            >
-              {artistBand}
-            </a>
-          ) : (
-            <span>{artistBand}</span>
-          )}
-        </div>
+        {artistBand && (
+          <div className="flex items-center space-x-2">
+            <Music className="h-4 w-4" />
+            {artistSpotifyUrl ? (
+              <a
+                href={artistSpotifyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:underline"
+              >
+                {artistBand}
+              </a>
+            ) : (
+              <span>{artistBand}</span>
+            )}
+          </div>
+        )}
         <span className="hidden sm:inline">•</span>
 
         {/* Date */}

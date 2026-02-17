@@ -77,10 +77,10 @@
     // Desktop grid
     .desktopGrid {
       @apply hidden lg:grid;
-      @apply grid-cols-3 gap-3 sm:gap-4 md:gap-6 xl:grid-cols-4;
+      @apply grid-cols-4 items-start gap-3 sm:gap-4 md:gap-6 xl:grid-cols-5;
 
       .concertCardWrapper {
-        @apply flex;
+        @apply h-full;
       }
     }
   }

@@ -5,6 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: {
@@ -33,6 +34,7 @@ export default function AdminLayout({
         <div className="flex-1">{children}</div>
         <Footer />
       </SidebarInset>
+      <Toaster position="top-right" richColors closeButton />
     </SidebarProvider>
   );
 }

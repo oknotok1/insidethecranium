@@ -11,9 +11,16 @@ import { searchSpotifyArtist } from "./spotify";
  * @param concert - Concert to enrich
  * @returns Concert with artistImage field
  */
-export const enrichConcertWithArtistImage = async <T extends { artistBand: string }>(
+export const enrichConcertWithArtistImage = async <T extends { artistBand?: string }>(
   concert: T
 ): Promise<T & { artistImage: string | null }> => {
+  if (!concert.artistBand) {
+    return {
+      ...concert,
+      artistImage: null,
+    };
+  }
+  
   const artist = await searchSpotifyArtist(concert.artistBand);
   return {
     ...concert,
@@ -26,9 +33,16 @@ export const enrichConcertWithArtistImage = async <T extends { artistBand: strin
  * @param concert - Concert to enrich
  * @returns Concert with artistSpotifyUrl field
  */
-export const enrichConcertWithArtistUrl = async <T extends { artistBand: string }>(
+export const enrichConcertWithArtistUrl = async <T extends { artistBand?: string }>(
   concert: T
 ): Promise<T & { artistSpotifyUrl: string | null }> => {
+  if (!concert.artistBand) {
+    return {
+      ...concert,
+      artistSpotifyUrl: null,
+    };
+  }
+  
   const artist = await searchSpotifyArtist(concert.artistBand);
   return {
     ...concert,
@@ -41,7 +55,7 @@ export const enrichConcertWithArtistUrl = async <T extends { artistBand: string 
  * @param concerts - Array of concerts to enrich
  * @returns Array of concerts with artistImage field
  */
-export const enrichConcertsWithArtistImages = async <T extends { artistBand: string }>(
+export const enrichConcertsWithArtistImages = async <T extends { artistBand?: string }>(
   concerts: T[]
 ): Promise<Array<T & { artistImage: string | null }>> => {
   return Promise.all(concerts.map(enrichConcertWithArtistImage));
@@ -52,7 +66,7 @@ export const enrichConcertsWithArtistImages = async <T extends { artistBand: str
  * @param concerts - Array of concerts to enrich
  * @returns Array of concerts with artistSpotifyUrl field
  */
-export const enrichConcertsWithArtistUrls = async <T extends { artistBand: string }>(
+export const enrichConcertsWithArtistUrls = async <T extends { artistBand?: string }>(
   concerts: T[]
 ): Promise<Array<T & { artistSpotifyUrl: string | null }>> => {
   return Promise.all(concerts.map(enrichConcertWithArtistUrl));

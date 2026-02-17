@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { ConcertDetail } from "@/types/contentful";
 import ErrorModal from "./ErrorModal";
 import type { ErrorState } from "@/types/admin";
+import MediaUpload from "./MediaUpload";
 
 interface ConcertEditFormProps {
   concert: ConcertDetail & { id: string; published: boolean };
@@ -16,6 +17,33 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<ErrorState | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [isMediaUploading, setIsMediaUploading] = useState(false);
+
+  // Media state
+  const [coverImage, setCoverImage] = useState<string | undefined>(
+    concert.coverImageUrl
+  );
+  const [galleryImages, setGalleryImages] = useState<string[]>(
+    concert.galleryImages?.map((img) => img.url) || []
+  );
+  const [videos, setVideos] = useState<string[]>(
+    concert.videos?.map((video) => video.url) || []
+  );
+
+  // Media reorder handlers
+  const handleGalleryReorder = (startIndex: number, endIndex: number) => {
+    const result = Array.from(galleryImages);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    setGalleryImages(result);
+  };
+
+  const handleVideosReorder = (startIndex: number, endIndex: number) => {
+    const result = Array.from(videos);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    setVideos(result);
+  };
 
   // Form state
   const [formData, setFormData] = useState({
@@ -41,6 +69,69 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Media upload handlers
+  const handleMediaUpload = async (files: File[], fieldName: string) => {
+    setIsMediaUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("entryId", concert.id);
+        formData.append("fieldName", fieldName);
+
+        const response = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.details || "Upload failed");
+        }
+
+        const data = await response.json();
+        uploadedUrls.push(data.asset.url);
+      }
+
+      // Update state based on field
+      if (fieldName === "coverImage") {
+        setCoverImage(uploadedUrls[0]);
+      } else if (fieldName === "galleryImages") {
+        setGalleryImages((prev) => [...prev, ...uploadedUrls]);
+      } else if (fieldName === "videos") {
+        setVideos((prev) => [...prev, ...uploadedUrls]);
+      }
+
+      alert(`Successfully uploaded ${files.length} file(s)`);
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setIsMediaUploading(false);
+    }
+  };
+
+  const handleMediaRemove = async (fieldName: string, index: number) => {
+    if (!confirm("Are you sure you want to remove this media?")) return;
+
+    try {
+      // Note: Actual deletion from Contentful would require asset ID
+      // For now, just remove from UI state
+      if (fieldName === "coverImage") {
+        setCoverImage(undefined);
+      } else if (fieldName === "galleryImages") {
+        setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+      } else if (fieldName === "videos") {
+        setVideos((prev) => prev.filter((_, i) => i !== index));
+      }
+    } catch (error) {
+      console.error("Remove error:", error);
+      alert("Failed to remove media");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -151,6 +242,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
 
       <form onSubmit={handleSubmit} className="space-y-8">
 
+      {/* 1. Basic Information */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
           Basic Information
@@ -194,13 +286,34 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
             />
           </div>
 
+          {/* Slug - Read-only */}
+          <div>
+            <label
+              htmlFor="slug"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Slug <span className="text-red-500">*</span>
+              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(unique identifier)</span>
+            </label>
+            <input
+              type="text"
+              id="slug"
+              value={concert.slug}
+              disabled
+              className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm text-gray-600 dark:border-white/10 dark:bg-black/10 dark:text-gray-400"
+            />
+            <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+              The slug cannot be changed after creation
+            </p>
+          </div>
+
           {/* Artist/Band */}
           <div>
             <label
               htmlFor="artistBand"
               className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
-              Artist/Band <span className="text-red-500">*</span>
+              Artist/Band
             </label>
             <input
               type="text"
@@ -208,37 +321,16 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               name="artistBand"
               value={formData.artistBand}
               onChange={handleChange}
-              required
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white"
-            />
-          </div>
-
-          {/* Genres */}
-          <div>
-            <label
-              htmlFor="genres"
-              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Genres
-              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(comma-separated)</span>
-            </label>
-            <input
-              type="text"
-              id="genres"
-              name="genres"
-              value={formData.genres}
-              onChange={handleChange}
-              placeholder="indie pop, dream pop, electronic"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
         </div>
       </div>
 
-      {/* Venue & Event Details */}
+      {/* 2. Venue & Location */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-          Venue & Event Details
+          Venue & Location
         </h2>
 
         <div className="space-y-5">
@@ -280,13 +372,41 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
             />
           </div>
 
+          {/* Venue Link */}
+          <div>
+            <label
+              htmlFor="venueLink"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Venue Link
+            </label>
+            <input
+              type="url"
+              id="venueLink"
+              name="venueLink"
+              value={formData.venueLink}
+              onChange={handleChange}
+              placeholder="https://..."
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Event Details */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
+          Event Details
+        </h2>
+
+        <div className="space-y-5">
           {/* Event Date */}
           <div>
             <label
               htmlFor="eventDate"
               className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
-              Event Date *
+              Event Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
@@ -299,6 +419,79 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
             />
           </div>
 
+          {/* Genres */}
+          <div>
+            <label
+              htmlFor="genres"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Genres
+              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(comma-separated)</span>
+            </label>
+            <input
+              type="text"
+              id="genres"
+              name="genres"
+              value={formData.genres}
+              onChange={handleChange}
+              placeholder="indie pop, dream pop, electronic"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
+            />
+          </div>
+
+          {/* Status */}
+          <div>
+            <label
+              htmlFor="status"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Status
+            </label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
+            >
+              <option value="">Select status...</option>
+              <option value="confirmed">Confirmed (upcoming show)</option>
+              <option value="on-fence">On the Fence (considering)</option>
+              <option value="went">Went (attended)</option>
+            </select>
+            <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+              Default: confirmed
+            </p>
+          </div>
+
+          {/* Price */}
+          <div>
+            <label
+              htmlFor="price"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Price
+            </label>
+            <input
+              type="text"
+              id="price"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              placeholder="$50 or €30"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Organization & Tickets */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
+          Organization & Tickets
+        </h2>
+
+        <div className="space-y-5">
           {/* Organizer */}
           <div>
             <label
@@ -306,7 +499,6 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               Organizer
-              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(optional)</span>
             </label>
             <input
               type="text"
@@ -314,6 +506,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               name="organizer"
               value={formData.organizer}
               onChange={handleChange}
+              placeholder="Event promoter or organizer name"
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
@@ -337,57 +530,6 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
             />
           </div>
 
-          {/* Status */}
-          <div>
-            <label
-              htmlFor="status"
-              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Status
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
-            >
-              <option value="">None</option>
-              <option value="confirmed">Confirmed (upcoming)</option>
-              <option value="on-fence">On the Fence (considering)</option>
-              <option value="went">Went (attended)</option>
-            </select>
-          </div>
-
-          {/* Price */}
-          <div>
-            <label
-              htmlFor="price"
-              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Ticket Price
-              <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(optional)</span>
-            </label>
-            <input
-              type="text"
-              id="price"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              placeholder="$50"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Links */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
-        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-          Links
-        </h2>
-
-        <div className="space-y-5">
           {/* Ticket Link */}
           <div>
             <label
@@ -406,26 +548,16 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
+        </div>
+      </div>
 
-          {/* Venue Link */}
-          <div>
-            <label
-              htmlFor="venueLink"
-              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Venue Link
-            </label>
-            <input
-              type="url"
-              id="venueLink"
-              name="venueLink"
-              value={formData.venueLink}
-              onChange={handleChange}
-              placeholder="https://..."
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
-            />
-          </div>
+      {/* 5. Links & References */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
+          Links & References
+        </h2>
 
+        <div className="space-y-5">
           {/* Setlist.fm Link */}
           <div>
             <label
@@ -447,10 +579,10 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
         </div>
       </div>
 
-      {/* Reflection */}
+      {/* 6. Content & Reflection */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-          Reflection
+          Content & Reflection
         </h2>
 
         <div>
@@ -458,7 +590,8 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
             htmlFor="reflection"
             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
           >
-            Your thoughts and reflections (Markdown supported)
+            Your thoughts and reflections
+            <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(Markdown supported)</span>
           </label>
           <textarea
             id="reflection"
@@ -470,9 +603,71 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
             className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-[#3d38f5] focus:outline-none focus:ring-2 focus:ring-[#3d38f5]/20 dark:border-white/10 dark:bg-black/20 dark:text-white dark:placeholder:text-gray-500"
           />
           <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-            Supports Markdown formatting
+            Use Markdown for formatting (bold, italics, lists, etc.)
           </p>
         </div>
+      </div>
+
+      {/* Cover Image Section */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Cover Image
+          </h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Upload a cover image for this concert. This will be used as the main visual.
+          </p>
+        </div>
+        <MediaUpload
+          type="image"
+          multiple={false}
+          onUpload={(files) => handleMediaUpload(files, "coverImage")}
+          disabled={isMediaUploading}
+          currentMedia={coverImage ? [coverImage] : []}
+          onRemove={() => handleMediaRemove("coverImage", 0)}
+        />
+      </div>
+
+      {/* Gallery Images Section */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Gallery Images
+          </h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Upload multiple images for the concert gallery. These will be displayed in the media grid.
+          </p>
+        </div>
+        <MediaUpload
+          type="image"
+          multiple={true}
+          onUpload={(files) => handleMediaUpload(files, "galleryImages")}
+          disabled={isMediaUploading}
+          currentMedia={galleryImages}
+          onRemove={(index) => handleMediaRemove("galleryImages", index)}
+          onReorder={handleGalleryReorder}
+        />
+      </div>
+
+      {/* Videos Section */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Videos
+          </h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Upload videos from the concert. Supported formats: MP4, WebM, MOV.
+          </p>
+        </div>
+        <MediaUpload
+          type="video"
+          multiple={true}
+          onUpload={(files) => handleMediaUpload(files, "videos")}
+          disabled={isMediaUploading}
+          currentMedia={videos}
+          onRemove={(index) => handleMediaRemove("videos", index)}
+          onReorder={handleVideosReorder}
+        />
       </div>
 
       {/* Actions */}
@@ -486,10 +681,10 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isMediaUploading}
           className="inline-flex items-center gap-2 rounded-lg bg-[#3d38f5] px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[#2e29cc] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
         >
-          {isSubmitting && (
+          {(isSubmitting || isMediaUploading) && (
             <svg
               className="h-4 w-4 animate-spin"
               fill="none"
@@ -510,7 +705,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
               />
             </svg>
           )}
-          {isSubmitting ? "Saving..." : "Save Changes"}
+          {isSubmitting ? "Saving..." : isMediaUploading ? "Uploading..." : "Save Changes"}
         </button>
       </div>
       </form>

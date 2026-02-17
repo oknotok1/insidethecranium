@@ -16,7 +16,7 @@ const client = createClient({
 });
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const searchParams = request.nextUrl.searchParams;
   const entryId = searchParams.get("entryId");
 
   if (entryId) {

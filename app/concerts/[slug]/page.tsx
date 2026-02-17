@@ -1,10 +1,14 @@
-import { fetchConcertBySlug } from "@/utils/contentful";
-import { enrichConcertWithArtistUrl } from "@/utils/spotify-enrichment";
-import { notFound } from "next/navigation";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+
 import { ConcertDetailsStrip } from "@/components/Concerts/ConcertDetailsStrip";
 import { ConcertMediaGrid } from "@/components/Concerts/ConcertMediaGrid";
+
+import { fetchConcertBySlug } from "@/utils/contentful";
+import { enrichConcertWithArtistUrl } from "@/utils/spotify-enrichment";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -67,7 +71,9 @@ export default async function ConcertDetailPage({ params }: PageProps) {
             </h1>
 
             {enrichedConcert.subtitle && (
-              <p className="text-lg text-gray-600 sm:text-xl dark:text-gray-400">{enrichedConcert.subtitle}</p>
+              <p className="text-lg text-gray-600 sm:text-xl dark:text-gray-400">
+                {enrichedConcert.subtitle}
+              </p>
             )}
 
             <ConcertDetailsStrip
@@ -87,13 +93,27 @@ export default async function ConcertDetailPage({ params }: PageProps) {
 
       {/* Reflection Section */}
       {concert.reflection && (
-        <section className="py-6 sm:py-8">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl rounded-lg bg-gray-100 p-4 sm:p-6 dark:bg-white/5">
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700 sm:text-base dark:text-gray-300">
-                {concert.reflection}
-              </p>
-            </div>
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-sm font-light leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => <p className="mb-4">{children}</p>,
+                a: ({ href, children }) => (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#3d38f5] transition-all hover:underline dark:text-[#8b87ff]"
+                  >
+                    {children}
+                  </a>
+                ),
+                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                em: ({ children }) => <em className="italic">{children}</em>,
+              }}
+            >
+              {concert.reflection}
+            </ReactMarkdown>
           </div>
         </section>
       )}
@@ -102,7 +122,9 @@ export default async function ConcertDetailPage({ params }: PageProps) {
       {(concert.galleryImages.length > 0 || concert.videos.length > 0) && (
         <section className="py-6 sm:py-8">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="mb-4 text-xl text-gray-900 sm:mb-6 sm:text-2xl dark:text-white">Photos & Videos</h2>
+            <h2 className="mb-4 text-xl text-gray-900 sm:mb-6 sm:text-2xl dark:text-white">
+              Photos & Videos
+            </h2>
             <ConcertMediaGrid
               concertSlug={concert.slug}
               concertTitle={concert.title}

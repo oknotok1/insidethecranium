@@ -1,8 +1,13 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+
+import ReactMarkdown from "react-markdown";
+
+import Link from "next/link";
+
+import type { ConcertDetail } from "@/types/contentful";
+
 import { ConcertDetailsStrip } from "./ConcertDetailsStrip";
 import { ConcertMediaGrid } from "./ConcertMediaGrid";
-import type { ConcertDetail } from "@/types/contentful";
 
 interface ConcertPreviewProps {
   concert: ConcertDetail & {
@@ -51,6 +56,33 @@ export function ConcertPreview({ concert }: ConcertPreviewProps) {
         </div>
       </div>
 
+      {/* Reflection/Write-up */}
+      {concert.reflection && (
+        <div className="line-clamp-4 text-sm leading-relaxed font-light text-gray-600 sm:text-base dark:text-gray-400">
+          <ReactMarkdown
+            components={{
+              p: ({ children }) => <p className="mb-4">{children}</p>,
+              a: ({ href, children }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#3d38f5] transition-all hover:underline dark:text-[#8b87ff]"
+                >
+                  {children}
+                </a>
+              ),
+              strong: ({ children }) => (
+                <strong className="font-semibold">{children}</strong>
+              ),
+              em: ({ children }) => <em className="italic">{children}</em>,
+            }}
+          >
+            {concert.reflection}
+          </ReactMarkdown>
+        </div>
+      )}
+
       {/* Mobile: View link below genre chips */}
       <div className="sm:hidden">
         <Link
@@ -69,15 +101,6 @@ export function ConcertPreview({ concert }: ConcertPreviewProps) {
         videos={concert.videos}
         maxItems={6}
       />
-
-      {/* Reflection/Write-up */}
-      {concert.reflection && (
-        <div className="max-w-4xl rounded-lg bg-gray-100 p-4 sm:p-6 dark:bg-white/5">
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700 sm:text-base dark:text-gray-300">
-            {concert.reflection}
-          </p>
-        </div>
-      )}
     </article>
   );
 }

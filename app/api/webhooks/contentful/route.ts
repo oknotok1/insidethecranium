@@ -49,6 +49,10 @@ export async function POST(request: NextRequest) {
     // Revalidate concert pages based on the action
     const revalidated: string[] = [];
 
+    // Revalidate the homepage (shows concerts preview)
+    revalidatePath("/");
+    revalidated.push("/");
+
     // Always revalidate the main concerts list page
     revalidatePath("/concerts");
     revalidated.push("/concerts");

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Upload, X, Loader2, Image as ImageIcon, Video as VideoIcon, GripVertical } from "lucide-react";
 import imageCompression from "browser-image-compression";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { fetchFile, toBlobURL } from "@ffmpeg/util";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { toast } from "sonner";
+import UploadErrorModal from "./UploadErrorModal";
 
 interface MediaUploadProps {
   type: "image" | "video";
@@ -14,6 +17,15 @@ interface MediaUploadProps {
   currentMedia?: string[]; // URLs of existing media
   onRemove?: (index: number) => void;
   onReorder?: (startIndex: number, endIndex: number) => void;
+}
+
+interface UploadError {
+  status?: number;
+  statusText?: string;
+  message: string;
+  details?: any;
+  request?: any;
+  requestId?: string;
 }
 
 export default function MediaUpload({
@@ -29,12 +41,49 @@ export default function MediaUpload({
   const [isDraggingCompressed, setIsDraggingCompressed] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
+  const [uploadError, setUploadError] = useState<UploadError | null>(null);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [ffmpegLoaded, setFfmpegLoaded] = useState(false);
+  const [ffmpegLoading, setFfmpegLoading] = useState(false);
   const originalFileInputRef = useRef<HTMLInputElement>(null);
   const compressedFileInputRef = useRef<HTMLInputElement>(null);
+  const ffmpegRef = useRef<FFmpeg | null>(null);
 
   const accept = type === "image" 
     ? "image/jpeg,image/jpg,image/png,image/webp,image/gif"
     : "video/mp4,video/webm,video/mov,video/quicktime";
+
+  // Initialize FFmpeg on component mount for videos
+  useEffect(() => {
+    if (type === "video" && !ffmpegLoaded && !ffmpegLoading) {
+      loadFFmpeg();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
+
+  // Initialize FFmpeg
+  const loadFFmpeg = async () => {
+    if (ffmpegRef.current || ffmpegLoaded || ffmpegLoading) return;
+
+    setFfmpegLoading(true);
+    const ffmpeg = new FFmpeg();
+    ffmpegRef.current = ffmpeg;
+
+    try {
+      const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+      });
+      setFfmpegLoaded(true);
+      console.log("FFmpeg loaded successfully");
+    } catch (error) {
+      console.error("Failed to load FFmpeg:", error);
+      throw new Error("Failed to initialize video converter");
+    } finally {
+      setFfmpegLoading(false);
+    }
+  };
 
   const compressImage = async (file: File): Promise<File> => {
     const options = {
@@ -55,6 +104,55 @@ export default function MediaUpload({
     }
   };
 
+  const convertVideo = async (file: File): Promise<File> => {
+    try {
+      // Load FFmpeg if not already loaded
+      if (!ffmpegLoaded) {
+        await loadFFmpeg();
+      }
+
+      const ffmpeg = ffmpegRef.current!;
+      const inputName = "input" + file.name.substring(file.name.lastIndexOf("."));
+      const outputName = "output.mp4";
+
+      // Write input file to FFmpeg virtual filesystem
+      await ffmpeg.writeFile(inputName, await fetchFile(file));
+
+      // Convert to MP4 with H.264 codec - HIGHEST QUALITY
+      // -crf 18: Visually lossless quality (lower = better, 18 is near-lossless)
+      // -preset slow: Better compression, slower encoding
+      // -profile:v high -level 4.2: H.264 High Profile for best quality
+      // -b:a 256k: High audio bitrate
+      await ffmpeg.exec([
+        "-i", inputName,
+        "-c:v", "libx264",
+        "-crf", "18",
+        "-preset", "slow",
+        "-profile:v", "high",
+        "-level", "4.2",
+        "-c:a", "aac",
+        "-b:a", "256k",
+        "-movflags", "+faststart",
+        outputName
+      ]);
+
+      // Read the output file
+      const data = await ffmpeg.readFile(outputName) as Uint8Array;
+      const blob = new Blob([new Uint8Array(data)], { type: "video/mp4" });
+      
+      // Clean up
+      await ffmpeg.deleteFile(inputName);
+      await ffmpeg.deleteFile(outputName);
+
+      // Create new file with .mp4 extension
+      const newFileName = file.name.replace(/\.[^/.]+$/, ".mp4");
+      return new File([blob], newFileName, { type: "video/mp4" });
+    } catch (error) {
+      console.error("Video conversion failed:", error);
+      throw error;
+    }
+  };
+
   const handleFiles = async (files: FileList | null, shouldCompress: boolean) => {
     if (!files || files.length === 0 || disabled) return;
 
@@ -66,34 +164,96 @@ export default function MediaUpload({
     const fileNames = new Set(filesArray.map(f => f.name));
     setUploadingFiles(fileNames);
 
-    for (const file of filesArray) {
+    const totalFiles = filesArray.length;
+    const batchToast = totalFiles > 1 ? toast.loading(`Uploading (0/${totalFiles})...`) : null;
+
+    for (let i = 0; i < filesArray.length; i++) {
+      const file = filesArray[i];
+      const currentIndex = i + 1;
+      
       try {
         let processedFile = file;
         
-        if (type === "image" && shouldCompress) {
-          const compressToast = toast.loading(`Compressing ${file.name}...`);
-          try {
-            processedFile = await compressImage(file);
-            toast.success(`Compressed ${file.name}`, { id: compressToast });
-          } catch (error) {
-            toast.error(`Failed to compress ${file.name}`, { id: compressToast });
-            throw error;
+        // Handle compression/conversion for original uploads
+        if (shouldCompress) {
+          if (type === "image") {
+            if (batchToast) {
+              toast.loading(`Compressing ${file.name}... (${currentIndex}/${totalFiles})`, { id: batchToast });
+              processedFile = await compressImage(file);
+            } else {
+              const compressToast = toast.loading(`Compressing ${file.name}...`);
+              try {
+                processedFile = await compressImage(file);
+                toast.dismiss(compressToast);
+              } catch (error) {
+                toast.error(`Failed to compress ${file.name}`, { id: compressToast });
+                throw error;
+              }
+            }
+          } else if (type === "video") {
+            if (batchToast) {
+              toast.loading(`Converting ${file.name} to MP4... (${currentIndex}/${totalFiles})`, { id: batchToast });
+              processedFile = await convertVideo(file);
+            } else {
+              const convertToast = toast.loading(`Converting ${file.name} to MP4...`);
+              try {
+                processedFile = await convertVideo(file);
+                toast.dismiss(convertToast);
+              } catch (error) {
+                toast.error(`Failed to convert ${file.name}`, { id: convertToast });
+                throw error;
+              }
+            }
           }
         }
 
-        const uploadToast = toast.loading(`Uploading ${processedFile.name}...`);
-        try {
-          await onUpload([processedFile]);
-          toast.success(`Successfully uploaded ${processedFile.name}`, { id: uploadToast });
-          uploadedCount.success++;
-        } catch (error) {
-          toast.error(`Failed to upload ${processedFile.name}: ${error instanceof Error ? error.message : 'Unknown error'}`, { id: uploadToast });
-          uploadedCount.failed++;
+        if (batchToast) {
+          toast.loading(`Uploading ${processedFile.name}... (${currentIndex}/${totalFiles})`, { id: batchToast });
+          
+          try {
+            await onUpload([processedFile]);
+            uploadedCount.success++;
+          } catch (error: any) {
+            toast.dismiss(batchToast);
+            toast.error(`Failed to upload ${processedFile.name}`);
+            
+            setUploadError({
+              status: error.status,
+              statusText: error.statusText,
+              message: error.message || "Upload failed",
+              details: error.details,
+              request: error.request,
+              requestId: error.requestId,
+            });
+            setIsErrorModalOpen(true);
+            
+            uploadedCount.failed++;
+          }
+        } else {
+          const uploadToast = toast.loading(`Uploading ${processedFile.name}...`);
+          try {
+            await onUpload([processedFile]);
+            toast.dismiss(uploadToast);
+            uploadedCount.success++;
+          } catch (error: any) {
+            toast.error(`Failed to upload ${processedFile.name}`, { id: uploadToast });
+            
+            setUploadError({
+              status: error.status,
+              statusText: error.statusText,
+              message: error.message || "Upload failed",
+              details: error.details,
+              request: error.request,
+              requestId: error.requestId,
+            });
+            setIsErrorModalOpen(true);
+            
+            uploadedCount.failed++;
+          }
         }
       } catch (error) {
         uploadedCount.failed++;
       } finally {
-        // Remove from uploading set
         setUploadingFiles(prev => {
           const next = new Set(prev);
           next.delete(file.name);
@@ -102,13 +262,15 @@ export default function MediaUpload({
       }
     }
 
-    // Final summary toast
-    if (uploadedCount.success > 0 && uploadedCount.failed === 0) {
-      toast.success(`All ${uploadedCount.success} file(s) uploaded successfully!`);
-    } else if (uploadedCount.success > 0 && uploadedCount.failed > 0) {
-      toast.warning(`${uploadedCount.success} succeeded, ${uploadedCount.failed} failed`);
-    } else if (uploadedCount.failed > 0) {
-      toast.error(`Failed to upload ${uploadedCount.failed} file(s)`);
+    if (batchToast) {
+      toast.dismiss(batchToast);
+    }
+
+    // Only show error summary if there were failures
+    if (uploadedCount.failed > 0) {
+      toast.error(
+        `Upload completed: ${uploadedCount.success} succeeded, ${uploadedCount.failed} failed`
+      );
     }
 
     // Reset file inputs
@@ -163,21 +325,28 @@ export default function MediaUpload({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Existing Media Grid with Drag & Drop */}
-      {currentMedia.length > 0 && (
-        <div>
-          <h4 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-            Current Media {onReorder && <span className="text-xs text-gray-500 dark:text-gray-400">(drag to reorder)</span>}
-          </h4>
+    <>
+      <UploadErrorModal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        error={uploadError}
+      />
+      
+      <div className="space-y-6">
+        {/* Existing Media Grid with Drag & Drop */}
+        {currentMedia.length > 0 && (
           <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable 
-              droppableId="media-grid" 
-              direction="horizontal" 
-              isDropDisabled={disabled}
-              isCombineEnabled={false}
-              ignoreContainerClipping={false}
-            >
+            <div>
+              <h4 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                Current Media {onReorder && <span className="text-xs text-gray-500 dark:text-gray-400">(drag to reorder)</span>}
+              </h4>
+              <Droppable 
+                droppableId="media-grid" 
+                direction="horizontal" 
+                isDropDisabled={disabled}
+                isCombineEnabled={false}
+                ignoreContainerClipping={false}
+              >
               {(provided) => (
                 <div
                   ref={provided.innerRef}
@@ -239,9 +408,9 @@ export default function MediaUpload({
                 </div>
               )}
             </Droppable>
+            </div>
           </DragDropContext>
-        </div>
-      )}
+        )}
 
       {/* Upload Areas */}
       <div className="grid gap-4 md:grid-cols-2">
@@ -253,7 +422,7 @@ export default function MediaUpload({
           <p className="mb-3 text-xs text-gray-500 dark:text-gray-400">
             {type === "image" 
               ? "Files will be automatically compressed to WebP format" 
-              : "Videos will be uploaded as-is (compression coming soon)"}
+              : "Videos will be automatically converted to MP4 (H.264) with highest quality"}
           </p>
           <div
             onDragOver={handleDragOverOriginal}
@@ -357,6 +526,7 @@ export default function MediaUpload({
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

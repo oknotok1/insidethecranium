@@ -8,7 +8,7 @@ import { SPOTIFY_API } from "@/utils/spotify";
 export const revalidate = false;
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const searchParams = request.nextUrl.searchParams;
   const artistIds = searchParams.get("artistIds");
   const accessToken = request.headers.get("access_token");
 

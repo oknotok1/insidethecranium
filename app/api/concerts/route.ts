@@ -15,7 +15,7 @@ export const revalidate = 86400;
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get("limit") || "100");
     const order = searchParams.get("order") || "-fields.eventDate";
 

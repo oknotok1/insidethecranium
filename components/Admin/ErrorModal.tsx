@@ -1,5 +1,8 @@
 "use client";
 
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
@@ -7,10 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import {
-  type ErrorState,
-  type ErrorDetails,
   isContentfulValidationError,
+  type ErrorDetails,
+  type ErrorState,
 } from "@/types/admin";
 
 interface ErrorModalProps {
@@ -19,7 +23,11 @@ interface ErrorModalProps {
   error: ErrorState | null;
 }
 
-export default function ErrorModal({ isOpen, onClose, error }: ErrorModalProps) {
+export default function ErrorModal({
+  isOpen,
+  onClose,
+  error,
+}: ErrorModalProps) {
   if (!error) return null;
 
   const formatErrorDetails = (details: ErrorDetails) => {
@@ -34,14 +42,14 @@ export default function ErrorModal({ isOpen, onClose, error }: ErrorModalProps) 
               key={idx}
               className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800/30 dark:bg-red-900/10"
             >
-              <div className="text-sm font-medium text-red-900 dark:text-red-200">
+              <div className="text-sm leading-relaxed font-medium wrap-break-word text-red-900 dark:text-red-200">
                 Field: {err.path?.join(" → ") || "Unknown"}
               </div>
-              <div className="mt-1 text-sm text-red-700 dark:text-red-300">
+              <div className="mt-1 text-sm leading-relaxed wrap-break-word text-red-700 dark:text-red-300">
                 {err.details || err.message || "Validation failed"}
               </div>
               {err.value !== undefined && (
-                <div className="mt-1 text-xs text-red-600 dark:text-red-400">
+                <div className="mt-1 text-xs leading-relaxed wrap-break-word text-red-600 dark:text-red-400">
                   Value: "{String(err.value)}"
                 </div>
               )}
@@ -53,7 +61,7 @@ export default function ErrorModal({ isOpen, onClose, error }: ErrorModalProps) 
 
     // Handle generic error details
     return (
-      <pre className="max-h-60 overflow-auto rounded-lg bg-gray-100 p-3 text-xs text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+      <pre className="max-h-60 overflow-auto rounded-lg bg-gray-100 p-3 text-xs leading-relaxed wrap-break-word whitespace-pre-wrap text-gray-800 dark:bg-gray-900 dark:text-gray-200">
         {JSON.stringify(details, null, 2)}
       </pre>
     );
@@ -61,7 +69,7 @@ export default function ErrorModal({ isOpen, onClose, error }: ErrorModalProps) 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24">
@@ -83,7 +91,7 @@ export default function ErrorModal({ isOpen, onClose, error }: ErrorModalProps) 
         <div className="space-y-4">
           {/* Main Error Message */}
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800/30 dark:bg-red-900/10">
-            <p className="text-sm font-medium text-red-900 dark:text-red-200">
+            <p className="text-sm leading-relaxed font-medium wrap-break-word text-red-900 dark:text-red-200">
               {error.message}
             </p>
           </div>
@@ -102,17 +110,17 @@ export default function ErrorModal({ isOpen, onClose, error }: ErrorModalProps) 
           <div className="flex justify-end gap-3 pt-2">
             <button
               onClick={() => {
-                navigator.clipboard.writeText(
-                  JSON.stringify(error, null, 2)
-                );
+                navigator.clipboard.writeText(JSON.stringify(error, null, 2));
+                toast.success("Error details copied to clipboard");
               }}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
             >
+              <Copy className="h-4 w-4" />
               Copy Error
             </button>
             <button
               onClick={onClose}
-              className="rounded-lg bg-[#3d38f5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2e29cc] dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
+              className="cursor-pointer rounded-lg bg-[#3d38f5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2e29cc] dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
             >
               Close
             </button>

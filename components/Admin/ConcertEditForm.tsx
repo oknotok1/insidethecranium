@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import type { ConcertDetail } from "@/types/contentful";
 import ErrorModal from "./ErrorModal";
 import type { ErrorState } from "@/types/admin";
@@ -74,6 +75,11 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
   // Media upload handlers
   const handleMediaUpload = async (files: File[], fieldName: string) => {
     setIsMediaUploading(true);
+    const timestamp = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Singapore",
+      hour12: false,
+    });
+
     try {
       const uploadedUrls: string[] = [];
 
@@ -89,8 +95,30 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.details || "Upload failed");
+          const errorData = await response.json();
+          
+          // Create structured error for modal
+          const errorState: ErrorState = {
+            message: errorData.message || `Failed to upload ${file.name}`,
+            details: {
+              status: errorData.status,
+              statusText: errorData.statusText,
+              fileName: file.name,
+              fileType: file.type,
+              fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+              fieldName,
+              errors: errorData.details?.errors,
+              request: errorData.request,
+              requestId: errorData.requestId,
+              fullError: errorData,
+            },
+            timestamp,
+          };
+
+          console.error(`[${timestamp}] Upload failed:`, errorState);
+          setError(errorState);
+          setIsErrorModalOpen(true);
+          throw errorData;
         }
 
         const data = await response.json();
@@ -106,17 +134,33 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
         setVideos((prev) => [...prev, ...uploadedUrls]);
       }
 
-      alert(`Successfully uploaded ${files.length} file(s)`);
-    } catch (error) {
-      console.error("Upload error:", error);
-      alert(error instanceof Error ? error.message : "Upload failed");
+      toast.success(`Successfully uploaded ${files.length} file(s)`);
+    } catch (error: any) {
+      // If error modal wasn't already set (unexpected error)
+      if (!error.status) {
+        const errorState: ErrorState = {
+          message: error instanceof Error ? error.message : "Upload failed",
+          details: {
+            error: error,
+            stack: error instanceof Error ? error.stack : undefined,
+          },
+          timestamp,
+        };
+
+        console.error(`[${timestamp}] Unexpected upload error:`, errorState);
+        setError(errorState);
+        setIsErrorModalOpen(true);
+      }
     } finally {
       setIsMediaUploading(false);
     }
   };
 
   const handleMediaRemove = async (fieldName: string, index: number) => {
-    if (!confirm("Are you sure you want to remove this media?")) return;
+    const timestamp = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Singapore",
+      hour12: false,
+    });
 
     try {
       // Note: Actual deletion from Contentful would require asset ID
@@ -128,9 +172,22 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
       } else if (fieldName === "videos") {
         setVideos((prev) => prev.filter((_, i) => i !== index));
       }
-    } catch (error) {
-      console.error("Remove error:", error);
-      alert("Failed to remove media");
+      
+      toast.success("Media removed");
+    } catch (error: any) {
+      const errorState: ErrorState = {
+        message: "Failed to remove media",
+        details: {
+          error: error,
+          index,
+          fieldName,
+        },
+        timestamp,
+      };
+
+      console.error(`[${timestamp}] Remove media error:`, errorState);
+      setError(errorState);
+      setIsErrorModalOpen(true);
     }
   };
 
@@ -200,13 +257,13 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
         return;
       }
 
-      // Success - log and redirect
+      // Success - log and refresh
       console.log(`[${timestamp}] Concert updated successfully:`, {
         concertId: concert.id,
         title: cleanedData.title,
       });
 
-      router.push("/admin/content/concerts");
+      toast.success("Concert updated successfully");
       router.refresh();
     } catch (err) {
       const errorState: ErrorState = {
@@ -682,7 +739,7 @@ export default function ConcertEditForm({ concert }: ConcertEditFormProps) {
         <button
           type="submit"
           disabled={isSubmitting || isMediaUploading}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#3d38f5] px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[#2e29cc] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#3d38f5] px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[#2e29cc] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#8b87ff] dark:hover:bg-[#7b77ef]"
         >
           {(isSubmitting || isMediaUploading) && (
             <svg

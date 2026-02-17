@@ -60,7 +60,7 @@ export default function ConcertsSkeleton() {
 
         {/* Desktop: Grid layout */}
         <div className={styles.desktopGrid}>
-          {Array.from({ length: 8 }).map((_, i) => (
+          {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className={styles.concertCardWrapper}>
               <ConcertCardSkeleton />
             </div>

@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import MusicCard from "@/components/Music/MusicCard";
 
+import { isAllowedSpotifyImageUrl } from "@/lib/spotify-image";
+
 import type { TrackWithGenres } from "@/types/spotify";
 
 import styles from "./styles.module.scss";
@@ -19,6 +21,15 @@ const scrollToSection = () => {
 
 const getSpotifyTrackUrl = (trackId: string) =>
   `https://open.spotify.com/track/${trackId}`;
+
+/** Proxy Spotify CDN artwork through our API for indefinite caching (static curated data). */
+function getCuratedArtworkUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  if (isAllowedSpotifyImageUrl(url))
+    return `/api/spotify/image?url=${encodeURIComponent(url)}`;
+
+  return url;
+}
 
 // Show All button for mobile carousel
 const ShowAllButton = ({
@@ -73,7 +84,7 @@ export default function CuratedSongs({
       title={track.name}
       subtitle={track.artists[0]?.name}
       genres={track.genres}
-      artwork={track.album.images[0]?.url}
+      artwork={getCuratedArtworkUrl(track.album.images[0]?.url)}
       spotifyUrl={getSpotifyTrackUrl(track.id)}
       className={styles.mobileTrackCardInner}
       trackId={track.id}

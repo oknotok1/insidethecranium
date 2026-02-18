@@ -65,14 +65,16 @@ export async function GET(request: NextRequest) {
       });
 
       if (!response.ok) {
-        const error = await response.json();
         return NextResponse.json(
           { error: "Failed to fetch currently playing" },
           { status: response.status },
         );
       }
 
+      if (response.status === 204) return NextResponse.json(null);
+
       const data = await response.json();
+
       return NextResponse.json(data);
     }
   } catch (err: any) {

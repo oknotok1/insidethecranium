@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import Image from "next/image";
 
-import { useAppContext, type NowPlayingTrack } from "@/contexts/AppContext";
+import { useAppContext } from "@/contexts/AppContext";
 import { usePreviewPlayer } from "@/contexts/PreviewPlayerContext";
 
 import {
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/popover";
 
 import { useYouTubeSearch } from "@/hooks/useYouTubeSearch";
+
+import type { NowPlayingTrack } from "@/types/spotify";
 
 import styles from "./styles.module.scss";
 

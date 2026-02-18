@@ -4,19 +4,17 @@ import useSWR from "swr";
 
 import React, {
   createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
   useContext,
   useEffect,
   useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
 } from "react";
 
 import type { NowPlayingTrack, RecentlyPlayedResponse } from "@/types/spotify";
 
 import { useSpotifyPlayer } from "./hooks/useSpotifyPlayer";
-
-export type { NowPlayingTrack };
 
 interface WebPlayerControls {
   isReady: boolean;
@@ -62,13 +60,24 @@ const TRACK_POLLING_INTERVAL = 5000; // 5 seconds
 const GENRE_CACHE_DURATION = 86400000; // 24 hours (genres rarely change)
 const REVALIDATION_DELAY = 2000; // 2 seconds
 
-// Token fetcher helper
+// Token fetcher helper — must throw on error so SWR retries (otherwise first-load failures leave hero stuck until refresh)
 const tokenFetcher = (url: string) =>
   fetch(url, { method: "GET" })
-    .then((res) => res.json())
-    .then((data) => data.access_token);
+    .then((res) => {
+      if (!res.ok) {
+        const err = new Error(`Token request failed: ${res.status}`);
+        (err as Error & { status?: number }).status = res.status;
+        throw err;
+      }
+      return res.json();
+    })
+    .then((data) => {
+      const token = data?.access_token;
+      if (!token) throw new Error("No access_token in response");
+      return token;
+    });
 
-// Track fetcher helper
+// Track fetcher helper (currently-playing can return 204 no content when nothing is playing)
 const createTrackFetcher = (accessToken: string | undefined) => {
   return (url: string) =>
     fetch(url, {
@@ -78,7 +87,9 @@ const createTrackFetcher = (accessToken: string | undefined) => {
         if (!res.ok) {
           switch (res.status) {
             case 401:
-              console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
+              console.warn(
+                `[AppContext] Auth error on ${url} (token not ready)`,
+              );
               return null;
             case 429:
               console.warn(`[AppContext] Rate limited on ${url}`);
@@ -87,10 +98,13 @@ const createTrackFetcher = (accessToken: string | undefined) => {
               console.warn(`[AppContext] Server error on ${url} (HTTP 500)`);
               return null;
             default:
-              console.warn(`[AppContext] Request failed on ${url} (HTTP ${res.status})`);
+              console.warn(
+                `[AppContext] Request failed on ${url} (HTTP ${res.status})`,
+              );
               return null;
           }
         }
+        if (res.status === 204) return null;
         return res.json();
       })
       .catch((err) => {
@@ -109,7 +123,12 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { data: accessToken } = useSWR<string>(
     "/api/spotify/auth/token",
     tokenFetcher,
-    { refreshInterval: TOKEN_REFRESH_INTERVAL },
+    {
+      refreshInterval: TOKEN_REFRESH_INTERVAL,
+      revalidateOnReconnect: true,
+      // Don't retry on rate limit so we don't hammer the API; hero can show last played if we have it
+      shouldRetryOnError: (err) => !err?.message?.includes("429"),
+    },
   );
 
   const spotifyPlayer = useSpotifyPlayer(
@@ -123,15 +142,18 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
       accessToken ? "/api/spotify/player/currently-playing" : null,
       trackFetcher,
       {
+        revalidateOnMount: true,
         refreshInterval: TRACK_POLLING_INTERVAL,
         refreshWhenHidden: false,
         refreshWhenOffline: false,
+        // Non-200 (e.g. 429 rate limit) → fetcher returns null → treat as no current track, show last played
+        shouldRetryOnError: false,
         onSuccess: (data) => {
           if (data) {
             setNowPlayingTrack(data);
             setIsListening(data.is_playing);
           } else {
-            // Don't clear nowPlayingTrack - keep it to show last played song
+            // No content (204) or error (429, 5xx) → show last played
             setIsListening(false);
           }
         },
@@ -152,7 +174,9 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
           // Silently handle errors
           switch (res.status) {
             case 401:
-              console.warn(`[AppContext] Auth error on ${url} (token not ready)`);
+              console.warn(
+                `[AppContext] Auth error on ${url} (token not ready)`,
+              );
               return null;
             case 429:
               console.warn(`[AppContext] Rate limited on ${url}`);
@@ -161,7 +185,9 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
               console.warn(`[AppContext] Server error on ${url} (HTTP 500)`);
               return null;
             default:
-              console.warn(`[AppContext] Request failed on ${url} (HTTP ${res.status})`);
+              console.warn(
+                `[AppContext] Request failed on ${url} (HTTP ${res.status})`,
+              );
               return null;
           }
         }
@@ -172,19 +198,21 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
         return null;
       });
 
-  // Fetch recently played track (cached indefinitely, invalidated on-demand)
+  // Fetch recently played track (cached indefinitely server-side; invalidated on-demand via revalidateTag)
+  const RECENTLY_PLAYED_DEDUPE_MS = 300000; // 5 min — use SWR cache to avoid refetching when data is static
   const {
     data: recentlyPlayed,
     mutate: mutateRecentlyPlayed,
     isLoading: isLoadingRecentlyPlayed,
   } = useSWR<RecentlyPlayedResponse>(
     accessToken ? "/api/spotify/player/recently-played" : null,
-    trackFetcher,
+    recentlyPlayedFetcher,
     {
       revalidateOnMount: true,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       shouldRetryOnError: false,
+      dedupingInterval: RECENTLY_PLAYED_DEDUPE_MS,
     },
   );
 
@@ -216,11 +244,16 @@ export const AppContext: React.FC<{ children: ReactNode }> = ({ children }) => {
     },
   );
 
-  // Only show loading state if we're fetching AND don't have any data yet
-  const isLoadingInitialData =
-    (isLoadingCurrentlyPlaying || isLoadingRecentlyPlayed) &&
+  // Hero: show skeleton until we know there's no currently playing, then show last played (recently-played, cached).
+  const waitingForToken = !accessToken;
+  const waitingForCurrentlyPlaying = !!accessToken && isLoadingCurrentlyPlaying;
+  const waitingForLastPlayed =
+    !!accessToken &&
     !currentlyPlayingTrack &&
-    !recentlyPlayed;
+    !recentlyPlayed &&
+    isLoadingRecentlyPlayed;
+  const isLoadingInitialData =
+    waitingForToken || waitingForCurrentlyPlaying || waitingForLastPlayed;
 
   useEffect(() => {
     if (!isListening && accessToken) {

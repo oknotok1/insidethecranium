@@ -4,7 +4,9 @@ import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
-import { useAppContext, type NowPlayingTrack } from "@/contexts/AppContext";
+import { useAppContext } from "@/contexts/AppContext";
+
+import type { NowPlayingTrack } from "@/types/spotify";
 
 import styles from "./styles.module.scss";
 

@@ -46,8 +46,8 @@ export default function Navbar() {
   const links = getNavbarLinks();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [playlistName, setPlaylistName] = useState<string>("");
-  
-  const isAdminRoute = pathname.startsWith('/admin');
+
+  const isAdminRoute = pathname.startsWith("/admin");
 
   const handleLinkClick = () => setIsMenuOpen(false);
 
@@ -68,7 +68,11 @@ export default function Navbar() {
       <nav
         className={`${styles.navbar} border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-white/10 dark:bg-black/80`}
       >
-        <div className={isAdminRoute ? styles.containerFullWidth : styles.container}>
+        <div
+          className={
+            isAdminRoute ? styles.containerFullWidth : styles.container
+          }
+        >
           <div className={styles.content}>
             <NavbarLogo handleLinkClick={handleLinkClick} />
 
@@ -85,7 +89,11 @@ export default function Navbar() {
                 className={`${styles.mobileMenuButton} text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100`}
                 aria-label="Toggle menu"
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
               </button>
             </div>
           </div>
@@ -203,19 +211,27 @@ const MobileMenu = ({
                   ? "text-gray-900 dark:text-white"
                   : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               }`}
-              style={isActive ? { backgroundColor: "rgba(61, 56, 245, 0.2)" } : undefined}
+              style={
+                isActive
+                  ? { backgroundColor: "rgba(61, 56, 245, 0.2)" }
+                  : undefined
+              }
             >
               <Icon className="h-5 w-5 shrink-0" />
               <span className="flex min-w-0 items-center gap-2">
                 <span className="shrink-0">{label}</span>
-                {href === "/playlists" && isPlaylistDetailPage && playlistName && (
-                  <>
-                    <span className="shrink-0 text-gray-400 dark:text-gray-600">|</span>
-                    <span className="truncate text-gray-500 dark:text-gray-500">
-                      {playlistName}
-                    </span>
-                  </>
-                )}
+                {href === "/playlists" &&
+                  isPlaylistDetailPage &&
+                  playlistName && (
+                    <>
+                      <span className="shrink-0 text-gray-400 dark:text-gray-600">
+                        |
+                      </span>
+                      <span className="truncate text-gray-500 dark:text-gray-500">
+                        {playlistName}
+                      </span>
+                    </>
+                  )}
               </span>
             </Link>
           );

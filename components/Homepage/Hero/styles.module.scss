@@ -10,30 +10,16 @@
   @apply relative z-10;
   @apply w-full max-w-7xl;
   @apply px-4 sm:px-6 lg:px-8;
-  @apply py-0 sm:py-16 lg:py-20;
-  @apply flex flex-col items-center;
+  @apply py-8 sm:py-16 lg:py-20;
+  @apply flex flex-col items-center justify-center;
+  @apply mb-4;
   @apply text-center;
-  min-height: calc(100svh - 4rem);
-
-  @media (max-width: 639px) {
-    position: relative;
-    padding-top: 2.5rem;
-    padding-bottom: 0;
-    justify-content: flex-start;
-  }
-
-  @media (min-width: 640px) {
-    justify-content: center;
-  }
+  min-height: calc(100svh - 6.5rem);
 
   .mainContent {
     @apply flex flex-col items-center;
     @apply w-full;
-
-    @media (max-width: 639px) {
-      flex: 0 0 auto;
-      margin-bottom: 2rem;
-    }
+    margin-bottom: 8svh !important;
   }
 
   .albumContainer {
@@ -207,15 +193,15 @@
     @apply flex flex-col items-center;
     @apply border-t border-gray-300;
     @apply w-5/6 sm:w-full;
+    position: absolute;
+    bottom: 0;
 
     @media (max-width: 639px) {
-      margin-top: auto;
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
 
     @media (min-width: 640px) {
-      margin-top: 3rem;
       padding-top: 2rem;
     }
 

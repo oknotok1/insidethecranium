@@ -6,6 +6,12 @@ const nextConfig = {
     root: process.cwd(), // Set workspace root to project directory
   },
   images: {
+    // Local image proxy (Curated Songs artwork) — allow query string ?url=...
+    localPatterns: [
+      {
+        pathname: "/api/spotify/image",
+      },
+    ],
     remotePatterns: [
       // Spotify CDN domains
       {

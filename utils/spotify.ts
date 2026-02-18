@@ -259,6 +259,9 @@ export const fetchSpotifyWithRetry = async <T>(
         };
       }
 
+      // 204 No Content (e.g. nothing currently playing) — no body to parse
+      if (response.status === 204) return { data: null };
+
       // Success
       const data = await response.json();
       return { data: data as T };

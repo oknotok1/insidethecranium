@@ -1,3 +1,6 @@
+import { Toaster } from "sonner";
+import { auth } from "@/auth";
+
 import { AdminSidebar } from "@/components/Admin/AdminSidebar";
 import Footer from "@/components/Layout/Footer";
 import {
@@ -5,7 +8,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Toaster } from "sonner";
 
 export const metadata = {
   title: {
@@ -14,11 +16,26 @@ export const metadata = {
   },
 };
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  const isAuthenticated = !!session;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col">
+        <main className="flex flex-1 items-center justify-center">
+          {children}
+        </main>
+        <Footer />
+        <Toaster position="top-right" richColors closeButton />
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <AdminSidebar />

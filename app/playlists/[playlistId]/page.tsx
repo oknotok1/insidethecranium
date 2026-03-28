@@ -1,8 +1,9 @@
+import { ArrowLeft } from "lucide-react";
+
 import { cache } from "react";
 
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { notFound } from "next/navigation";
 
 import PlaylistArtists from "@/components/Playlists/PlaylistArtists";
 import PlaylistGenres from "@/components/Playlists/PlaylistGenres";
@@ -161,21 +162,18 @@ async function fetchPlaylistDetails(
     logger.log("Playlist Detail", `Fetching playlist: ${cleanPlaylistId}`);
 
     // Use centralized fetch with automatic 401 retry
-    const {
-      data,
-      error,
-      status,
-    } = await fetchSpotifyWithRetry<PlaylistDetails>(
-      `${SPOTIFY_API.BASE_URL}/playlists/${cleanPlaylistId}`,
-      {
-        accessToken,
-        next: {
-          revalidate: false, // Cache indefinitely
-          tags: ["playlists", `playlist:${cleanPlaylistId}`],
+    const { data, error, status } =
+      await fetchSpotifyWithRetry<PlaylistDetails>(
+        `${SPOTIFY_API.BASE_URL}/playlists/${cleanPlaylistId}`,
+        {
+          accessToken,
+          next: {
+            revalidate: false, // Cache indefinitely
+            tags: ["playlists", `playlist:${cleanPlaylistId}`],
+          },
         },
-      },
-      "Playlist Detail",
-    );
+        "Playlist Detail",
+      );
 
     if (!data || error) {
       const err: any = new Error(error || "Failed to fetch playlist");
@@ -219,7 +217,7 @@ const getPlaylistDetails = cache(
   },
 );
 
-// Fetch artist details - returns plain object (not Map) for cache serialization
+// Fetch artist details - calls Spotify directly in batches (no internal HTTP round-trip)
 async function fetchArtistDetails(
   artistIds: string[],
 ): Promise<Record<string, ArtistDetails>> {
@@ -229,32 +227,49 @@ async function fetchArtistDetails(
     const accessToken = await getSpotifyAccessToken();
     logger.log("Playlist Detail", `Fetching ${artistIds.length} artists`);
 
-    // Use our cached API endpoint with indefinite caching
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/artists/genres?artistIds=${artistIds.join(",")}`,
-      {
-        headers: {
-          access_token: accessToken,
-        },
-        next: {
-          revalidate: false, // Cache indefinitely
-          tags: ["artist-genres"],
-        },
-      },
-    );
-
-    if (!response.ok) {
-      logger.error(
-        "Playlist Detail",
-        `Failed to fetch artists: ${response.status} ${response.statusText}`,
-      );
-      throw new Error(`Failed to fetch artists: ${response.statusText}`);
+    const batches: string[][] = [];
+    for (
+      let i = 0;
+      i < artistIds.length;
+      i += SPOTIFY_API.MAX_ARTISTS_PER_REQUEST
+    ) {
+      batches.push(artistIds.slice(i, i + SPOTIFY_API.MAX_ARTISTS_PER_REQUEST));
     }
 
-    const data = await response.json();
-    const artistMap: Record<string, ArtistDetails> = {};
+    logger.log(
+      "Playlist Detail",
+      `Processing ${batches.length} artist batches`,
+    );
 
-    data.artists.forEach((artist: ArtistDetails) => {
+    const allArtists: ArtistDetails[] = [];
+
+    for (const batch of batches) {
+      const { data, error } = await fetchSpotifyWithRetry<{
+        artists: ArtistDetails[];
+      }>(
+        `${SPOTIFY_API.BASE_URL}/artists?ids=${batch.join(",")}`,
+        {
+          accessToken,
+          next: {
+            revalidate: false,
+            tags: ["artist-genres", ...batch.map((id) => `artist:${id}`)],
+          },
+        },
+        "Playlist Detail",
+      );
+
+      if (data?.artists) {
+        allArtists.push(...data.artists);
+      } else {
+        logger.warn(
+          "Playlist Detail",
+          `Batch returned no artists: ${error ?? "unknown"}`,
+        );
+      }
+    }
+
+    const artistMap: Record<string, ArtistDetails> = {};
+    allArtists.forEach((artist) => {
       if (artist) {
         artistMap[artist.id] = {
           id: artist.id,
@@ -293,9 +308,9 @@ export default async function PlaylistDetailPage({
   params: Promise<{ playlistId: string }>;
 }) {
   const { playlistId } = await params;
-  
+
   // Ignore source map requests from dev tools
-  if (playlistId.endsWith('.map') || playlistId.endsWith('.js')) {
+  if (playlistId.endsWith(".map") || playlistId.endsWith(".js")) {
     notFound();
   }
 

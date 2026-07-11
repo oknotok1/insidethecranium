@@ -42,15 +42,12 @@ export default async function ConcertsPage() {
 
   // Use the same filtering for the list items (for Jump to Concert cards)
   const pastConcertsIds = new Set(pastConcertsRaw.map((c) => c.id));
-  
+
   // Create a map of concert IDs to their first gallery image
   const concertGalleryMap = new Map(
-    pastConcertsRaw.map((c) => [
-      c.id,
-      c.galleryImages?.[0]?.url || null,
-    ])
+    pastConcertsRaw.map((c) => [c.id, c.galleryImages?.[0]?.url || null]),
   );
-  
+
   const pastConcertsListRaw = allConcerts
     .filter((concert) => pastConcertsIds.has(concert.id))
     .map((concert) => ({
@@ -72,12 +69,12 @@ export default async function ConcertsPage() {
     ]);
 
   // Separate confirmed and on-fence shows with images
-  const confirmedShows = upcomingShowsWithImages.filter(
-    (show) => show.status === "confirmed",
-  );
-  const onFenceShows = upcomingShowsWithImages.filter(
-    (show) => show.status === "on-fence",
-  );
+  const confirmedShows = upcomingShowsWithImages
+    .filter((show) => show.status === "confirmed")
+    .sort(sortByMostRecent);
+  const onFenceShows = upcomingShowsWithImages
+    .filter((show) => show.status === "on-fence")
+    .sort(sortByMostRecent);
 
   return (
     <main className="min-h-[calc(100vh-4rem)]">
@@ -102,3 +99,6 @@ export default async function ConcertsPage() {
     </main>
   );
 }
+
+const sortByMostRecent = (a: any, b: any) =>
+  new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime();

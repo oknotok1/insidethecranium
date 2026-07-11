@@ -1,0 +1,174 @@
+@reference "../../../styles/tailwind.css";
+
+%flexCenter {
+  @apply flex items-center justify-center;
+}
+
+%detailRow {
+  @apply flex items-center gap-2.5;
+}
+
+%detailSurface {
+  @apply min-w-0 flex-1;
+}
+
+%detailIcon {
+  @apply mt-0.5 h-4 w-4 shrink-0;
+}
+
+%actionBase {
+  @extend %flexCenter;
+  @apply w-full gap-2 rounded-sm px-4 py-2.5 text-sm font-medium transition-colors;
+}
+
+.upcomingShowCard {
+  @apply rounded-lg p-4 transition-all duration-300;
+
+  &:hover {
+    .cardHeader {
+      .artistMedia {
+        .artistAvatar {
+          .artistImage {
+            @apply scale-110;
+          }
+        }
+
+        .statusBadgeWrapper {
+          .statusBadge {
+            @apply border-gray-100;
+          }
+        }
+      }
+    }
+  }
+}
+
+.cardHeader {
+  @apply mb-4 flex gap-4;
+
+  .artistMedia {
+    @apply relative shrink-0;
+
+    .artistAvatar {
+      @apply h-20 w-20 overflow-hidden rounded-full ring-2;
+
+      .artistImage {
+        @apply h-full w-full object-cover transition-transform duration-300;
+      }
+
+      .artistFallback {
+        @extend %flexCenter;
+        @apply h-full w-full;
+      }
+
+      .artistFallbackIcon {
+        @apply h-8 w-8;
+      }
+    }
+
+    .statusBadgeWrapper {
+      @apply absolute right-0.5 bottom-0.5;
+
+      .statusBadge {
+        @extend %flexCenter;
+        @apply h-5 w-5 rounded-full border-2 shadow-lg transition-colors;
+      }
+
+      .statusBadgeIcon {
+        @apply h-3 w-3;
+      }
+    }
+  }
+
+  .primaryInfo {
+    @apply min-w-0 flex-1;
+
+    .artistLink {
+      @apply mb-1 block truncate text-lg font-semibold hover:underline;
+    }
+
+    .artistName {
+      @apply mb-1 truncate text-lg font-semibold;
+    }
+
+    .genreList {
+      @apply mb-2 flex flex-wrap gap-1.5;
+
+      .genreTag {
+        @apply rounded-full px-2 py-0.5 text-xs font-medium;
+      }
+    }
+
+    .priceRow {
+      @apply inline-flex items-center gap-1.5 text-sm font-semibold;
+
+      .priceIcon {
+        @apply h-3.5 w-3.5;
+      }
+    }
+  }
+}
+
+.cardBody {
+  @apply mb-4 space-y-2.5;
+
+  .detailRow {
+    @extend %detailRow;
+
+    .detailIcon {
+      @extend %detailIcon;
+    }
+
+    .detailBody {
+      @extend %detailSurface;
+
+      .detailText {
+        @apply text-sm font-medium;
+      }
+
+      .venueLink {
+        @apply truncate text-sm font-medium hover:underline;
+      }
+
+      .venueName {
+        @apply truncate text-sm font-medium;
+      }
+
+      .venueLocation {
+        @apply truncate text-xs;
+      }
+
+      .organizerLabel {
+        @apply text-xs;
+      }
+
+      .organizerLink {
+        @apply inline text-sm font-medium hover:underline;
+      }
+
+      .organizerName {
+        @apply text-sm font-medium;
+      }
+    }
+  }
+
+  .organizerRow {
+    @apply items-start;
+  }
+}
+
+.cardFooter {
+  @apply transition-colors;
+
+  .actionButton {
+    @extend %actionBase;
+  }
+
+  .actionIcon {
+    @apply h-4 w-4 shrink-0;
+  }
+
+  .actionLabel {
+    @apply leading-none;
+  }
+}

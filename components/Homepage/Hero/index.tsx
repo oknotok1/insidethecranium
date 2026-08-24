@@ -1,21 +1,21 @@
 "use client";
 
 import { ExternalLink, Music2 } from "lucide-react";
+
 import { useEffect, useState } from "react";
+
 import { useAppContext } from "@/contexts/AppContext";
 
 import { ImageWithFallback } from "@/components/common/ImageWithFallback";
+
 import { HeroBackground } from "./Background";
 import { HeroSkeleton } from "./HeroSkeleton";
-
 import { useDisplayTrack } from "./hooks/useDisplayTrack";
 import { useHeroTimestamp } from "./hooks/useHeroTimestamp";
 import { useTrackGenres } from "./hooks/useTrackGenres";
-
+import styles from "./styles.module.scss";
 import { extractSongData } from "./utils/songDataExtractor";
 import { extractLastPlayedTimestamp } from "./utils/timestampExtractor";
-
-import styles from "./styles.module.scss";
 
 // Utility to format milliseconds to MM:SS
 const formatTime = (ms: number): string => {
@@ -34,7 +34,11 @@ export default function HeroSection() {
     isLoadingInitialData,
   } = useAppContext();
 
-  const displayTrack = useDisplayTrack(isListening, nowPlayingTrack, recentlyPlayedTrack);
+  const displayTrack = useDisplayTrack(
+    isListening,
+    nowPlayingTrack,
+    recentlyPlayedTrack,
+  );
 
   const genres = useTrackGenres(displayTrack, accessToken);
 
@@ -45,12 +49,12 @@ export default function HeroSection() {
     recentlyPlayedTrack,
   );
 
-  const { formattedDate, formattedTime, lastPlayedTimeForLabel } = useHeroTimestamp(
-    isListening,
-    lastPlayedAt,
-  );
+  const { formattedDate, formattedTime, lastPlayedTimeForLabel } =
+    useHeroTimestamp(isListening, lastPlayedAt);
 
   const songData = extractSongData(displayTrack, isListening, nowPlayingTrack);
+
+  if (!accessToken) return null;
 
   if (isLoadingInitialData || !displayTrack) return <HeroSkeleton />;
 
@@ -66,7 +70,10 @@ export default function HeroSection() {
               : lastPlayedTimeForLabel || "Last played"}
           </div>
 
-          <AlbumArtwork artwork={songData.albumArtwork} album={songData.album} />
+          <AlbumArtwork
+            artwork={songData.albumArtwork}
+            album={songData.album}
+          />
 
           <SongInfo
             title={songData.title}
@@ -89,11 +96,20 @@ export default function HeroSection() {
   );
 }
 
-const AlbumArtwork = ({ artwork, album }: { artwork?: string; album: string }) => {
+const AlbumArtwork = ({
+  artwork,
+  album,
+}: {
+  artwork?: string;
+  album: string;
+}) => {
   if (!artwork)
     return (
       <div className={styles.placeholderIcon}>
-        <Music2 className="h-12 w-12" style={{ color: "var(--color-primary)" }} />
+        <Music2
+          className="h-12 w-12"
+          style={{ color: "var(--color-primary)" }}
+        />
       </div>
     );
 
@@ -156,14 +172,21 @@ const Metadata = ({ genres }: { genres?: string[] }) => (
     {genres?.map((genre, index) => (
       <span key={genre}>
         {genre}
-        {index < genres.length - 1 && <span className={styles.metadataSeparator}>•</span>}
+        {index < genres.length - 1 && (
+          <span className={styles.metadataSeparator}>•</span>
+        )}
       </span>
     ))}
   </div>
 );
 
 const SpotifyLink = ({ url }: { url: string }) => (
-  <a href={url} target="_blank" rel="noopener noreferrer" className={styles.spotifyLink}>
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={styles.spotifyLink}
+  >
     <span>Listen on Spotify</span>
     <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
   </a>
@@ -251,7 +274,9 @@ const Timestamp = ({
     <div className={styles.timestampContainer}>
       <div className={styles.timestamp}>
         {date} • {timeParts[0]}
-        <span style={{ visibility: colonVisible ? "visible" : "hidden" }}>:</span>
+        <span style={{ visibility: colonVisible ? "visible" : "hidden" }}>
+          :
+        </span>
         {timeParts[1]}
       </div>
     </div>
